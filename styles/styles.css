@@ -1,0 +1,577 @@
+* {
+    text-overflow: ellipsis;
+}
+a {
+    color: darkorange;
+}
+a:visited {
+    color: red;
+}
+a:hover {
+    color: orange;
+}
+a:active {
+    color: darkred;
+}
+html, body {
+    height: 100%;
+}
+body {
+    position: relative;
+    margin: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+}
+body::before {
+    content: ' ';
+    position: fixed;
+    background-image: url(../images/background.jpg);
+    background-position: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+    z-index: -1;
+}
+/*#background-div {
+    position: fixed;
+    background-image: url(../images/background.jpg);
+    background-position: center;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}*/
+#wrapper {
+    width: 90%;
+    margin: 10px auto 10px;
+    max-width: 1080px;
+}
+.article {
+    width: auto;
+    margin: 5px;
+    margin-left: 30%;
+    border-top: 30px solid transparent;
+    border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+}
+.full-width {
+    width: 100%;
+}
+.footer {
+    width: 100%;
+    /*max-height: 50px;*/
+    background: black;
+    color: white;
+    left: 0;
+    bottom: 0;
+    z-index: 5;
+    overflow: hidden;
+    border-top: 1px solid #888;
+}
+.footer-copyright {
+    font-weight: bold;
+    text-align: center;
+    display: block;
+    margin: 10px 0;
+}
+.footer-images {
+    text-align: center;
+}
+.footer-image {
+    max-width: 30%;
+    min-width: 150px;
+    height: 61px;
+    border: 3px solid red;
+}
+.header {
+    width: 100%;
+    background: black;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    border-bottom: 1px solid #888;
+    overflow: hidden;
+}
+.header-main {
+    width: 90%;
+    max-width: 1080px;
+    margin: 0 auto;
+}
+.header h2, .header img {
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+    width: 25%;
+    float: left;
+    margin: 0;
+    padding: 15px 0;
+    max-width: 400px;
+}
+.header-links {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-top: 2%;
+    float: right;
+}
+.header-links ul {
+    list-style: none;
+    margin: 0;
+    height: 100%;
+}
+.header-links ul li {
+    float: left;
+    border-top: 3px solid transparent;
+}
+.header-links ul li:before {
+    content: '';
+    color: #888;
+}
+.header-links ul li:hover:before {
+    content: '';
+}
+.header-links a {
+    color: rgba(255,255,255,.8);
+    text-decoration: none;
+	padding: 15px;
+	display: block;
+}
+.header-links ul li:hover {
+    background: darkred;
+    border-top: 3px solid #888;
+	border-radius: 7px 7px 0 0;
+	text-decoration: underline;
+}
+.nav {
+    width: 30%;
+    /*height: 50px;*/
+    margin: 5px;
+    float: left;
+    z-index: 2;
+    border-top: 30px solid transparent;
+    border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+}
+.nav ul {
+    list-style: none;
+    margin-top: 10%;
+    width: 70%;
+}
+.nav ul li {
+    margin-bottom: 7%;
+    background: black;
+    margin-left: -80px;
+    padding-left: 10%;
+    position: relative;
+    box-shadow: -1px 1px .3em black;
+    border-top: 1px solid red;
+    border-right: 1px solid red;
+    border-radius: 0 10px 10px 0;
+    transition: background .1s linear;
+}
+.nav ul li:after, .nav ul li form:after {
+    content: "";
+    width: 0;
+    z-index: -1;
+    position: absolute;
+    left: 0;
+    border-right: 33px solid rgba(255, 255, 255, 0.851);
+    /*border-top: 24px solid transparent;*/
+    border-bottom: 20px solid transparent;
+}
+.nav ul li:last-child:after {
+    display: none;
+}
+.nav ul li:hover {
+    background: darkred;
+    transition: background .2s linear;
+}
+.nav ul li a, .nav ul li form {
+    color: white;
+    font-family: "Book Antiqua";
+    text-decoration: none;
+    font-size: 1.2em;
+	display: block;
+}
+.nav ul li form {
+    padding: 5px 0;
+}
+.nav ul li form:after {
+    border-top: 30px solid transparent;
+}
+.clear-div {
+    clear: both;
+}
+.blocks {
+    background: rgba(255,255,255, .75);
+    border-radius: 5px;
+    border-right: 1px solid red;
+    border-bottom: 1px solid red;
+    border-top: 1px solid #888;
+    border-left: 1px solid #888; 
+}
+.article h2, .article p {
+    color: rgba(0,0,0,.8);
+    font-family: "Book Antiqua";
+}
+.article h2 {
+    padding: 5px 10px;
+    font-size: 1.6em;
+    margin-bottom: 0;
+}
+.article p {
+    padding: 5px 10px;
+    text-align: justify;
+    font-size: 1.1em;
+    text-indent: 2%;
+    margin-top: 0;
+}
+.article img {
+    max-width: 100%;
+    height: auto;
+}
+.article-image {
+    width: 50%;
+    max-width: 300px;
+    border: 3px solid black;
+	box-shadow: 2px 2px .3em black;
+    float: left;
+    opacity: .8;
+    margin: 0 25px;
+    /*clear: left;*/
+}
+#publs-container, #press-container {
+    width: 95%;
+    margin: 0 auto;
+    float: left;
+}
+.article-publs, .article-press {
+    color: white;  
+    background: darkred;
+    padding-bottom: 5px;
+    position: relative;
+    box-shadow: 1px 1px .3em black,
+                -1px -1px .3em black;
+    border-top: 1px solid #888;
+}
+.article-publ-text {
+    
+}
+.article-press p {
+    text-align: center;
+    margin: 5px 0;
+}
+.article-press-links {
+    margin: 5px;
+    font-weight: bold;
+}
+.article table {
+    width: 90%;  
+    font-size: 1.1em;
+    margin: 0 auto;
+    text-align: justify;
+	box-shadow: 1px 1px .3em black;
+}
+.article table strong {
+    color: white;
+    text-decoration: underline;
+}
+.article table p {
+    color: white;
+}
+.article table p.quotes {
+    font-size: inherit;
+    margin: 5px;
+}
+.article tr:nth-child(even) {
+    background: darkred;
+}
+.article tr:nth-child(odd) {
+    background: rgba(0,0,0,.7);
+}
+.article th {
+    background: darkorange;
+    border: 1px solid black;
+	text-align: center;
+}
+.article td {
+    /*background: rgba(20, 20, 20, 0.749);*/
+    color: rgba(255,255,255,.8);
+    padding-left: 10px;
+}
+.article td img {
+    width: auto;
+    max-width: 250px;
+    border: 5px solid white;
+}
+.article td:hover {
+    background: rgb(30,30,30);
+}
+#news-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 95%;
+    margin: 0 auto;
+}
+#news-container:first-child {
+    flex-grow: 2 !important;
+}
+#news-container  h3 {
+    text-align: right;
+    width: 50%;
+}
+#news-container hr {
+    width: 100%;
+}
+.news-list {
+	list-style-type: none;
+	width: 100%;
+	text-align: center;
+	/*margin-left: 10%;*/
+}
+.news-list li {
+	float: left;
+	margin-right: 3%;
+	font-weight: bold;
+	font-size: 14pt;
+}
+.article-news {
+    color: white;  
+    margin: 10px;
+    /*width: 25%; ???*/ 
+    background: darkred;
+    flex: 1 1 240px;
+    padding-bottom: 25px;
+    position: relative;
+    box-shadow: 1px 1px .3em black;
+                /*-1px -1px .3em black;*/
+    border-top: 1px solid #888;
+	border-radius: 7px 0 0 7px;
+}
+.article-news strong {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.article-news-header {
+    width: 100%;
+    background: black;
+    box-sizing: border-box;
+    padding: 10px;
+    text-align: center;
+	border-radius: 7px 0 0 0;
+}
+.article-news-image {
+    padding-top: 5px;
+    box-sizing: border-box;
+}
+.article-news-text {
+    padding: 5px !important;
+    color: rgba(255, 255, 255, .804) !important;
+}
+.article-news-more {
+    text-decoration: none;
+    background: black;
+    color: white !important;
+    padding: 15px 10px 5px;
+    box-sizing: border-box;    
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    /*right: 0;*/
+	text-align: right;
+    border-top: 2px solid darkorange;
+	border-radius: 0 0 0 7px;
+}
+.article-news-more:hover {
+    background: darkred;
+    border-top: 3px solid #888;
+}
+p.quotes {
+    font-size: 1.15em;
+    color: rgba(255,255,255, .7);
+    background: rgba(255,0,0,.7);
+    border-left: 5px solid black;
+    margin-left: 7%;
+    margin-right: 5%;
+    text-shadow: none;
+    text-align: left;
+    text-indent: 0;
+    box-shadow: 1px 1px .3em black;
+    position: relative;
+    clear: both;
+    padding-left: 35px;
+}
+p.quotes:before {
+    content: "\201c";
+    font-size: 2.7em;
+    width: auto;
+    position: absolute;
+    left: 5px;
+    top: 0;
+    color: rgba(255,255,255, .8);
+}
+.scroll-button {
+    background: black;
+    border-radius: 75px;
+    padding: 35px 10px;
+    color: white;
+    width: 70px;
+    opacity: 0;
+    position: fixed;
+    bottom: -100px;
+    right: 50px;
+    transition: bottom .3s linear,
+                opacity .5s linear;
+    cursor: pointer;
+    border-top: 1px solid #888;
+    border-left: 1px solid #888;
+}
+.scroll-button-active {
+    bottom: 100px;
+    opacity: .5;
+    transition: bottom .3s linear,
+                opacity 1s linear;
+}
+.scroll-button:hover {
+    opacity: 1;
+    transition: opacity .5s linear;
+}
+
+/*mobile, baby!*/
+@media only screen and (max-width:479px) {
+    #wrapper {
+        max-width: 460px;
+        min-width: 310px;
+        width: 100%;
+    }
+    .header, .footer {
+        max-width: 460px;
+        min-width: 370px;
+        background: red;
+    }
+    .header-links {
+        float: left;
+        font-size: .8em;
+        padding: 0;
+        width: 30%;
+    }
+    .header-links ul:before {
+        content: 'menu';
+        color: white;
+        padding: 5px;
+    }
+    .header-links ul {
+        position: relative;
+        padding: 0;
+    }
+    .header-links ul li {
+        left: -9999px;
+        opacity: 0;
+        float: none;
+        position: absolute;
+        padding: 5px;
+        border-top: none;
+        border-left: 3px solid transparent;
+    }
+    .header-links ul:hover li {
+        left: 0;
+        opacity: 1;
+        position: relative;
+    }
+    .header-links ul li:hover { 
+        border-left: 3px solid #888888;
+        border-top: none;
+    }
+    .header img {
+        width: 70%;
+        float: right;
+    }
+    .nav {
+        display: none;
+    }
+    .article {
+        width: 100%;
+        margin: 5px;
+    }
+    #news-container {
+        margin: 0;
+    }
+    #news-container > div {
+        margin-top: 10px;
+    }
+    .article-news {
+        margin: 0 0 10px;
+    }
+    .article-news-header {
+        padding: 0;
+    }
+    .article-news-image {
+        width: 100%;
+    }
+    .article p {
+        padding: 5px 15px;
+    }
+    .scroll-button {
+        display: none;
+    }
+    .footer-copyright {
+        font-size: .7em;
+    }
+}
+@media only screen and (min-width:480px) and (max-width:679px) {
+    #wrapper {
+        max-width: 660px;
+        width: 100%;
+    }
+    .header, .footer {
+        max-width: 660px;
+        background: yellow;
+    }
+    .header-links {
+        float: left;
+        font-size: .8em;
+        padding: 0;
+    }
+    .header-links ul li {
+        padding: 10px;
+    }
+    .header img {
+        width: 100%;
+    }
+    .scroll-button {
+        display: none;
+    }
+    .nav {
+        display: none;
+    }
+    .article {
+        width: 100%;
+        margin: 5px;
+    }
+    .footer-copyright {
+        font-size: .9em;
+    }
+}
+@media only screen and (min-width:680px) and (max-width:959px) {
+    #wrapper {
+        max-width: 940px;
+    }
+    .header, .footer {
+        max-width: 940px;
+        background: green;
+    }
+    .header-links {
+        float: left;
+        font-size: 1.0em;
+    }
+    .scroll-button {
+        display: none;
+    }
+}

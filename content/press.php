@@ -8,6 +8,7 @@
 							echo "<script>document.addEventListener('DOMContentLoaded', function() { replacePressLinks(); }, false);</script>";
 						}
 						else {
+							echo "<strong><a href='index.php?pages=press'>Назад</a></strong><br>";
 							$pressArr = getPressArray($customPress);
 							for($i=0, $j=1; $i<count($pressArr); $i++, $j++) {
 								echo "<a class='article-press-links' href='index.php?pages=press&custom-press=$customPress&page=$i'>Страница $j</a>";

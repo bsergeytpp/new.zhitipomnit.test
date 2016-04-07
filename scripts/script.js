@@ -27,12 +27,11 @@ function replaceNewsLinks() {
 }
 
 function replacePressLinks() {
-	var container = document.body.getElementsByClassName('article')[0];
-	var allLinks = container.getElementsByTagName('A');
-	for(var i=0; i<allLinks.length; i++) {
-		var str = allLinks[i];
+	var press = document.body.getElementsByClassName('article-press');
+	for(var i=0; i<press.length; i++) {
+		var str = press[i].getElementsByTagName('A')[0];
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
-		//console.log(allLinks[i].getAttribute('href'));
+		//console.log(press[i].getAttribute('href'));
 	}
 }
 

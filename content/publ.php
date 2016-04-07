@@ -4,11 +4,12 @@
 					<div class="clear-div"></div>
 					<?
 						$customPubl = isset($_GET['custom-publ']) ? $_GET['custom-publ']: '';
+						$pageNum = isset($_GET['page']) ? $_GET['page']: '1';
 						if(!$customPubl) {
-							$publs = getPubls();
-							foreach($publs as $cur) {
+							getPubls($pageNum);
+							/*foreach($publs as $cur) {
 								echo $cur;
-							}
+							}*/
 						}
 						else echo getSinglePubl($customPubl);
 					?>

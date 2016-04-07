@@ -20,7 +20,7 @@
 			?>
             <div class="article ">
                 <?
-					$params = $_GET['pages'];
+					$params = isset($_GET['pages']) ? $_GET['pages'] : '';
 					switch($params) {
 						case 'main': 
 							include "content/main.php"; break;

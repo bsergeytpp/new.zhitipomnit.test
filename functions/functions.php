@@ -126,9 +126,9 @@
 		echo $list, $dom2->saveHTML(), $list;
 	}
 	
-	function getULlist($totalNews, $newsPerPage, $href, $pageNum) {
+	function getULlist($totalElems, $elemsPerPage, $href, $pageNum) {
 		$list = '<ul class="news-list"><li> << ';
-		for($j = 1; $j <= $totalNews/$newsPerPage; $j++) {
+		for($j = 1; $j <= ceil($totalElems/$elemsPerPage); $j++) {
 			if($j == $pageNum) {
 				$list .= " <li>" . $j . " ";
 				continue;
@@ -194,8 +194,6 @@
 	}
 	
 	function adaptOldNews($newsToAdapt) {
-		
-		
 		// ошибки в коде старых новостей
 		$pattern = [
 			'/materials/',
@@ -236,7 +234,7 @@
 		return str_replace(array_keys($replace), $replace, $string);
 	}
 	
-	function getPubls() {
+	function getPubls($page) {
 		$dir = "content/publ/";
 		$publArr = scandir($dir);
 		$rPubls = [];
@@ -256,7 +254,26 @@
 		
 		foreach($oldPubls as $publ) $rPubls[] = $publ;
 		
-		return $rPubls;
+		createPublsList($rPubls, $page);
+	}
+	
+	function createPublsList($publs, $page) {
+		if(count($publs) < 10) {
+			echo $publs;
+			return;
+		}
+		
+		$totalPubls = count($publs);
+		$list = getULlist($totalPubls, 10, 'index.php?pages=publ&page=', $page);
+		echo $list;
+		
+		$publsTemp = [];
+		for($i=$page*10; $i>($page*10-10); $i--) {
+			array_unshift($publsTemp, $publs[$i-1]);
+		}
+		
+		echo implode($publsTemp);
+		echo $list;
 	}
 	
 	function getOldPubls() {
@@ -389,6 +406,29 @@
 	
 	function getPressPage($pressArr, $pageNum) {
 		return $pressArr[$pageNum];
+	}
+	
+	function createPressList($press, $page) {
+		$pressArr = explode(PHP_EOL, $press);
+		
+		if(count($pressArr) < 10) {
+			echo $pressArr;
+			return;
+		}
+		$totalPress = count($pressArr);
+		
+		$list = getULlist($totalPress, 10, 'index.php?pages=press&page=', $page);
+		
+		echo $list;
+		
+		$pressTemp = [];
+		for($i = $page * 10; $i>($page*10-10); $i--) {
+			array_unshift($pressTemp, $pressArr[$i-1]);
+		}
+		
+		echo implode($pressTemp);
+		
+		echo $list;
 	}
 	
 	// PostgreSQL functions

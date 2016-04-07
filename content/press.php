@@ -2,9 +2,10 @@
 				<div id="press-container">
 					<?
 						$customPress = isset($_GET['custom-press']) ? $_GET['custom-press'] : '';
+						$pageNum = isset($_GET['page']) ? $_GET['page'] : '1';
 						if(!$customPress) {
 							$press = file_get_contents('content/press/gazeta.html');
-							echo $press;
+							createPressList($press, $pageNum);
 							echo "<script>document.addEventListener('DOMContentLoaded', function() { replacePressLinks(); }, false);</script>";
 						}
 						else {

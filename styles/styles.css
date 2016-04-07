@@ -333,7 +333,7 @@ body::before {
 	list-style-type: none;
 	width: 100%;
 	text-align: center;
-	/*margin-left: 10%;*/
+	padding: 10px 0 10px 0;
 }
 .news-list li {
 	float: left;

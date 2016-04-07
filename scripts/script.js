@@ -38,3 +38,20 @@ function replacePressLinks() {
 function changeStyle() {
 	document.getElementById('news-container').style.display = 'block';
 }
+
+function displayNewsImage() {
+	var imgs = document.body.getElementsByClassName('article-news-image');
+	for(var i = 0; i<imgs.length; i++) {
+		if(isFileExists(imgs[i].getAttribute('src'))) {
+			imgs[i].style.display = 'block';
+		}
+		else imgs[i].style.display = 'none';
+	}
+}
+
+function isFileExists(url) {
+	var http = new XMLHttpRequest();
+	http.open('HEAD', url, true);
+	http.send();
+	return http.status != 404;
+}

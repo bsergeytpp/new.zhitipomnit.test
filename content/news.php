@@ -7,6 +7,7 @@
 						file_put_contents('content/templates/smth.php', '');
 						if(!$customNewsDate) {
 							getAllNews($pageNum);
+							//echo "<script>document.addEventListener('DOMContentLoaded', function() { displayNewsImage(); }, false);</script>";
 							echo "<h3 class='full-width'><a href='index.php?pages=news&custom-news-date=all-old'>Старые новости</a></h3>";
 						}
 						else if($customNewsDate == 'all-old') {
@@ -15,7 +16,7 @@
 							echo "<h3 class='full-width'><a href='index.php?pages=news&page=$pageNum'>Последние новости</a></h3>";
 						}
 						else {
-							echo getSingleNews($customNewsDate);
+							echo getSingleNews($customNewsDate, $pageNum);
 						}
 						
 					//	$link = connectToPostgres();

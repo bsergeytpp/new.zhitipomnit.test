@@ -4,18 +4,19 @@
 	}
 	
 	function exceptStr($str) {
-		for($i=0; $i<strlen($str); $i++)
-			if($str[$i] == '.' && $i > 200)
+		$len = strlen($str);
+		for($i=0; $i<$len; $i++) {
+			if($str[$i] == '.' && $i > 200) {
 				$str = substr($str, 0, $i+1);
+				break;
+			}
+		}
 				
 		return $str;
 	}
 	
 	function adaptModernNews($news) {
-		for($i=0; $i<3; $i++)
-			if($i == 2)
-				unset($news[$i]);	
-				
+		unset($news[2]);
 		$newsKeys = ['newsDate', 'newsText'];
 		$news = array_combine($newsKeys, $news);
 		$newsFull = file_get_contents('content/templates/news_full.php');
@@ -25,12 +26,7 @@
 	}
 	
 	function createExceptNews($news) {
-		for($i=0; $i<3; $i++) {
-			if($i == 1) {
-				$news[$i] = exceptStr(strip_tags($news[$i]));
-			}
-		}
-				
+		$news[1] = exceptStr(strip_tags($news[1]));
 		$newsKeys = ['newsDate', 'newsText', 'newsUrl'];
 		$news = array_combine($newsKeys, $news);
 		$newsTemplate = file_get_contents('content/templates/news_template.php');
@@ -52,50 +48,41 @@
 				}
 			}
 		}
+		$totalNews = count($rNews);
+		$rNews = sortNews($rNews, $totalNews);
 		
-		$rNews = sortNews($rNews);
-		
-		for($i=0; $i<count($rNews); $i++) {
+		for($i=0; $i<$totalNews; $i++) {
 			$rNews[$i] = createExceptNews($rNews[$i]);
 		}
 		
-		createNewsList($rNews, $page);
+		createNewsList($rNews, $page, $totalNews);
 	}
 	
-	function createNewsList($news, $page) {
-		$totalNews = count($news);
-		
+	function createNewsList($news, $page, $totalNews) {		
 		// делаем ссылки на страницы списка		
 		$list = getULlist($totalNews, 3, 'index.php?pages=news&page=', $page);
 		
 		// новостей мало, список не делаем
 		if($totalNews <= 3) {
-			foreach($news as $cur) {
-				file_put_contents('content/templates/smth.php', $cur, FILE_APPEND); 
-			}
+			echo implode($news);
 			return;
 		}
 		
 		// создаем список новостей для страницы
 		$tempArr = [];
 		for($i=$page*3; $i>($page*3-3); $i--) {
-			array_unshift($tempArr, $news[$i-1]);
+			if(isset($news[$i-1])) {
+				array_unshift($tempArr, $news[$i-1]);
+			}
 		}
 				
-		file_put_contents('content/templates/smth.php', $tempArr, FILE_APPEND);
-		
-		echo $list;
-		
-		include 'content/templates/smth.php'; 
-		
-		echo $list;
+		echo $list, implode($tempArr), $list;
 	}
 	
 	function createOldNewsList($oldNews, $page) {
 		$dom = new DOMDocument;
 		$oldNews = mb_convert_encoding($oldNews, 'HTML-ENTITIES', "UTF-8");
-		$dom->loadHTML($oldNews);
-				
+		$dom->loadHTML($oldNews);		
 		$p_elems = $dom->getElementsByTagName('p');
 		$totalNews = $p_elems->length;
 		
@@ -112,15 +99,17 @@
 		$dom2 = new DOMDocument;
 		
 		for($i = $page*10; $i>($page*10-10); $i--) {
-			$node = $dom2->importNode($p_elems->item($i-1), true);
-			if(!$dom2->hasChildNodes()) {
-				$dom2->appendChild($node);
+			if($p_elems->item($i-1) !== null) {
+				$node = $dom2->importNode($p_elems->item($i-1), true);
+				if(!$dom2->hasChildNodes()) {
+					$dom2->appendChild($node);
+					$firstChild = $dom2->firstChild;
+					continue;
+				}
+				// вывод по убыванию даты
+				$firstChild->parentNode->insertBefore($node, $firstChild);
 				$firstChild = $dom2->firstChild;
-				continue;
 			}
-			// вывод по убыванию даты
-			$firstChild->parentNode->insertBefore($node, $firstChild);
-			$firstChild = $dom2->firstChild;
 		}
 		
 		echo $list, $dom2->saveHTML(), $list;
@@ -128,7 +117,9 @@
 	
 	function getULlist($totalElems, $elemsPerPage, $href, $pageNum) {
 		$list = '<ul class="news-list"><li> << ';
-		for($j = 1; $j <= ceil($totalElems/$elemsPerPage); $j++) {
+		$totalPages = ceil($totalElems/$elemsPerPage);
+		
+		for($j = 1; $j <= $totalPages; $j++) {
 			if($j == $pageNum) {
 				$list .= " <li>" . $j . " ";
 				continue;
@@ -141,8 +132,8 @@
 		return $list;
 	}
 	
-	function sortNews($newsArr) {
-		for($i=1; $i<count($newsArr); $i++) {					
+	function sortNews($newsArr, $totalNews) {
+		for($i=1; $i<$totalNews; $i++) {					
 			for($j= $i-1; $j>=0; $j--) {		
 				if(reverseDate($newsArr[$j][0]) < reverseDate($newsArr[$j+1][0])) {
 					$temp = $newsArr[$j+1];
@@ -159,14 +150,15 @@
 		return intval(substr($date, -2, 2) . substr($date, -5, 2) . substr($date, 0, 2));
 	}
 	
-	function getSingleNews($date) {
+	function getSingleNews($date, $pageNum) {
 		// Определяем формат даты
 		$dateArr = explode('-', $date);
+		
 		if(strlen((string)$dateArr[0]) > 2) {
 			$date = $dateArr[2].'-'.$dateArr[1].'-'.substr($dateArr[0], -2, 2);
 		}
-		// Определяем тип новости
-		$pageNum = isset($_GET['page']) ? $_GET['page'] : '1';
+		
+		// Определяем тип новости		
 		if(file_exists('content/news/'.$date.'.txt')) {
 			return getSingleModernNews($date.'.txt', $pageNum);
 		}
@@ -183,50 +175,45 @@
 	function getSingleModernNews($name, $pageNum) {
 		echo "<strong><a href='index.php?pages=news&page=$pageNum'>Назад</a></strong>";
 		
-		return adaptModernNews(unserialize(file_get_contents("content/news/".$name)));
+		return adaptModernNews(unserialize(file_get_contents('content/news/'.$name)));
 	}
 	
 	function getSingleOldNews($name, $pageNum) {		
 		echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=$pageNum'>Назад</a></strong>";
 		echo "<script>document.addEventListener('DOMContentLoaded', function() { changeStyle(); }, false);</script>";
 		
-		return adaptOldNews(file_get_contents("content/news/$name"));
+		return adaptOldNews(file_get_contents('content/news/'.$name));
 	}
 	
 	function adaptOldNews($newsToAdapt) {
+		if(!mb_detect_encoding($newsToAdapt, "UTF-8", true)) {
+			$newsToAdapt = mb_convert_encoding($newsToAdapt, "UTF-8", "windows-1251");
+		}
 		// ошибки в коде старых новостей
 		$pattern = [
-			'/materials/',
-			'/Фонд Жить и Помнить/',
-			'/Новости фонда ЖИТЬ И ПОМНИТЬ/',
-			'/<img src="..\/\images\/\m1.gif" width="100%" height="28" border="0" \/\>/',
-			'/<img src="..\/\images\/\m2.gif" width="100%" height="21" border="0" \/\>/',
-			'/style=padding-top: 10""/',
-			'/style=padding-top:10""/',
-			'/style=padding-top:10"/',
-			'/style=padding-top: 10"/',
-			'/style=padding-top: 10 ""/',
-			'/"padding-left: 25; padding-right: 25; padding-top: 0; padding-bottom: 25""/'
+			'materials',
+			'Фонд Жить и Помнить',
+			'Новости фонда ЖИТЬ И ПОМНИТЬ',
+			'<img src="../images/m1.gif" width="100%" height="28" border="0" />',
+			'<img src="../images/m2.gif" width="100%" height="21" border="0" />',
+			'style=padding-top: 10""',
+			'style=padding-top:10""',
+			'style=padding-top:10"',
+			'style=padding-top: 10"',
+			'style=padding-top: 10 ""',
+			'"padding-left: 25; padding-right: 25; padding-top: 0; padding-bottom: 25""'
 		];
 		$replacement = array_fill(0, 11, '');
-		$replacement[0] = '/content/news/materials/';
-		$adaptedNews = preg_replace($pattern, $replacement, $newsToAdapt);
-		
-		if(!mb_detect_encoding($adaptedNews, "UTF-8", true)) {
-			$adaptedNews = mb_convert_encoding($adaptedNews, "UTF-8", "windows-1251");
-		}
-		
+		$replacement[0] = 'content/news/materials';
+		$adaptedNews = str_replace($pattern, $replacement, $newsToAdapt);
 		$adaptedNews = strip_tags($adaptedNews, '<h1><h2><h3><p><strong><a><img><ol><ul><li>');
 
 		return $adaptedNews;
 	}
 	
 	function getAllOldNews($page) {
-		if(!$page) $page = 1;
-		
 		$allNews = file_get_contents("content/news/archive_news.html");
 		$allNews = strip_tags($allNews, '<p><strong><a>');
-		
 		createOldNewsList($allNews, $page);
 	}
 	
@@ -241,6 +228,7 @@
 		
 		foreach($publArr as $publName) {
 			$publPath = $dir.$publName;
+			
 			if(file_exists($publPath) && is_file($publPath)) {
 				if(substr($publPath, -3, 3) == 'txt') {	// новые статьи
 					$publ = file_get_contents($publPath);
@@ -251,25 +239,26 @@
 		}
 		
 		$oldPubls = getOldPubls();
-		
-		foreach($oldPubls as $publ) $rPubls[] = $publ;
-		
+		$rPubls = $rPubls + $oldPubls;
 		createPublsList($rPubls, $page);
 	}
 	
 	function createPublsList($publs, $page) {
-		if(count($publs) < 10) {
+		$totalPubls = count($publs);
+		
+		if($totalPubls < 10) {
 			echo $publs;
 			return;
 		}
-		
-		$totalPubls = count($publs);
+
 		$list = getULlist($totalPubls, 10, 'index.php?pages=publ&page=', $page);
 		echo $list;
-		
 		$publsTemp = [];
+		
 		for($i=$page*10; $i>($page*10-10); $i--) {
-			array_unshift($publsTemp, $publs[$i-1]);
+			if(isset($publs[$i-1])) {
+				array_unshift($publsTemp, $publs[$i-1]);
+			}
 		}
 		
 		echo implode($publsTemp);
@@ -278,7 +267,7 @@
 	
 	function getOldPubls() {
 		$publsList = file('content/publ/publik.html');
-		$arr = [];
+		$oldNewsArr = [];
 		
 		foreach($publsList as $publ) {
 			// получаем ссылку
@@ -294,43 +283,44 @@
 				'text' => $text
 			];
 			$oldPubl = createExceptPubl($oldPubl, true);
-			$arr[] = $oldPubl;
+			$oldNewsArr[] = $oldPubl;
 		}
 		
-		return $arr;
+		return $oldNewsArr;
 	}
 	
 	function getSinglePubl($name) {
 		if(substr($name, -3, 3) == 'txt') {
 			$publArr = unserialize(file_get_contents($name));
 			for($i=0; $i<3; $i++) {
-				if($i == 2)
-					$publ = $publArr[$i];
+				if($i == 2) $publ = $publArr[$i];
 			}
 		}
 		else if(substr($name, -4, 4) == 'html'){
 			$publ = file_get_contents($name);
-			// ошибка в большом кол-ве файлов
-			$pattern = [
-				'/materials/',
-				'/ПУБЛИКАЦИИ/',
-				'/<img src="..\/\images\/\m1.gif" width="100%" height="28" border="0" \/\>/',
-				'/<img src="..\/\images\/\m2.gif" width="100%" height="21" border="0" \/\>/',
-				'/<IMG SRC="..\/\images\/\m2.gif" ALIGN=BOTTOM WIDTH=100% HEIGHT=21 BORDER=0>/',
-				'/style=padding-top: 10""/',
-				'/style=padding-top:10""/',
-				'/style=padding-top:10"/',
-				'/style=padding-top: 10"/',
-				'/style=padding-top: 10 ""/'
-			];
-			$replacemetnt = array_fill(0, 10, '');
-			$replacemetnt[0] = "/content/publ/materials/";
-			$publ = preg_replace($pattern, $replacemetnt, $publ);
-			$publ = preg_replace("/Фонд Жить и Помнить/", "", $publ, 1);
 			
-			if(!mb_detect_encoding($publ, "UTF-8", true)) 
+			if(!mb_detect_encoding($publ, "UTF-8", true)) {
 				$publ = mb_convert_encoding($publ, "UTF-8", "windows-1251");
+			}
 			
+			// ошибки в большом кол-ве файлов
+			$pattern = [
+				'materials',
+				'ПУБЛИКАЦИИ',
+				'<img src="../images/m1.gif" width="100%" height="28" border="0" />',
+				'<img src="../images/m2.gif" width="100%" height="21" border="0" />',
+				'<IMG SRC="../images/m2.gif" ALIGN=BOTTOM WIDTH=100% HEIGHT=21 BORDER=0>',
+				'style=padding-top: 10""',
+				'style=padding-top:10""',
+				'style=padding-top:10"',
+				'style=padding-top: 10"',
+				'style=padding-top: 10 ""',
+				'style="padding-top: 10""'
+			];
+			$replacemetnt = array_fill(0, 11, '');
+			$replacemetnt[0] = "content/publ/materials";
+			$publ = str_replace($pattern, $replacemetnt, $publ);
+			$publ = preg_replace("/Фонд Жить и Помнить/", "", $publ, 1);
 			$publ = strip_tags($publ, '<h1><h2><h3><p><strong><a><img><ol><ul><li>');
 		}
 		else {
@@ -355,9 +345,10 @@
 	
 	function createExceptPubl($publ, $isOld) {
 		$publTemplate = file_get_contents('content/templates/publ_template.php');
+		
 		if($isOld) {
-			$publTemplate = preg_replace("/publUrl/", $publ['link'], $publTemplate);
-			$publTemplate = preg_replace("/publHeader/", $publ['text'], $publTemplate);
+			$publTemplate = str_replace("publUrl", $publ['link'], $publTemplate);
+			$publTemplate = str_replace("publHeader", $publ['text'], $publTemplate);
 		}
 		else {
 			$publArr = unserialize($publ);
@@ -374,29 +365,29 @@
 		
 		for($i=0,$j=1;$i<4;$i++,$j++) {
 			$press = file_get_contents("content/press/$name/$j.html");
-						
-			// ошибки в большом кол-ве файлов
-			$pattern = [
-				'/materials/',
-				'/<img src="..\/\..\/\images\/\m1.gif" width="100%" height="28" border="0" \/\>/',
-				'/log.jpg/',
-				'/<img src="..\/\..\/\images\/\" width="687" height="153" \/\>/',
-				'/<img src="..\/\..\/\images\/\m2.gif" width="100%" height="21" border="0" \/\>/',
-				'/style=padding-top: 10""/',
-				'/style=padding-top:10""/',
-				'/style=padding-top:10"/',
-				'/style=padding-top: 10"/',
-				'/style=padding-top: 10 ""/',
-				'/bgcolor="#FFFFFF""/'
-			];
-			$replacement = array_fill(0, 11, '');
-			$replacement[0] = "/content/press/$name/materials/";
-			$press = preg_replace($pattern, $replacement, $press);
 			
 			if(!mb_detect_encoding($press, 'UTF-8', true)) {
 				$press = mb_convert_encoding($press, "UTF-8", 'windows-1251');
 			}
 			
+			// ошибки в большом кол-ве файлов
+			$pattern = [
+				'materials',
+				'<img src="../../images/m1.gif" width="100%" height="28" border="0" />',
+				'log.jpg',
+				'<img src="../../images/" width="687" height="153" />',
+				'<img src="../../images/m2.gif" width="100%" height="21" border="0" />',
+				'style=padding-top: 10""',
+				'style=padding-top:10""',
+				'style=padding-top:10"',
+				'style=padding-top: 10"',
+				'style=padding-top: 10 ""',
+				'bgcolor="#FFFFFF""'
+			];
+			$replacement = array_fill(0, 11, '');
+			$replacement[0] = "content/press/$name/materials";
+			$press = str_replace($pattern, $replacement, $press);
+			$press = preg_replace("/Фонд Жить и Помнить/", '', $press, 1);
 			$press = strip_tags($press, '<h1><h2><h3><p><strong><a><img><ul><ol><li>');	
 			$pressArr[] = $press;
 		}
@@ -410,24 +401,25 @@
 	
 	function createPressList($press, $page) {
 		$pressArr = explode(PHP_EOL, $press);
+		$totalPress = count($pressArr);
 		
-		if(count($pressArr) < 10) {
+		if($totalPress < 10) {
 			echo $pressArr;
 			return;
 		}
-		$totalPress = count($pressArr);
 		
 		$list = getULlist($totalPress, 10, 'index.php?pages=press&page=', $page);
 		
 		echo $list;
-		
 		$pressTemp = [];
+		
 		for($i = $page * 10; $i>($page*10-10); $i--) {
-			array_unshift($pressTemp, $pressArr[$i-1]);
+			if(isset($pressArr[$i-1])) {
+				array_unshift($pressTemp, $pressArr[$i-1]);
+			}
 		}
 		
 		echo implode($pressTemp);
-		
 		echo $list;
 	}
 	

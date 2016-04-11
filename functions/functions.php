@@ -25,37 +25,65 @@
 		return $newsFull;
 	}
 	
-	function createExceptNews($news) {
-		$news[1] = exceptStr(strip_tags($news[1]));
-		$newsKeys = ['newsDate', 'newsText', 'newsUrl'];
-		$news = array_combine($newsKeys, $news);
-		$newsTemplate = file_get_contents('content/templates/news_template.php');
-		$newsTemplate = replaceTemplateTags($newsTemplate, $news);
-		
+	function createExceptNews($news, $db) {
+		if($db) {
+			$news['newsheader'] = exceptStr(strip_tags($news['newsheader']));
+			$newsTemplate = file_get_contents('content/templates/news_template.php');
+			$newsTemplate = str_replace(['newsDate', 'newsText', 'newsUrl'], [$news['news_date'], $news['news_header'], $news['news_date']], $newsTemplate);
+		}
+		else {
+			$news[1] = exceptStr(strip_tags($news[1]));
+			$newsKeys = ['newsDate', 'newsText', 'newsUrl'];
+			$news = array_combine($newsKeys, $news);
+			$newsTemplate = file_get_contents('content/templates/news_template.php');
+			$newsTemplate = replaceTemplateTags($newsTemplate, $news);
+		}
 		return $newsTemplate;
 	}
 	
 	function getAllNews($page) {
-		$dir = "content/news/";
-		$newsArr = scandir($dir);
-		$rNews = [];
+		$newsArr = [];
+		$totalNews = null;
+		$link = connectToPostgres();
 		
-		foreach($newsArr as $news) {
-			$news_path = $dir.$news;
-			if(file_exists($news_path) && is_file($news_path)) {
-				if(substr($news_path, -3, 3) == 'txt') {
-					$rNews[] = unserialize(clearStr(file_get_contents($news_path)));
+		if($link) {
+			$query = 'SELECT * FROM news';
+			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$row = pg_fetch_all($res);
+			
+			while($row = pg_fetch_assoc($res)) {
+				$newsArr[] = $row;
+			}
+			
+			$totalNews = count($newsArr);
+			
+			for($i = 0; $i<$totalNews; $i++) {
+				$newsArr[$i] = createExceptNews($newsArr[$i], true);
+			}
+
+			pg_close($link);
+		}
+		else {
+			$dir = "content/news/";
+			$dirNews = scandir($dir);
+			
+			foreach($dirNews as $news) {
+				$news_path = $dir.$news;
+				if(file_exists($news_path) && is_file($news_path)) {
+					if(substr($news_path, -3, 3) == 'txt') {
+						$newsArr[] = unserialize(clearStr(file_get_contents($news_path)));
+					}
 				}
 			}
+			$totalNews = count($newsArr);
+			$newsArr = sortNews($newsArr, $totalNews);
+			
+			for($i=0; $i<$totalNews; $i++) {
+				$newsArr[$i] = createExceptNews($newsArr[$i]);
+			}
 		}
-		$totalNews = count($rNews);
-		$rNews = sortNews($rNews, $totalNews);
 		
-		for($i=0; $i<$totalNews; $i++) {
-			$rNews[$i] = createExceptNews($rNews[$i]);
-		}
-		
-		createNewsList($rNews, $page, $totalNews);
+		createNewsList($newsArr, $page, $totalNews);
 	}
 	
 	function createNewsList($news, $page, $totalNews) {		
@@ -151,6 +179,7 @@
 	}
 	
 	function getSingleNews($date, $pageNum) {
+		$link = connectToPostgres();
 		// Определяем формат даты
 		$dateArr = explode('-', $date);
 		
@@ -165,11 +194,24 @@
 		else if(file_exists('content/news/'.$date.'.html')) {
 			return getSingleOldNews($date.'.html', $pageNum);
 		}
+		else if($link) {
+			$date = implode('-', $dateArr);
+			$res = pg_query($link, "SELECT news_date, news_header, news_text FROM news WHERE news_date = '$date'") or die('Query error: '. pg_last_error());
+			$row = pg_fetch_assoc($res);
+			return getSingleDbNews($row);
+		}
 		else {
 			echo "<h1>Такой новости не существует!</h1>";
 			echo "<a href='index.php?pages=news&page=$pageNum'>Вернуться назад</a>";
 			return;
 		}
+	}
+	
+	function getSingleDbNews($news) {
+		$newsFull = file_get_contents('content/templates/news_full.php');
+		$newsFull = str_replace(['newsDate', 'newsText'], [$news['news_date'], "<h4>".$news['news_header']."</h4>".$news['news_text']], $newsFull);
+		
+		return $newsFull;
 	}
 	
 	function getSingleModernNews($name, $pageNum) {
@@ -425,7 +467,7 @@
 	
 	// PostgreSQL functions
 	function connectToPostgres() {
-		$link = pg_connect("host=192.168.0.4 dbname=new.zip user=root password=pass") or die("No DB connection: " . pg_last_error());
+		$link = pg_connect("host=192.168.0.4 port=5432 dbname=new.zip user=zip.admin password=123");
 		return $link;
 	}
 ?>

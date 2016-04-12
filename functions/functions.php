@@ -50,12 +50,15 @@
 			$query = 'SELECT * FROM news';
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			//$row = pg_fetch_all($res);
+			echo "<h4>Новости из базы данных</h4>";
 			
 			while($row = pg_fetch_assoc($res)) {
 				$newsArr[] = $row;
 			}
 			
 			$totalNews = count($newsArr);
+			
+			$newsArr = sortNews($newsArr, $totalNews, true);
 			
 			for($i = 0; $i<$totalNews; $i++) {
 				$newsArr[$i] = createExceptNews($newsArr[$i], true);
@@ -66,6 +69,7 @@
 		else {
 			$dir = "content/news/";
 			$dirNews = scandir($dir);
+			echo "<h4>Новости из текстовых файлов</h4>";
 			
 			foreach($dirNews as $news) {
 				$news_path = $dir.$news;
@@ -76,7 +80,7 @@
 				}
 			}
 			$totalNews = count($newsArr);
-			$newsArr = sortNews($newsArr, $totalNews);
+			$newsArr = sortNews($newsArr, $totalNews, false);
 			
 			for($i=0; $i<$totalNews; $i++) {
 				$newsArr[$i] = createExceptNews($newsArr[$i]);
@@ -160,10 +164,18 @@
 		return $list;
 	}
 	
-	function sortNews($newsArr, $totalNews) {
+	function sortNews($newsArr, $totalNews, $isDb) {
 		for($i=1; $i<$totalNews; $i++) {					
-			for($j= $i-1; $j>=0; $j--) {		
-				if(reverseDate($newsArr[$j][0]) < reverseDate($newsArr[$j+1][0])) {
+			for($j= $i-1; $j>=0; $j--) {
+				if($isDb) {
+					$tempCur = str_replace('-', '', $newsArr[$j]['news_date']);
+					$tempNext = str_replace('-', '', $newsArr[$j+1]['news_date']);
+				}
+				else {
+					$tempCur = reverseDate($newsArr[$j][0]);
+					$tempNext = reverseDate($newsArr[$j+1][0]);
+				}
+				if(intval($tempCur) < intval($tempNext)) {
 					$temp = $newsArr[$j+1];
 					$newsArr[$j+1] = $newsArr[$j];
 					$newsArr[$j] = $temp;
@@ -198,16 +210,22 @@
 			$date = implode('-', $dateArr);
 			$res = pg_query($link, "SELECT news_date, news_header, news_text FROM news WHERE news_date = '$date'") or die('Query error: '. pg_last_error());
 			$row = pg_fetch_assoc($res);
-			return getSingleDbNews($row);
+			if(!$row) {
+				echo "<h1>Такой новости не существует!</h1>";
+				echo "<a href='index.php?pages=news&page=$pageNum'>К новостям</a>";
+				return;
+			}
+			return getSingleDbNews($row, $pageNum);
 		}
 		else {
 			echo "<h1>Такой новости не существует!</h1>";
-			echo "<a href='index.php?pages=news&page=$pageNum'>Вернуться назад</a>";
+			echo "<a href='index.php?pages=news&page=$pageNum'>К новостям</a>";
 			return;
 		}
 	}
 	
-	function getSingleDbNews($news) {
+	function getSingleDbNews($news, $pageNum) {
+		echo "<strong><a href='index.php?pages=news&page=$pageNum'>К новостям</a></strong>";
 		$newsFull = file_get_contents('content/templates/news_full.php');
 		$newsFull = str_replace(['newsDate', 'newsText'], [$news['news_date'], "<h4>".$news['news_header']."</h4>".$news['news_text']], $newsFull);
 		
@@ -215,13 +233,13 @@
 	}
 	
 	function getSingleModernNews($name, $pageNum) {
-		echo "<strong><a href='index.php?pages=news&page=$pageNum'>Назад</a></strong>";
+		echo "<strong><a href='index.php?pages=news&page=$pageNum'>К новостям</a></strong>";
 		
 		return adaptModernNews(unserialize(file_get_contents('content/news/'.$name)));
 	}
 	
 	function getSingleOldNews($name, $pageNum) {		
-		echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=$pageNum'>Назад</a></strong>";
+		echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=$pageNum'>К новостям</a></strong>";
 		echo "<script>document.addEventListener('DOMContentLoaded', function() { changeStyle(); }, false);</script>";
 		
 		return adaptOldNews(file_get_contents('content/news/'.$name));

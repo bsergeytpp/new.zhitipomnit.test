@@ -16,7 +16,7 @@
 	}
 	
 	function adaptModernNews($news) {
-		unset($news[2]);
+		unset($news[2]); // TODO: некрасиво
 		$newsKeys = ['newsDate', 'newsText'];
 		$news = array_combine($newsKeys, $news);
 		$newsFull = file_get_contents('content/templates/news_full.php');
@@ -27,12 +27,12 @@
 	
 	function createExceptNews($news, $db) {
 		if($db) {
-			$news['newsheader'] = exceptStr(strip_tags($news['newsheader']));
+			$news['news_header'] = exceptStr(strip_tags($news['news_header']));
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
 			$newsTemplate = str_replace(['newsDate', 'newsText', 'newsUrl'], [$news['news_date'], $news['news_header'], $news['news_date']], $newsTemplate);
 		}
 		else {
-			$news[1] = exceptStr(strip_tags($news[1]));
+			$news[1] = exceptStr(strip_tags($news[1]));	// TODO: некрасиво
 			$newsKeys = ['newsDate', 'newsText', 'newsUrl'];
 			$news = array_combine($newsKeys, $news);
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
@@ -49,7 +49,7 @@
 		if($link) {
 			$query = 'SELECT * FROM news';
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
-			$row = pg_fetch_all($res);
+			//$row = pg_fetch_all($res);
 			
 			while($row = pg_fetch_assoc($res)) {
 				$newsArr[] = $row;
@@ -264,9 +264,23 @@
 	}
 	
 	function getPubls($page) {
+		$link = connectToPostgres();
+		$rPubls = [];
+		
+		if($link) {
+			$res = pg_query($link, "SELECT publs_id, publs_header FROM publs") or die('Query error: '. pg_last_error());
+			
+			while($row = pg_fetch_assoc($res)) {
+				$rPubls[] = $row;
+			}
+			
+			for($i=0; $i<count($rPubls); $i++) {
+				$rPubls[$i] = createExceptPubl($rPubls[$i], false, true);
+			}
+		}
+		
 		$dir = "content/publ/";
 		$publArr = scandir($dir);
-		$rPubls = [];
 		
 		foreach($publArr as $publName) {
 			$publPath = $dir.$publName;
@@ -274,7 +288,7 @@
 			if(file_exists($publPath) && is_file($publPath)) {
 				if(substr($publPath, -3, 3) == 'txt') {	// новые статьи
 					$publ = file_get_contents($publPath);
-					$publ = createExceptPubl($publ, false);
+					$publ = createExceptPubl($publ, false, false);
 					$rPubls[] = $publ;
 				}
 			}
@@ -289,7 +303,7 @@
 		$totalPubls = count($publs);
 		
 		if($totalPubls < 10) {
-			echo $publs;
+			echo implode($publs);
 			return;
 		}
 
@@ -324,7 +338,7 @@
 				'link' => 'content/publ/'.$href,
 				'text' => $text
 			];
-			$oldPubl = createExceptPubl($oldPubl, true);
+			$oldPubl = createExceptPubl($oldPubl, true, false);
 			$oldNewsArr[] = $oldPubl;
 		}
 		
@@ -332,6 +346,7 @@
 	}
 	
 	function getSinglePubl($name) {
+		$link = connectToPostgres();
 		if(substr($name, -3, 3) == 'txt') {
 			$publArr = unserialize(file_get_contents($name));
 			for($i=0; $i<3; $i++) {
@@ -365,7 +380,12 @@
 			$publ = preg_replace("/Фонд Жить и Помнить/", "", $publ, 1);
 			$publ = strip_tags($publ, '<h1><h2><h3><p><strong><a><img><ol><ul><li>');
 		}
-		else {
+		else if($link) {
+			$res = pg_query($link, "SELECT publs_header, publs_text FROM publs WHERE publs_id = $name") or die("Query error: ". pg_last_error());
+			$row = pg_fetch_assoc($res);
+			$publ = '<h3>'.$row['publs_header'].'</h3>'.$row['publs_text'];
+		}
+		else {	// скорее всего файл
 			if(file_exists($name)) {
 				header('Content-Description: File Transfer');
 				header('Content-Type: application/octet-strem');
@@ -385,12 +405,15 @@
 		return $publ;
 	}
 	
-	function createExceptPubl($publ, $isOld) {
+	function createExceptPubl($publ, $isOld, $isDb) {
 		$publTemplate = file_get_contents('content/templates/publ_template.php');
 		
 		if($isOld) {
 			$publTemplate = str_replace("publUrl", $publ['link'], $publTemplate);
 			$publTemplate = str_replace("publHeader", $publ['text'], $publTemplate);
+		}
+		else if($isDb) {
+			$publTemplate = str_replace(['publUrl', 'publHeader'], [$publ['publs_id'], $publ['publs_header']], $publTemplate);
 		}
 		else {
 			$publArr = unserialize($publ);

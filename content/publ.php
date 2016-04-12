@@ -7,9 +7,6 @@
 						$pageNum = isset($_GET['page']) ? $_GET['page']: '1';
 						if(!$customPubl) {
 							getPubls($pageNum);
-							/*foreach($publs as $cur) {
-								echo $cur;
-							}*/
 						}
 						else echo getSinglePubl($customPubl);
 					?>

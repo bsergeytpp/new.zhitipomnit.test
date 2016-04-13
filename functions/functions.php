@@ -1,4 +1,12 @@
 <?
+	define('DB_CONNECT', 'host=192.168.0.4 port=5432 dbname=new.zip user=zip.admin password=123');
+	define('NEWS_MAXCOUNT', '3');	// новостей на странице
+	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
+	define('PUBLS_MAXCOUNT', '10');	// статей на странице
+	define('PRESS_MAXCOUNT', '10');	// гезет на странице
+	
+	$link = false;
+
 	function clearStr($str) {
 		return preg_replace('~\R~u', "", trim($str));
 	}
@@ -92,23 +100,15 @@
 	
 	function createNewsList($news, $page, $totalNews) {		
 		// делаем ссылки на страницы списка		
-		$list = getULlist($totalNews, 3, 'index.php?pages=news&page=', $page);
+		$list = getULlist($totalNews, NEWS_MAXCOUNT, 'index.php?pages=news&page=', $page);
 		
 		// новостей мало, список не делаем
-		if($totalNews <= 3) {
+		if($totalNews <= NEWS_MAXCOUNT) {
 			echo implode($news);
 			return;
 		}
-		
-		// создаем список новостей для страницы
-		$tempArr = [];
-		for($i=$page*3; $i>($page*3-3); $i--) {
-			if(isset($news[$i-1])) {
-				array_unshift($tempArr, $news[$i-1]);
-			}
-		}
 				
-		echo $list, implode($tempArr), $list;
+		echo $list, implode(getSampleOfArray($page, NEWS_MAXCOUNT, $news)), $list;
 	}
 	
 	function createOldNewsList($oldNews, $page) {
@@ -119,10 +119,10 @@
 		$totalNews = $p_elems->length;
 		
 		// делаем ссылки на страницы списка
-		$list = getULlist($totalNews, 10, 'index.php?pages=news&custom-news-date=all-old&page=', $page);
+		$list = getULlist($totalNews, OLDNEWS_MAXCOUNT, 'index.php?pages=news&custom-news-date=all-old&page=', $page);
 		
 		// новостей мало, список не делаем
-		if($totalNews <= 10) {
+		if($totalNews <= OLDNEWS_MAXCOUNT) {
 			echo $oldNews;
 			return;
 		}
@@ -130,7 +130,7 @@
 		// переносим DOM-элементы в новый документ и выводим его
 		$dom2 = new DOMDocument;
 		
-		for($i = $page*10; $i>($page*10-10); $i--) {
+		for($i = $page*OLDNEWS_MAXCOUNT; $i>($page*OLDNEWS_MAXCOUNT-OLDNEWS_MAXCOUNT); $i--) {
 			if($p_elems->item($i-1) !== null) {
 				$node = $dom2->importNode($p_elems->item($i-1), true);
 				if(!$dom2->hasChildNodes()) {
@@ -295,6 +295,9 @@
 			for($i=0; $i<count($rPubls); $i++) {
 				$rPubls[$i] = createExceptPubl($rPubls[$i], false, true);
 			}
+			
+			// сортируем статьи по ID
+			$rPubls = array_reverse($rPubls);
 		}
 		
 		$dir = "content/publ/";
@@ -320,22 +323,14 @@
 	function createPublsList($publs, $page) {
 		$totalPubls = count($publs);
 		
-		if($totalPubls < 10) {
+		if($totalPubls < PUBLS_MAXCOUNT) {
 			echo implode($publs);
 			return;
 		}
 
-		$list = getULlist($totalPubls, 10, 'index.php?pages=publ&page=', $page);
+		$list = getULlist($totalPubls, PUBLS_MAXCOUNT, 'index.php?pages=publ&page=', $page);
 		echo $list;
-		$publsTemp = [];
-		
-		for($i=$page*10; $i>($page*10-10); $i--) {
-			if(isset($publs[$i-1])) {
-				array_unshift($publsTemp, $publs[$i-1]);
-			}
-		}
-		
-		echo implode($publsTemp);
+		echo implode(getSampleOfArray($page, PUBLS_MAXCOUNT, $publs));
 		echo $list;
 	}
 	
@@ -486,29 +481,34 @@
 		$pressArr = explode(PHP_EOL, $press);
 		$totalPress = count($pressArr);
 		
-		if($totalPress < 10) {
+		if($totalPress < PRESS_MAXCOUNT) {
 			echo $pressArr;
 			return;
 		}
 		
-		$list = getULlist($totalPress, 10, 'index.php?pages=press&page=', $page);
+		$list = getULlist($totalPress, PRESS_MAXCOUNT, 'index.php?pages=press&page=', $page);
 		
 		echo $list;
-		$pressTemp = [];
+		echo implode(getSampleOfArray($page, PRESS_MAXCOUNT, $pressArr));
+		echo $list;
+	}
+	
+	function getSampleOfArray($pNum, $max, $arr) {
+		$tempArr = [];
 		
-		for($i = $page * 10; $i>($page*10-10); $i--) {
-			if(isset($pressArr[$i-1])) {
-				array_unshift($pressTemp, $pressArr[$i-1]);
+		for($i = $pNum * $max; $i>($pNum*$max-$max); $i--) {
+			if(isset($arr[$i-1])) {
+				array_unshift($tempArr, $arr[$i-1]);
 			}
 		}
 		
-		echo implode($pressTemp);
-		echo $list;
+		return $tempArr;
 	}
 	
 	// PostgreSQL functions
 	function connectToPostgres() {
-		$link = pg_connect("host=192.168.0.4 port=5432 dbname=new.zip user=zip.admin password=123");
+		global $link;
+		$link = pg_connect(DB_CONNECT);
 		return $link;
 	}
 ?>

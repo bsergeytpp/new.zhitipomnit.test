@@ -5,22 +5,35 @@
 					<?
 						$customNewsDate = isset($_GET['custom-news-date']) ? $_GET['custom-news-date'] : '';
 						$pageNum = isset($_GET['page']) ? $_GET['page'] : '1';
-						$newsClass = new NewsClass($customNewsDate, $pageNum);
+						global $link;
+						$link = connectToPostgres();
+					
+						if($link) {
+							$newsClass = new DbNewsClass($customNewsDate, $pageNum);
+						}
+						else {
+							$newsClass = new OtherNewsClass($customNewsDate, $pageNum);
+						}
 						
 						if(!$customNewsDate) {
-							//getAllNews($pageNum);
-							$newsClass->getAllNews();
+							$newsClass->getNews();
 							//echo "<script>document.addEventListener('DOMContentLoaded', function() { displayNewsImage(); }, false);</script>";
 							echo "<h3 class='full-width'><a href='index.php?pages=news&custom-news-date=all-old'>Старые новости</a></h3>";
+							pg_close($link);
 						}
 						else if($customNewsDate == 'all-old') {
-							//getAllOldNews($pageNum);
-							$newsClass->getAllOldNews();
+							$newsClass = new OldNewsClass($customNewsDate, $pageNum);
+							$newsClass->getNews();
 							echo "<script>document.addEventListener('DOMContentLoaded', function() { replaceNewsLinks(); }, false);</script>";
 							echo "<h3 class='full-width'><a href='index.php?pages=news&page=$pageNum'>Последние новости</a></h3>";
 						}
 						else {
-							//echo getSingleNews($customNewsDate, $pageNum);
+							/*if(isset($_SERVER["HTTP_REFERER"])) {
+								if(strpos($_SERVER["HTTP_REFERER"], 'old')) {
+									$newsClass = new OldNewsClass($customNewsDate, $pageNum);
+								}
+							}*/
+							$newsClass = checkNewsExistence($customNewsDate, $pageNum);
 							echo $newsClass->getSingleNews();
 						}
 					?>

@@ -505,6 +505,25 @@
 		return $tempArr;
 	}
 	
+	function checkNewsExistence($date, $page) {
+		if(file_exists('content/news/'.convertDate($date).'.html')) {	// формат гггг-мм-дд
+			return new OldNewsClass(convertDate($date), $page);
+		}
+		if(file_exists('content/news/'.$date.'.html')) {	// формат дд-мм-гггг
+			return new OldNewsClass($date, $page);
+		}
+		if(file_exists('content/news/'.$date.'.txt')) {
+			return new OtherNewsClass($date, $page);
+		}
+		return new DbNewsClass($date, $page);
+	}
+	
+	function convertDate($date) {
+		$dateArr = explode('-', $date);
+
+		return date('d-m-y', strtotime(implode('-', array_reverse($dateArr))));
+	}
+	
 	// PostgreSQL functions
 	function connectToPostgres() {
 		global $link;

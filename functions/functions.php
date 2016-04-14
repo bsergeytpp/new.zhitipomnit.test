@@ -3,7 +3,7 @@
 	define('NEWS_MAXCOUNT', '3');	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
 	define('PUBLS_MAXCOUNT', '10');	// статей на странице
-	define('PRESS_MAXCOUNT', '10');	// гезет на странице
+	define('PRESS_MAXCOUNT', '10');	// гaзет на странице
 	
 	$link = false;
 

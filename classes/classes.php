@@ -1,9 +1,14 @@
 <?
-	class NewsClass {
+	abstract class NewsClass {
 		protected $newsDate = '';
 		protected $pageNum = 1;
 		protected $newsArr = [];
 		protected $totalNews = null;
+		
+		abstract public function getNews();
+		
+		abstract public function getSingleNews();
+		
 		public function __construct($date, $page) {
 			if(isset($date)) $this->newsDate = $date;
 			if(isset($page)) $this->pageNum = $page;
@@ -64,7 +69,6 @@
 			}
 			
 			$this->totalNews = count($this->newsArr);
-			
 			$this->sortNews();
 			
 			for($i = 0; $i<$this->totalNews; $i++) {
@@ -79,13 +83,13 @@
 			
 			if($link) {
 				// Меняем формат даты
-				$dateArr = explode('-', $this->newsDate);
+				/*$dateArr = explode('-', $this->newsDate);
 				
 				if(strlen((string)$dateArr[0]) > 2) {
 					$this->newsDate = $dateArr[2].'-'.$dateArr[1].'-'.substr($dateArr[0], -2, 2);
 				}
 				
-				$this->newsDate = implode('-', $dateArr);
+				$this->newsDate = implode('-', $dateArr);*/
 				
 				return $this->getSingleDbNews($this->pageNum);
 			}
@@ -98,7 +102,8 @@
 		
 		private function getSingleDbNews($pageNum) {
 			global $link;
-			$res = pg_query($link, "SELECT news_date, news_header, news_text FROM news WHERE news_date = '$this->newsDate'") or die('Query error: '. pg_last_error());
+			$query = "SELECT news_date, news_header, news_text FROM news WHERE news_date = '$this->newsDate'";
+			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			$news = pg_fetch_assoc($res);
 			
 			if(!$news) {
@@ -110,7 +115,6 @@
 			echo "<strong><a href='index.php?pages=news&page=$pageNum'>К новостям</a></strong>";
 			$newsFull = file_get_contents('content/templates/news_full.php');
 			$newsFull = str_replace(['newsDate', 'newsText'], [$news['news_date'], "<h4>".$news['news_header']."</h4>".$news['news_text']], $newsFull);
-			
 			echo $newsFull;
 		}
 	
@@ -124,11 +128,8 @@
 		
 		protected function sortNews() {
 			for($i=1; $i<$this->totalNews; $i++) {					
-				for($j= $i-1; $j>=0; $j--) {
-					$tempCur = str_replace('-', '', $this->newsArr[$j]['news_date']);
-					$tempNext = str_replace('-', '', $this->newsArr[$j+1]['news_date']);
-					
-					if(intval($tempCur) < intval($tempNext)) {
+				for($j=$i-1; $j>=0; $j--) {
+					if($this->newsArr[$j]['news_date'] < $this->newsArr[$j+1]['news_date']) {
 						$temp = $this->newsArr[$j+1];
 						$this->newsArr[$j+1] = $this->newsArr[$j];
 						$this->newsArr[$j] = $temp;

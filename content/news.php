@@ -28,11 +28,6 @@
 							echo "<h3 class='full-width'><a href='index.php?pages=news&page=$pageNum'>Последние новости</a></h3>";
 						}
 						else {
-							/*if(isset($_SERVER["HTTP_REFERER"])) {
-								if(strpos($_SERVER["HTTP_REFERER"], 'old')) {
-									$newsClass = new OldNewsClass($customNewsDate, $pageNum);
-								}
-							}*/
 							$newsClass = checkNewsExistence($customNewsDate, $pageNum);
 							echo $newsClass->getSingleNews();
 						}

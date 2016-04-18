@@ -6,7 +6,6 @@
 		protected $totalNews = null;
 		
 		abstract public function getNews();
-		
 		abstract public function getSingleNews();
 		
 		public function __construct($date, $page) {

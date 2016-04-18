@@ -50,7 +50,6 @@
 		
 		public function getSinglePubl($date) {
 			echo "<strong><a href='index.php?pages=publ'>Назад</a></strong><br>";
-			
 			global $link;
 			$link = connectToPostgres();
 			
@@ -75,8 +74,6 @@
 			
 			return $publTemplate;
 		}
-		
-		
 	}
 	
 	class OldPublsClass extends PublsClass {

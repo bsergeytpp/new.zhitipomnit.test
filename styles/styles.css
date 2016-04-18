@@ -5,7 +5,7 @@ a {
     color: darkorange;
 }
 a:visited {
-    color: red;
+    color: #FF6400;
 }
 a:hover {
     color: orange;
@@ -259,6 +259,7 @@ body::before {
     box-shadow: 1px 1px .3em black,
                 -1px -1px .3em black;
     border-top: 1px solid #888;
+	margin: 0 0 15px 0;
 }
 .article-publ-text {
     

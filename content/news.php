@@ -1,4 +1,4 @@
-                <? require 'classes/classes.php'; ?>
+                <? require 'classes/News.class.php'; ?>
 				<h2>Новости</h2>
                 <div id="news-container">
 					<!--<div class="clear-div"></div>-->

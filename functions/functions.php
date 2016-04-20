@@ -47,61 +47,6 @@
 	function replaceTemplateTags($string, $replace) {
 		return str_replace(array_keys($replace), $replace, $string);
 	}
-		
-	function getPressArray($name) {
-		$pressArr = [];
-		
-		for($i=0,$j=1;$i<4;$i++,$j++) {
-			$press = file_get_contents("content/press/$name/$j.html");
-			
-			if(!mb_detect_encoding($press, 'UTF-8', true)) {
-				$press = mb_convert_encoding($press, "UTF-8", 'windows-1251');
-			}
-			
-			// ошибки в большом кол-ве файлов
-			$pattern = [
-				'materials',
-				'<img src="../../images/m1.gif" width="100%" height="28" border="0" />',
-				'log.jpg',
-				'<img src="../../images/" width="687" height="153" />',
-				'<img src="../../images/m2.gif" width="100%" height="21" border="0" />',
-				'style=padding-top: 10""',
-				'style=padding-top:10""',
-				'style=padding-top:10"',
-				'style=padding-top: 10"',
-				'style=padding-top: 10 ""',
-				'bgcolor="#FFFFFF""'
-			];
-			$replacement = array_fill(0, 11, '');
-			$replacement[0] = "content/press/$name/materials";
-			$press = str_replace($pattern, $replacement, $press);
-			$press = preg_replace("/Фонд Жить и Помнить/", '', $press, 1);
-			$press = strip_tags($press, '<h1><h2><h3><p><strong><a><img><ul><ol><li>');	
-			$pressArr[] = $press;
-		}
-		
-		return $pressArr;
-	}
-	
-	function getPressPage($pressArr, $pageNum) {
-		return $pressArr[$pageNum];
-	}
-	
-	function createPressList($press, $page) {
-		$pressArr = explode(PHP_EOL, $press);
-		$totalPress = count($pressArr);
-		
-		if($totalPress < PRESS_MAXCOUNT) {
-			echo $pressArr;
-			return;
-		}
-		
-		$list = getULlist($totalPress, PRESS_MAXCOUNT, 'index.php?pages=press&page=', $page);
-		
-		echo $list;
-		echo implode(getSampleOfArray($page, PRESS_MAXCOUNT, $pressArr));
-		echo $list;
-	}
 	
 	function getSampleOfArray($pNum, $max, $arr) {
 		$tempArr = [];

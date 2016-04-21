@@ -94,33 +94,40 @@
 			}
 			else {
 				echo "<h1>Такой новости не существует!</h1>";
-				echo "<a href='index.php?pages=news&page=$this->pageNum'>К новостям</a>";
+				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
 		}
 		
 		private function getSingleDbNews($pageNum) {
 			global $link;
-			$query = "SELECT news_date, news_header, news_text FROM news WHERE news_date = '$this->newsDate'";
+			$query = "SELECT news_date, news_header, news_text FROM news WHERE news_date = '".$this->newsDate."'";
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			$news = pg_fetch_assoc($res);
 			
 			if(!$news) {
 				echo "<h1>Такой новости не существует!</h1>";
-				echo "<a href='index.php?pages=news&page=$pageNum'>К новостям</a>";
+				echo "<a href='index.php?pages=news&page=".$pageNum."'>К новостям</a>";
 				return;
 			}
 			
-			echo "<strong><a href='index.php?pages=news&page=$pageNum'>К новостям</a></strong>";
+			echo "<strong><a href='index.php?pages=news&page=".$pageNum."'>К новостям</a></strong>";
 			$newsFull = file_get_contents('content/templates/news_full.php');
-			$newsFull = str_replace(['newsDate', 'newsText'], [$news['news_date'], "<h4>".$news['news_header']."</h4>".$news['news_text']], $newsFull);
+			$pattern = ['newsDate', 'newsText'];
+			$replacement = [
+				$news['news_date'], 
+				"<h4>".$news['news_header']."</h4>".$news['news_text']
+			];
+			$newsFull = str_replace($pattern, $replacement, $newsFull);
 			echo $newsFull;
 		}
 	
 		protected function createExceptNews($news) {
 			$news['news_header'] = exceptStr(strip_tags($news['news_header']));
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
-			$newsTemplate = str_replace(['newsDate', 'newsText', 'newsUrl'], [$news['news_date'], $news['news_header'], $news['news_date']], $newsTemplate);
+			$pattern = ['newsDate', 'newsText', 'newsUrl'];
+			$replacement = [$news['news_date'], $news['news_header'], $news['news_date']];
+			$newsTemplate = str_replace($pattern, $replacement, $newsTemplate);
 
 			return $newsTemplate;
 		}
@@ -151,7 +158,7 @@
 			}
 			else {
 				echo "<h1>Такой новости не существует!</h1>";
-				echo "<a href='index.php?pages=news&page=$this->pageNum'>К новостям</a>";
+				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
 		}
@@ -193,7 +200,7 @@
 		}
 		
 		private function getSingleOldNews() {		
-			echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=$this->pageNum'>К новостям</a></strong>";
+			echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=".$this->pageNum."'>К новостям</a></strong>";
 			echo "<script>document.addEventListener('DOMContentLoaded', function() { changeStyle(); }, false);</script>";
 			
 			return $this->adaptOldNews(file_get_contents('content/news/'.$this->newsDate.'.html'));
@@ -254,7 +261,7 @@
 			}
 			else {
 				echo "<h1>Такой новости не существует!</h1>";
-				echo "<a href='index.php?pages=news&page=$this->pageNum'>К новостям</a>";
+				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
 		}

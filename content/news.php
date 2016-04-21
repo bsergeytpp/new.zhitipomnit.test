@@ -25,7 +25,7 @@
 							$newsClass = new OldNewsClass($customNewsDate, $pageNum);
 							$newsClass->getNews();
 							echo "<script>document.addEventListener('DOMContentLoaded', function() { replaceNewsLinks(); }, false);</script>";
-							echo "<h3 class='full-width'><a href='index.php?pages=news&page=$pageNum'>Последние новости</a></h3>";
+							echo "<h3 class='full-width'><a href='index.php?pages=news&page=".$pageNum."'>Последние новости</a></h3>";
 						}
 						else {
 							$newsClass = checkNewsExistence($customNewsDate, $pageNum);

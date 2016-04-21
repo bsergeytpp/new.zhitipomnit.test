@@ -54,7 +54,7 @@
 			$link = connectToPostgres();
 			
 			if($link) {
-				$query = "SELECT publs_header, publs_text FROM publs WHERE publs_id = $date";
+				$query = 'SELECT publs_header, publs_text FROM publs WHERE publs_id = '.$date;
 				$res = pg_query($link, $query) or die("Query error: ". pg_last_error());
 				$row = pg_fetch_assoc($res);
 				$publ = '<h3>'.$row['publs_header'].'</h3>'.$row['publs_text'];
@@ -63,14 +63,16 @@
 			}
 			else {
 				echo "<h1>Такой статьи не существует!</h1>";
-				echo "<a href='index.php?pages=publ&page=$this->pageNum'>К статьям</a>";
+				echo "<a href='index.php?pages=publ&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}
 		}
 		
 		protected function createExceptPubl($publ) {
 			$publTemplate = file_get_contents('content/templates/publ_template.php');
-			$publTemplate = str_replace(['publUrl', 'publHeader'], [$publ['publs_id'], $publ['publs_header']], $publTemplate);
+			$pattern = ['publUrl', 'publHeader'];
+			$replacement = [$publ['publs_id'], $publ['publs_header']];
+			$publTemplate = str_replace($pattern, $replacement, $publTemplate);
 			
 			return $publTemplate;
 		}
@@ -148,15 +150,16 @@
 			}
 			else {
 				echo "<h1>Такой статьи не существует!</h1>";
-				echo "<a href='index.php?pages=publ&custom-publ=all-old&page=$this->pageNum'>К статьям</a>";
+				echo "<a href='index.php?pages=publ&custom-publ=all-old&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}
 		}
 		
 		protected function createExceptPubl($publ) {
 			$publTemplate = file_get_contents('content/templates/publ_template.php');
-			$publTemplate = str_replace("publUrl", $publ['link'], $publTemplate);
-			$publTemplate = str_replace("publHeader", $publ['text'], $publTemplate);
+			$pattern =["publUrl", "publHeader"];
+			$replacement = [$publ['link'], $publ['text']];
+			$publTemplate = str_replace($pattern, $replacement, $publTemplate);
 			
 			return $publTemplate;
 		}
@@ -189,6 +192,7 @@
 			
 			if(substr($date, -3, 3) == 'txt') {
 				$publArr = unserialize(file_get_contents($date));
+				
 				for($i=0; $i<3; $i++) {
 					if($i == 2) $publ = $publArr[$i];
 				}
@@ -197,7 +201,7 @@
 			}
 			else {
 				echo "<h1>Такой статьи не существует!</h1>";
-				echo "<a href='index.php?pages=publ&page=$this->pageNum'>К статьям</a>";
+				echo "<a href='index.php?pages=publ&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}	
 		}

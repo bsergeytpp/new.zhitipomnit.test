@@ -33,7 +33,7 @@
 			$totalPress = count($this->pressArr);
 			
 			for($i=0, $j=1; $i<$totalPress; $i++, $j++) {
-				echo "<a class='article-press-links' href='index.php?pages=press&custom-press=$this->pressName&page=$i'>Страница $j</a>";
+				echo "<a class='article-press-links' href='index.php?pages=press&custom-press=".$this->pressName."&page=".$i."'>Страница ".$j."</a>";
 			}
 			
 			echo "<div class='clear-div'></div>";
@@ -49,7 +49,7 @@
 		
 		private function getPressArray() {			
 			for($i=0,$j=1;$i<4;$i++,$j++) {
-				$press = file_get_contents("content/press/$this->pressName/$j.html");
+				$press = file_get_contents("content/press/".$this->pressName."/".$j.".html");
 				
 				if(!mb_detect_encoding($press, 'UTF-8', true)) {
 					$press = mb_convert_encoding($press, "UTF-8", 'windows-1251');
@@ -70,7 +70,7 @@
 					'bgcolor="#FFFFFF""'
 				];
 				$replacement = array_fill(0, 11, '');
-				$replacement[0] = "content/press/$this->pressName/materials";
+				$replacement[0] = "content/press/".$this->pressName."/materials";
 				$press = str_replace($pattern, $replacement, $press);
 				$press = preg_replace("/Фонд Жить и Помнить/", '', $press, 1);
 				$press = strip_tags($press, '<h1><h2><h3><p><strong><a><img><ul><ol><li>');	

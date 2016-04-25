@@ -33,7 +33,7 @@
 		</div>
 		<div>
 			<label for="txtString">Пароль</label>
-			<input id="txtString" type="text" name="pw" />
+			<input id="txtString" type="password" name="pw" />
 		</div>
 		<div>
 			<button type="submit">Войти</button>

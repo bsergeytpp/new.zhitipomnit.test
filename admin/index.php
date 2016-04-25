@@ -16,7 +16,8 @@ if(isset($_GET['logout'])) {
 	<h1>Администрирование сайта</h1>
 	<h3>Доступные действия:</h3>
 	<ul>
-		<li><a href='addnews.php'>Добавление новостей</a></li>
+		<li><a href='add_news.php'>Добавление новостей</a></li>
+		<li><a href='add_publs.php'>Добавление публикаций</a></li>
 		<li><a href='index.php?logout'>Завершить сеанс</a></li>
 	</ul>
 </body>

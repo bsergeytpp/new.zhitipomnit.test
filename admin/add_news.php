@@ -11,8 +11,8 @@
     <body>
         <div id="background-div"></div>
 		<h2>Форма добавления новости:</h2>
-        <form action="savenews.php" method="post">
-			<p>Дата: <input type="text" name="news-date" size="10" required></p>
+        <form action="save_news.php" method="post">
+			<p>Дата: <input type="date" name="news-date" size="10" required></p>
 			<p>Заголовок: <input type="text" name="news-header" size="20" required></p>
 			<p>Текст: <textarea name="news-text" size="50" required></textarea></p>
 			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->

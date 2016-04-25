@@ -15,7 +15,7 @@
 		$query = "SELECT user_login, user_password, user_group FROM users Where user_login = '".$login."'";
 		$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
-		if($result === false)	return false;
+		if($result === false) return false;
 		
 		$row = pg_fetch_array($result);
 		

@@ -24,7 +24,7 @@
 	}
 	
 	function getULlist($totalElems, $elemsPerPage, $href, $pageNum) {
-		$list = '<ul class="news-list"><li> << ';
+		$list = '<ul class="news-list"><li> « ';
 		$totalPages = ceil($totalElems/$elemsPerPage);
 		
 		for($j = 1; $j <= $totalPages; $j++) {
@@ -35,7 +35,7 @@
 			$list .= " <li><a href='$href$j'>" . $j . "</a> ";
 		}
 		
-		$list .= '<li> >> </ul><br>';
+		$list .= '<li> » </ul><br>';
 		
 		return $list;
 	}
@@ -96,7 +96,7 @@
 		}
 		return new DbPublsClass($page);
 	}
-	
+		
 	function convertDate($date) {
 		$dateArr = explode('-', $date);
 

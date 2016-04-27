@@ -16,6 +16,71 @@ document.onscroll = function() {
         }
 };
 
+document.addEventListener('DOMContentLoaded', function() {
+	var ul = document.getElementsByClassName('news-list');
+	
+	if(!ul) return;
+	
+	for(var i=0; i<ul.length; i++) {
+		ul[i].addEventListener('click', navigateUlList, false);
+	}
+}, false);
+
+function navigateUlList(e) {
+	var target = e.target;
+	
+	if(target === e.currentTarget) {
+		e.stopPropagation();
+		return;
+	}
+	
+	var urlArr = decodeURIComponent(location.search.substr(1)).split('&');
+	var pair, urlParams = new Object;
+	
+	for(var i=0; i<urlArr.length; i++) {
+		pair = urlArr[i].split("=");
+		urlParams[pair[0]] = pair[1];
+	}
+	
+	var pageNum = getParam('page', urlParams);
+	
+	if(!pageNum) pageNum = 1;
+				
+	if(target == this.firstChild) {
+		if(target.innerHTML.indexOf("«")) {
+			if(pageNum != 1) {
+				urlParams['page'] = --pageNum;
+				urlArr = [];
+				for(var elem in urlParams) {
+					urlArr.push(elem + "=" + urlParams[elem]); 
+				}
+				location.search = urlArr.join('&');
+				
+			}
+		}
+	}
+	else if(target == this.lastChild) {
+		if(target.innerHTML.indexOf("«")) {
+			if(pageNum != this.children.length-2) {
+				urlParams['page'] = ++pageNum;
+				urlArr = [];
+				for(var elem in urlParams) {
+					urlArr.push(elem + "=" + urlParams[elem]); 
+				}
+				location.search = urlArr.join('&');
+			}
+		}
+	}		
+}
+
+function getParam(value, obj) {
+	for(var param in obj) {
+		if(param == value)
+			return obj[param];
+	}
+	return false;
+}
+
 function replaceNewsLinks() {
 	var container = document.body.getElementsByClassName('article')[0];
 	var parents = container.getElementsByTagName('P');

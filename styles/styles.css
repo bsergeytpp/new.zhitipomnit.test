@@ -472,7 +472,7 @@ p.quotes:before {
         width: 30%;
     }
     .header-links ul:before {
-        content: 'menu';
+        content: 'Меню';
         color: white;
         padding: 5px;
     }

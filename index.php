@@ -1,4 +1,7 @@
-<? require "functions/functions.php"; ?>
+<? 
+	require "functions/functions.php"; 
+	require_once "admin/session.inc.php";
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,6 +23,9 @@
 			?>
             <div class="article ">
                 <?
+					/*if($_SESSION['admin'] === true) {
+						echo "<strong>Вы - Админ. Поздравляю!</strong><br>";
+					}*/
 					$params = isset($_GET['pages']) ? $_GET['pages'] : '';
 					switch($params) {
 						case 'main': 
@@ -52,5 +58,8 @@
         ?> 
         <div class="scroll-button" onclick="window.scrollTo(0,0);">↑ Наверх</div>
         <script src="scripts/script.js"></script>
+		<script>
+			//window.onload = isAdmin();
+		</script>
     </body>
 </html>

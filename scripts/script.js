@@ -26,6 +26,20 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 }, false);
 
+document.addEventListener('DOMContentLoaded', isAdmin(addCloseBtn), false);
+
+function addCloseBtn() {
+	var articleNews = document.getElementsByClassName('article-news');
+	
+	for(var i=0; i<articleNews.length; i++) {
+		var div = document.createElement('div');
+		div.className = 'admin-close-button';
+		div.innerHTML = 'X';
+		var firstChild = articleNews[i].children[0];
+		articleNews[i].insertBefore(div, firstChild);
+	}
+}
+
 function navigateUlList(e) {
 	var target = e.target;
 	
@@ -119,4 +133,24 @@ function isFileExists(url) {
 	http.open('HEAD', url, true);
 	http.send();
 	return http.status != 404;
+}
+
+function isAdmin(callback) {
+	var request = new XMLHttpRequest();
+	request.open('HEAD', 'content/json.php', true);
+	request.onreadystatechange = function () {
+		if(request.readyState == 4) {
+			var resp = request.getResponseHeader('IsAdmin');
+			if(resp != null) {
+				console.log("Вы - Админ. Поздравляю!");
+				if(typeof callback == 'function') {
+					callback.apply(request);
+				}
+			}
+			else {
+				console.log("Вы - не Админ. Херово!");
+			}	
+		}
+	};
+	request.send();
 }

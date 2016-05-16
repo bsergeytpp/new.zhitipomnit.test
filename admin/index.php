@@ -18,7 +18,10 @@ if(isset($_GET['logout'])) {
 	<ul>
 		<li><a href='add_news.php'>Добавление новостей</a></li>
 		<li><a href='add_publs.php'>Добавление публикаций</a></li>
+		<li><a href='manage_news.php'>Управление новостями</a></li>
+		<li><a href='manage_publs.php'>Управление публикациями</a></li>
 		<li><a href='index.php?logout'>Завершить сеанс</a></li>
 	</ul>
+	<a href="/">Перейти на сайт</a>
 </body>
 </html>

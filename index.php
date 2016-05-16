@@ -23,9 +23,6 @@
 			?>
             <div class="article ">
                 <?
-					/*if($_SESSION['admin'] === true) {
-						echo "<strong>Вы - Админ. Поздравляю!</strong><br>";
-					}*/
 					$params = isset($_GET['pages']) ? $_GET['pages'] : '';
 					switch($params) {
 						case 'main': 
@@ -58,8 +55,5 @@
         ?> 
         <div class="scroll-button" onclick="window.scrollTo(0,0);">↑ Наверх</div>
         <script src="scripts/script.js"></script>
-		<script>
-			//window.onload = isAdmin();
-		</script>
     </body>
 </html>

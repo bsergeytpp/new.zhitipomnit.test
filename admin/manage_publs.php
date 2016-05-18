@@ -30,6 +30,7 @@
 	<title>Управление публикациями</title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<script src="../scripts/tinymce/tinymce.min.js"></script>
+	<script src="scripts/admin_script.js"></script>
 </head>
 <body>
 	<h1>Управление публикациями</h1>
@@ -42,44 +43,6 @@
 		</tr>
 		<? getPublsToTable(); ?>
 	</table> 
-	<script>
-		var editBtns = document.getElementsByClassName("edit-btn");
-		
-		for(var i=0; i<editBtns.length; i++) {
-			editBtns[i].addEventListener('click', function(e) {
-				var target = e.target;
-				var parent = this.parentNode;
-				var prevNode = parent.previousSibling;
-				var textArea = prevNode.lastChild;
-				
-				if(this.innerHTML.indexOf('Редактировать') != -1) {
-					textArea.className = 'publs-textarea';
-					initTinyMCE();
-					this.innerHTML = '<strong>Сохранить</strong>';
-				}
-				else if(this.innerHTML.indexOf('Сохранить') != -1) {
-					var updatedText = tinymce.activeEditor.getContent();
-					var publsId = prevNode.firstChild.innerHTML;
-					var updatedPubls = "id=" + encodeURIComponent(publsId) + "&" +
-									   "text=" + encodeURIComponent(updatedText);
-					var request = new XMLHttpRequest();
-					request.open('POST', 'update_publs.php', true);
-					request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-					request.send(updatedPubls);
-					document.location.reload(true);
-				}
-			}, false);
-		}
-		
-		function initTinyMCE() {
-			tinymce.init({
-				inline: true,
-				selector: '.publs-textarea',
-				language: 'ru_RU',
-				plugins: 'code',
-				paste_data_images: true
-			});
-		}
-	</script>
+	<script> editBtnOnClick('publs'); </script>
 </body>
 </html>

@@ -11,13 +11,13 @@
 			if(isset($_POST['text']) && isset($_POST['id'])) {
 				$text = clearStr($_POST['text']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE news
-						  SET news_text = '" . pg_escape_string($text) . "' " . 
-						  "WHERE news_id = " . $id;
+				$query = "UPDATE publs
+						  SET publs_text = '" . pg_escape_string($text) . "' " . 
+						  "WHERE publs_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Новость не была обновлена';
-				else echo 'Новость была обновлена';			
+				if($result === false) echo 'Публикация не была обновлена';
+				else echo 'Публикация была обновлена';			
 			}
 			echo "Нет данных для обновления.";
 		}

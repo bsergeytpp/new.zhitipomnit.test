@@ -52,13 +52,31 @@
 				var parent = this.parentNode;
 				var prevNode = parent.previousSibling;
 				var textArea = prevNode.lastChild;
-				textArea.className = 'news-textarea';
-				initTinyMCE();
+
+				if(this.innerHTML.indexOf('Редактировать') != -1) {
+					textArea.className = 'news-textarea';
+					initTinyMCE();
+					this.innerHTML = '<strong>Сохранить</strong>';
+				}
+				else if(this.innerHTML.indexOf('Сохранить') != -1) {
+					var updatedText = tinymce.activeEditor.getContent();
+					var newsId = prevNode.firstChild.innerHTML;
+					console.log(newsId);
+					var updatedNews = "id=" + encodeURIComponent(newsId) + "&" + 
+									  "text=" + encodeURIComponent(updatedText);
+					var request = new XMLHttpRequest();
+					request.open('POST', 'update_news.php', false);
+					request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+					request.setRequestHeader("Content-Length", updatedNews.length);
+					request.send(updatedNews);
+					document.location.reload(true);
+				}
 			}, false);
 		}
 		
 		function initTinyMCE() {
 			tinymce.init({
+				inline: true,
 				selector: '.news-textarea',
 				language: 'ru_RU',
 				plugins: 'code',

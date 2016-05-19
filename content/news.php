@@ -19,7 +19,7 @@
 							$newsClass->getNews();
 							//echo "<script>document.addEventListener('DOMContentLoaded', function() { displayNewsImage(); }, false);</script>";
 							echo "<h3 class='full-width'><a href='index.php?pages=news&custom-news-date=all-old'>Старые новости</a></h3>";
-							pg_close($link);
+							if($link) pg_close($link);
 						}
 						else if($customNewsDate == 'all-old') {
 							$newsClass = new OldNewsClass($customNewsDate, $pageNum);

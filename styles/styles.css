@@ -59,7 +59,7 @@ body::before {
     margin-left: 30%;
     border-top: 30px solid transparent;
     border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
-    -o-border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
 }
 .full-width {
@@ -164,7 +164,7 @@ body::before {
     z-index: 2;
     border-top: 30px solid transparent;
     border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
-    -o-border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
 }
 .nav ul {

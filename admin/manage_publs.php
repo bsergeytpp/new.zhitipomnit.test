@@ -7,7 +7,7 @@
 		global $link;
 		$link = connectToPostgres();
 		
-		$query = 'SELECT * FROM publs';
+		$query = 'SELECT * FROM publs ORDER BY publs_id';
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
 		while($row = pg_fetch_assoc($res)) {
@@ -34,6 +34,7 @@
 </head>
 <body>
 	<h1>Управление публикациями</h1>
+	<a href="../admin">Назад</a>
 	<h3>Доступные действия:</h3>
 	<table border='1'>
 		<tr>

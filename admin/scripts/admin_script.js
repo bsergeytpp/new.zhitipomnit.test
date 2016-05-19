@@ -28,6 +28,8 @@ function editBtnOnClick(pattern) {
 				textArea.className = pattern + '-textarea';
 				initTinyMCE('.' + pattern + '-textarea', true);
 				this.innerHTML = '<strong>Сохранить</strong>';
+				parent.style.background = 'lightgray';
+				prevNode.style.background = 'lightgray';
 			}
 			else if(this.innerHTML.indexOf('Сохранить') != -1) {
 				var updatedText = tinymce.activeEditor.getContent();

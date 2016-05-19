@@ -106,6 +106,10 @@
 	// PostgreSQL functions
 	function connectToPostgres() {
 		global $link;
+		
+		if(!function_exists('pg_connect')) 
+			return false;
+		
 		$link = pg_connect(DB_CONNECT);
 		return $link;
 	}

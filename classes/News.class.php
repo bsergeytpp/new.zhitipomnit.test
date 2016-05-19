@@ -146,10 +146,11 @@
 	}
 	
 	class OldNewsClass extends NewsClass {
+		protected $allNews = [];
 		public function getNews() {
-			$allNews = file_get_contents("content/news/archive_news.html");
-			$allNews = strip_tags($allNews, '<p><strong><a>');
-			$this->createNewsList($allNews);
+			$this->allNews = file_get_contents("content/news/archive_news.html");
+			$this->allNews = strip_tags($this->allNews, '<p><strong><a>');
+			$this->createNewsList();
 		}
 		
 		public function getSingleNews() {
@@ -163,10 +164,10 @@
 			}
 		}
 		
-		protected function createNewsList($oldNews) {
+		protected function createNewsList() {
 			$dom = new DOMDocument;
-			$oldNews = mb_convert_encoding($oldNews, 'HTML-ENTITIES', "UTF-8");
-			$dom->loadHTML($oldNews);		
+			$this->allNews = mb_convert_encoding($this->allNews, 'HTML-ENTITIES', "UTF-8");
+			$dom->loadHTML($this->allNews);		
 			$p_elems = $dom->getElementsByTagName('p');
 			$this->totalNews = $p_elems->length;
 			
@@ -175,7 +176,7 @@
 			
 			// новостей мало, список не делаем
 			if($this->totalNews <= OLDNEWS_MAXCOUNT) {
-				echo $oldNews;
+				echo $this->allNews;
 				return;
 			}
 			

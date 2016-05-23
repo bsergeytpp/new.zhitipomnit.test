@@ -10,7 +10,7 @@
                     <li><a href="index.php?pages=memory">Книга Памяти</a></li>
                     <li>
 						<form action="index.php" method="get">
-							<i>Открыть новость от</i>
+							Открыть новость от
 							<input type="hidden" name="pages" value="news">
 							<input type="date" name="custom-news-date" required pattern="[0-9]{2}-[0-9]{2}-[0-9]{2}">
 							<input type="submit" value="Открыть">

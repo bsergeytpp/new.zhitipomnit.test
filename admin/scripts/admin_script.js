@@ -32,16 +32,40 @@ function editBtnOnClick(pattern) {
 				prevNode.style.background = 'lightgray';
 			}
 			else if(this.innerHTML.indexOf('Сохранить') != -1) {
-				var updatedText = tinymce.activeEditor.getContent();
-				var id = prevNode.firstChild.innerHTML;
-				var updatedData = "id=" + encodeURIComponent(id) + "&" +
-								   "text=" + encodeURIComponent(updatedText);
-				var request = new XMLHttpRequest();
-				request.open('POST', 'update_' + pattern + '.php', true);
-				request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				request.send(updatedData);
+				if(!checkActiveEditors(pattern + '-textarea')) {
+					var updatedText = tinymce.activeEditor.getContent();
+					var id = prevNode.firstChild.innerHTML;
+					saveEditedText(updatedText, id, pattern);
+				}
+				else {
+					var totalEditors = tinymce.editors.length;
+					for(var i=0; i<totalEditors; i++) {
+						var elem = tinymce.editors[i].getElement();
+						var elemParent = elem.parentNode;
+						var elemId = elemParent.firstChild.innerHTML;
+						saveEditedText(tinymce.editors[i].getContent(), elemId, pattern);
+					}
+				}
 				document.location.reload(true);
 			}
 		}, false);
 	}
+}
+
+function saveEditedText(text, id, pattern) {
+	var data = "id=" + encodeURIComponent(id) + "&" +
+					  "text=" + encodeURIComponent(text);
+	var request = new XMLHttpRequest();
+	request.open('POST', 'update_' + pattern + '.php', true);
+	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.send(data);
+}
+
+function checkActiveEditors(pattern) {
+	if(tinymce.editors.length == 1) return false;
+	
+	if(confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) {	
+		return false;
+	}
+	return true;
 }

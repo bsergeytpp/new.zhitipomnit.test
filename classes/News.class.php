@@ -125,8 +125,8 @@
 		protected function createExceptNews($news) {
 			$news['news_header'] = exceptStr(strip_tags($news['news_header']));
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
-			$pattern = ['newsDate', 'newsText', 'newsUrl'];
-			$replacement = [$news['news_date'], $news['news_header'], $news['news_date']];
+			$pattern = ['newsId', 'newsDate', 'newsText', 'newsUrl'];
+			$replacement = [$news['news_id'], $news['news_date'], $news['news_header'], $news['news_date']];
 			$newsTemplate = str_replace($pattern, $replacement, $newsTemplate);
 
 			return $newsTemplate;

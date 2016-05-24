@@ -26,18 +26,122 @@ document.addEventListener('DOMContentLoaded', function() {
 	}
 }, false);
 
-document.addEventListener('DOMContentLoaded', isAdmin(addCloseBtn), false);
+document.addEventListener('DOMContentLoaded', isAdmin(addEditBtn), false);
 
-function addCloseBtn() {
+function initTinyMCE(className, isInline) {
+	tinymce.init({
+		inline: isInline,
+		selector: className,
+		language: 'ru_RU',
+		plugins: 'code',
+		paste_data_images: true,
+		width: 400,
+		height: 170
+	});
+}
+
+function addEditBtn() {
 	var articleNews = document.getElementsByClassName('article-news');
 	
-	for(var i=0; i<articleNews.length; i++) {
+	for(var i=0, len=articleNews.length; i<len; i++) {
 		var div = document.createElement('div');
-		div.className = 'admin-close-button';
-		div.innerHTML = 'X';
+		div.className = 'admin-edit-button';
 		var firstChild = articleNews[i].children[0];
 		articleNews[i].insertBefore(div, firstChild);
 	}
+	
+	initNewsEdit();
+}
+
+function initNewsEdit() {
+	var editBtns = document.getElementsByClassName('admin-edit-button');
+	
+	for(var i=0, len=editBtns.length; i<len; i++) {
+		(function() {
+			editBtns[i].addEventListener('click', addHandlerOnEditBtns, false);
+		})();
+	}
+}
+
+function addHandlerOnEditBtns(e) {
+	var id = this.parentNode.getAttribute('id');
+	getNewsById(id, function () {
+		var response = this.responseText;
+		
+		if(typeof response === 'string') {
+			var newsObj = JSON.parse(response);
+		}
+		
+		if(typeof newsObj === 'object') {
+			var div = document.createElement('div');
+			var form = document.createElement('form');
+			var textarea = document.createElement('textarea');
+			var saveBtn = document.createElement('a');
+			var closeBtn = document.createElement('a');
+			saveBtn.innerHTML = 'Сохранить';
+			saveBtn.setAttribute('href', '#');
+			closeBtn.innerHTML = 'Отменить';
+			closeBtn.setAttribute('href', '#');
+			div.className = 'admin-edit-news'; 
+			form.innerHTML = 'ID: ' + newsObj['news_id'] + ' | ' + 
+							 'Загловок: ' + newsObj['news_header'];
+			textarea.innerHTML = newsObj['news_text'];
+			form.appendChild(textarea);
+			form.appendChild(saveBtn);
+			form.appendChild(closeBtn);
+			div.appendChild(form);
+			document.body.appendChild(div);
+			initTinyMCE('.admin-edit-news textarea', false);
+			saveBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var updatedText = tinymce.activeEditor.getContent();
+				sendRequestToSave(id, updatedText);
+				document.body.removeChild(div);
+			}, false);
+			closeBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				document.body.removeChild(div);
+			}, false);
+		}
+		else console.log(response);
+	});
+}
+
+function sendRequestToSave(id, text) {
+	var data = "id=" + encodeURIComponent(id) + "&" +
+			   "text=" + encodeURIComponent(text);
+	var request = new XMLHttpRequest();
+	request.open('POST', 'admin/update_news.php', true);
+	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.send(data);
+}
+
+function getNewsById(id, callback) {
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function () {
+		if(request.readyState == 4) {
+			clearTimeout(timeout); 
+			if(request.status != 200) {
+				console.log('wha?');
+			}
+			else {
+				var resp = request.responseText;
+				if(resp != null) {
+					if(typeof callback  == 'function') {
+						callback.call(request);
+					}
+				}
+				else {
+					console.log("Херово!");
+				}	
+			}
+		}
+	};
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	request.open('GET', 'admin/get_news_by_id.php?id=' + id, true);
+	request.send();
 }
 
 function navigateUlList(e) {
@@ -51,7 +155,7 @@ function navigateUlList(e) {
 	var urlArr = decodeURIComponent(location.search.substr(1)).split('&');
 	var pair, urlParams = new Object;
 	
-	for(var i=0; i<urlArr.length; i++) {
+	for(var i=0, len=urlArr.length; i<len; i++) {
 		pair = urlArr[i].split("=");
 		urlParams[pair[0]] = pair[1];
 	}
@@ -65,6 +169,7 @@ function navigateUlList(e) {
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
 				urlArr = [];
+				
 				for(var elem in urlParams) {
 					urlArr.push(elem + "=" + urlParams[elem]); 
 				}
@@ -78,6 +183,7 @@ function navigateUlList(e) {
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;
 				urlArr = [];
+				
 				for(var elem in urlParams) {
 					urlArr.push(elem + "=" + urlParams[elem]); 
 				}
@@ -89,16 +195,19 @@ function navigateUlList(e) {
 
 function getParam(value, obj) {
 	for(var param in obj) {
-		if(param == value)
+		if(param == value) {
 			return obj[param];
+		}
 	}
+	
 	return false;
 }
 
 function replaceNewsLinks() {
 	var container = document.body.getElementsByClassName('article')[0];
 	var parents = container.getElementsByTagName('P');
-	for(var i=0; i<parents.length; i++) {
+	
+	for(var i=0, len=parents.length; i<len; i++) {
 		var link = parents[i].getElementsByTagName('A')[0];
 		link.setAttribute('href', 'index.php?pages=news&custom-news-date=' + link.getAttribute('href').substring(0, link.getAttribute('href').length - 5));
 		//console.log(link.getAttribute('href'));
@@ -107,7 +216,8 @@ function replaceNewsLinks() {
 
 function replacePressLinks() {
 	var press = document.body.getElementsByClassName('article-press');
-	for(var i=0; i<press.length; i++) {
+	
+	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
 		//console.log(press[i].getAttribute('href'));
@@ -120,7 +230,8 @@ function changeStyle() {
 
 function displayNewsImage() {
 	var imgs = document.body.getElementsByClassName('article-news-image');
-	for(var i = 0; i<imgs.length; i++) {
+	
+	for(var i=0, len=imgs.length; i<len; i++) {
 		if(isFileExists(imgs[i].getAttribute('src'))) {
 			imgs[i].style.display = 'block';
 		}
@@ -137,14 +248,16 @@ function isFileExists(url) {
 
 function isAdmin(callback) {
 	var request = new XMLHttpRequest();
-	request.open('HEAD', 'content/json.php', true);
 	request.onreadystatechange = function () {
 		if(request.readyState == 4) {
+			clearTimeout(timeout);
 			var resp = request.getResponseHeader('IsAdmin');
+			
 			if(resp != null) {
 				console.log("Вы - Админ. Поздравляю!");
+				
 				if(typeof callback == 'function') {
-					callback.apply(request);
+					callback.call(request);
 				}
 			}
 			else {
@@ -152,5 +265,9 @@ function isAdmin(callback) {
 			}	
 		}
 	};
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	request.open('HEAD', 'content/json.php', true);
 	request.send();
 }

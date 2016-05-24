@@ -462,17 +462,35 @@ p.quotes:before {
     opacity: 1;
     transition: opacity .5s linear;
 }
-.admin-close-button {
+.admin-edit-button {
 	position: absolute;
-	background: lightgray;
-	border-radius: 15px;
+	background-image: url(/images/gear.png);
+	background-size: 100%;
+	background-repeat: no-repeat;
 	width: 25px;
-	height: 20px;
+	height: 25px;
 	color: black;
 	font-weight: bold;
 	right: 0;
 	cursor: pointer;
 	text-align: center;
+}
+.admin-edit-news {
+	background: gray; 
+	width: 400px; 
+	height: 400px; 
+	position: absolute; 
+	left: 25%; 
+	top: 25%;
+	content: test;
+}
+.admin-edit-news form {
+	width: auto;
+	height: auto;
+}
+.admin-edit-news textarea {
+	width: 390px;
+	height: 270px;
 }
 
 /*mobile, baby!*/

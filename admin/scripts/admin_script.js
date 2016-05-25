@@ -76,7 +76,7 @@ function saveEditedText(text, id, pattern) {
 function checkActiveEditors(pattern) {
 	if(tinymce.editors.length == 1) return false;
 	
-	(confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) 	
-	? return false;
-	: return true;
+	return (confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) 	
+	? false;
+	: true;
 }

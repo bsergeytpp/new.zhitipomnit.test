@@ -260,6 +260,9 @@ body::before {
     margin: 0 auto;
     float: left;
 }
+.publs-full-container {
+	position: relative;
+}
 .article-publs, .article-press {
     color: white;  
     background: darkred;
@@ -477,7 +480,7 @@ p.quotes:before {
 	cursor: pointer;
 	text-align: center;
 }
-.admin-edit-news {
+.admin-edit-elem {
 	background: gray; 
 	width: 400px; 
 	height: 400px; 
@@ -486,11 +489,11 @@ p.quotes:before {
 	top: 25%;
 	content: test;
 }
-.admin-edit-news form {
+.admin-edit-elem form {
 	width: auto;
 	height: auto;
 }
-.admin-edit-news textarea {
+.admin-edit-elem textarea {
 	width: 390px;
 	height: 270px;
 }

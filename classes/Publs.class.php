@@ -54,10 +54,10 @@
 			$link = connectToPostgres();
 			
 			if($link) {
-				$query = 'SELECT publs_header, publs_text FROM publs WHERE publs_id = '.$date;
+				$query = 'SELECT* FROM publs WHERE publs_id = '.$date;
 				$res = pg_query($link, $query) or die("Query error: ". pg_last_error());
 				$row = pg_fetch_assoc($res);
-				$publ = '<h3>'.$row['publs_header'].'</h3>'.$row['publs_text'];
+				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
 				
 				return $publ;
 			}
@@ -70,7 +70,7 @@
 		
 		protected function createExceptPubl($publ) {
 			$publTemplate = file_get_contents('content/templates/publ_template.php');
-			$pattern = ['publUrl', 'publHeader'];
+			$pattern = ['publId', 'publHeader'];
 			$replacement = [$publ['publs_id'], $publ['publs_header']];
 			$publTemplate = str_replace($pattern, $replacement, $publTemplate);
 			

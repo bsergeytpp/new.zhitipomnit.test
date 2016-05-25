@@ -43,6 +43,11 @@ function initTinyMCE(className, isInline) {
 function addEditBtn() {
 	var articleNews = document.getElementsByClassName('article-news');
 	
+	// если новость открыта
+	if(articleNews.length === 0) {
+		articleNews = document.getElementsByClassName('news-full-container');
+	}
+	
 	for(var i=0, len=articleNews.length; i<len; i++) {
 		var div = document.createElement('div');
 		div.className = 'admin-edit-button';
@@ -73,46 +78,98 @@ function addHandlerOnEditBtns(e) {
 		}
 		
 		if(typeof newsObj === 'object') {
-			var div = document.createElement('div');
-			var form = document.createElement('form');
-			var textarea = document.createElement('textarea');
-			var saveBtn = document.createElement('a');
-			var closeBtn = document.createElement('a');
-			saveBtn.innerHTML = 'Сохранить';
-			saveBtn.setAttribute('href', '#');
-			closeBtn.innerHTML = 'Отменить';
-			closeBtn.setAttribute('href', '#');
-			div.className = 'admin-edit-news'; 
-			form.innerHTML = 'ID: ' + newsObj['news_id'] + ' | ' + 
-							 'Загловок: ' + newsObj['news_header'];
-			textarea.innerHTML = newsObj['news_text'];
-			form.appendChild(textarea);
-			form.appendChild(saveBtn);
-			form.appendChild(closeBtn);
-			div.appendChild(form);
-			document.body.appendChild(div);
+			if(checkPrevEditDivs()) {
+				document.body.removeChild(document.getElementsByClassName('admin-edit-news')[0]);
+			}
+			
+			// создаем все необходимые элементы
+			var editDiv = createEditDiv(newsObj);
+			
+			// делаем из textarea объект tinymce
 			initTinyMCE('.admin-edit-news textarea', false);
-			saveBtn.addEventListener('click', function(e) {
+			
+			// вешаем на кнопки события
+			editDiv.addEventListener('click', function(e) {
+				var target = e.target;
 				e.preventDefault();
-				var updatedText = tinymce.activeEditor.getContent();
-				sendRequestToSave(id, updatedText);
-				document.body.removeChild(div);
-			}, false);
-			closeBtn.addEventListener('click', function(e) {
-				e.preventDefault();
-				document.body.removeChild(div);
+				
+				if(target.innerHTML === 'Отменить') {
+					e.stopPropagation();
+					document.body.removeChild(this);	// удаляем div редактирования
+				}
+				else if(target.innerHTML === 'Сохранить') {
+					e.stopPropagation();
+					var updatedText = tinymce.activeEditor.getContent();
+					// запрос на сохранение новости
+					sendSaveRequest({
+						'id': id,
+						'text': updatedText
+					   },
+					   'POST', 
+					   'admin/update_news.php', 
+					   'application/x-www-form-urlencoded');
+					document.body.removeChild(this);	// удаляем div редактирования
+				} 
+				
 			}, false);
 		}
 		else console.log(response);
 	});
 }
 
-function sendRequestToSave(id, text) {
-	var data = "id=" + encodeURIComponent(id) + "&" +
-			   "text=" + encodeURIComponent(text);
+function createEditDiv(newsObj) {
+	var div = document.createElement('div');
+	var form = document.createElement('form');
+	var textarea = document.createElement('textarea');
+	var saveBtn = document.createElement('a');
+	var closeBtn = document.createElement('a');
+	saveBtn.innerHTML = 'Сохранить';
+	saveBtn.setAttribute('href', '#');
+	closeBtn.innerHTML = 'Отменить';
+	closeBtn.setAttribute('href', '#');
+	div.className = 'admin-edit-news'; 
+	form.innerHTML = 'ID: ' + newsObj['news_id'] + ' | ' + 
+					 'Загловок: ' + newsObj['news_header'];
+	textarea.innerHTML = newsObj['news_text'];
+	form.appendChild(textarea);
+	form.appendChild(saveBtn);
+	form.appendChild(closeBtn);
+	div.appendChild(form);
+	document.body.appendChild(div);
+	
+	return div;
+}
+
+function checkPrevEditDivs() {
+	var div = document.getElementsByClassName('admin-edit-news');
+	
+	(div.length > 0) ? return true : return false;
+}
+
+function sendSaveRequest(argArr, reqType, reqTarget, contentType) {
+	var data = '', j = 1;
+	
+	for(var key in argArr) {
+		var val = argArr[key];
+		data += key + '=' + val;
+		(j++ < Object.keys(argArr).length) ? data += '&' : console.log('I dunno');
+	}
+	
 	var request = new XMLHttpRequest();
-	request.open('POST', 'admin/update_news.php', true);
-	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			if(request.status != 200) {
+				console.log('Ошибка: ' + request.responseText);
+			}
+			else console.log('Запрос отправлен. Все - хорошо.');
+		}
+	};
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	request.open(reqType, reqTarget, true);
+	request.setRequestHeader("Content-Type", contentType);
 	request.send(data);
 }
 
@@ -121,6 +178,7 @@ function getNewsById(id, callback) {
 	request.onreadystatechange = function () {
 		if(request.readyState == 4) {
 			clearTimeout(timeout); 
+			
 			if(request.status != 200) {
 				console.log('wha?');
 			}
@@ -137,6 +195,7 @@ function getNewsById(id, callback) {
 			}
 		}
 	};
+	
 	var timeout = setTimeout(function() {
 		request.abort();
 	}, 60*1000);

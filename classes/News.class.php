@@ -101,7 +101,7 @@
 		
 		private function getSingleDbNews($pageNum) {
 			global $link;
-			$query = "SELECT news_date, news_header, news_text FROM news WHERE news_date = '".$this->newsDate."'";
+			$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."'";
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			$news = pg_fetch_assoc($res);
 			
@@ -113,8 +113,9 @@
 			
 			echo "<strong><a href='index.php?pages=news&page=".$pageNum."'>К новостям</a></strong>";
 			$newsFull = file_get_contents('content/templates/news_full.php');
-			$pattern = ['newsDate', 'newsText'];
+			$pattern = ['newsId', 'newsDate', 'newsText'];
 			$replacement = [
+				$news['news_id'],
 				$news['news_date'], 
 				"<h4>".$news['news_header']."</h4>".$news['news_text']
 			];

@@ -340,7 +340,9 @@ body::before {
     width: 100%;
 }
 .news-full-container {
-	display: block !important;
+	position: relative;
+    width: 95%;
+    margin: 0 auto;
 }
 .news-list {
 	list-style-type: none;

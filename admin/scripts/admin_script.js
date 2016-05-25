@@ -11,7 +11,7 @@ function initTinyMCE(className, isInline) {
 function editBtnOnClick(pattern) {
 	var editBtns = document.getElementsByClassName("edit-btn");
 		
-	for(var i=0; i<editBtns.length; i++) {
+	for(var i=0, len=editBtns.length; i<len; i++) {
 		editBtns[i].addEventListener('click', function(e) {
 			var target = e.target;
 			
@@ -56,6 +56,18 @@ function saveEditedText(text, id, pattern) {
 	var data = "id=" + encodeURIComponent(id) + "&" +
 					  "text=" + encodeURIComponent(text);
 	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			
+			(request.status != 200) 
+			? console.log('Ошибка: ' + request.responseText);
+			: console.log('Запрос отправлен. Все - хорошо.');
+		}
+	};
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
 	request.open('POST', 'update_' + pattern + '.php', true);
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.send(data);
@@ -64,8 +76,7 @@ function saveEditedText(text, id, pattern) {
 function checkActiveEditors(pattern) {
 	if(tinymce.editors.length == 1) return false;
 	
-	if(confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) {	
-		return false;
-	}
-	return true;
+	(confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) 	
+	? return false;
+	: return true;
 }

@@ -24,7 +24,7 @@
 						else if($customNewsDate == 'all-old') {
 							$newsClass = new OldNewsClass($customNewsDate, $pageNum);
 							$newsClass->getNews();
-							echo "<script>document.addEventListener('DOMContentLoaded', function() { replaceNewsLinks(); }, false);</script>";
+							echo "<script>document.addEventListener('DOMContentLoaded', function() { replaceNewsLinks(); }, {passive: true});</script>";
 							echo "<h3 class='full-width'><a href='index.php?pages=news&page=".$pageNum."'>Последние новости</a></h3>";
 						}
 						else {

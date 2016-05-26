@@ -61,7 +61,7 @@ function saveEditedText(text, id, pattern) {
 			clearTimeout(timeout);
 			
 			(request.status != 200) 
-			? console.log('Ошибка: ' + request.responseText);
+			? console.log('Ошибка: ' + request.responseText)
 			: console.log('Запрос отправлен. Все - хорошо.');
 		}
 	};
@@ -77,6 +77,50 @@ function checkActiveEditors(pattern) {
 	if(tinymce.editors.length == 1) return false;
 	
 	return (confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) 	
-	? false;
+	? false
 	: true;
+}
+
+function saveSettings() {
+	var table = document.getElementsByClassName('settings-table')[0];
+	var inputs = table.getElementsByTagName('input');
+	var data = [];
+	
+	for(var i=0, len=inputs.length; i<len; i++) {
+		var name = inputs[i].getAttribute('name');
+		switch(name) {
+			case 'NEWS': data['NEWS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
+			case 'OLDNEWS': data['OLDNEWS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
+			case 'PUBLS': data['PUBLS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
+			case 'PRESS': data['PRESS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
+			default: break;
+		}
+	}
+	
+	sendRequest(data, 'POST', 'save_settings.php', 'application/x-www-form-urlencoded');
+}
+
+function sendRequest(data, reqType, reqTarget, contentType) {
+	var request = new XMLHttpRequest();
+	var reqData = '';
+	
+	for(var key in data) {
+		reqData += '&' + key + '=' + data[key];
+	}
+		
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			
+			(request.status != 200) 
+			? console.log('Ошибка: ' + request.responseText)
+			: console.log('Запрос отправлен. Все - хорошо.');
+		}
+	};
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	request.open(reqType, reqTarget+'?'+reqData, true);
+	request.setRequestHeader("Content-Type", contentType);
+	request.send(data);
 }

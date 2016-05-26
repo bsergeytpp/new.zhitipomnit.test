@@ -70,8 +70,8 @@
 		
 		protected function createExceptPubl($publ) {
 			$publTemplate = file_get_contents('content/templates/publ_template.php');
-			$pattern = ['publId', 'publHeader'];
-			$replacement = [$publ['publs_id'], $publ['publs_header']];
+			$pattern = ['publId', 'publUrl', 'publHeader'];
+			$replacement = [$publ['publs_id'], $publ['publs_id'], $publ['publs_header']];
 			$publTemplate = str_replace($pattern, $replacement, $publTemplate);
 			
 			return $publTemplate;

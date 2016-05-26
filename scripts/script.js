@@ -1,4 +1,38 @@
-document.onscroll = function() {
+/*Passive event listeners for Blink*/
+// Dunno if it works.
+var supportsPassive = false;
+
+try {
+	var opts = Object.defineProperty({}, 'passive', {
+		get: function() {
+			supportsPassive = true;
+		}
+	});
+	window.addEventListener("test", null, opts);
+} catch (e) {}
+
+function addEventListenerWithOptions(target, type, handler, options) {
+	var optionsOrCapture = options;
+	
+	if (!supportsPassive) {
+		optionsOrCapture = options.capture;
+	}
+	target.addEventListener(type, handler, optionsOrCapture);
+}
+
+addEventListenerWithOptions(document, "touchstart", function(e) {}, {passive: true} );
+addEventListenerWithOptions(document, "touchmove", function(e) {}, {passive: true} );
+addEventListenerWithOptions(document, "touchend", function(e) {}, {passive: true} );
+
+addEventListenerWithOptions(document, "wheel", function(e) {
+	//var respTime = performance.now() - e.timeStamp;
+	//console.log(respTime);
+	
+}, {passive: true} );
+
+/***********************/
+
+addEventListenerWithOptions(document, 'onscroll', function(e) {
     var article = document.getElementsByClassName('article')[0];
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
     var header = document.getElementsByClassName('header')[0];
@@ -14,9 +48,9 @@ document.onscroll = function() {
 			//article.style.width = "";
 			scrollBtn.classList.remove("scroll-button-active");
         }
-};
+}, {passive: true});
 
-document.addEventListener('DOMContentLoaded', function() {
+addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
 	var ul = document.getElementsByClassName('news-list');
 	
 	if(!ul) return;
@@ -24,10 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	for(var i=0; i<ul.length; i++) {
 		ul[i].addEventListener('click', navigateUlList, false);
 	}
-}, false);
+}, {passive: true});
 
-document.addEventListener('DOMContentLoaded', isAdmin(addEditBtn('news')), false);
-document.addEventListener('DOMContentLoaded', isAdmin(addEditBtn('publs')), false);
+addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+	checkIfAdmin(appendScript.bind(null, 'scripts/tinymce/tinymce.min.js'));
+	checkIfAdmin(addEditBtn.bind(null,'news')); 
+	checkIfAdmin(addEditBtn.bind(null, 'publs'));
+}, {passive: true});
 
 function initTinyMCE(className, isInline) {
 	tinymce.init({
@@ -318,23 +355,22 @@ function isFileExists(url) {
 	return http.status != 404;
 }
 
-function isAdmin(callback) {
+function checkIfAdmin(callback) {
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
 		if(request.readyState == 4) {
 			clearTimeout(timeout);
 			var resp = request.getResponseHeader('IsAdmin');
 			
-			if(resp != null) {
+			if(resp !== null) {
 				console.log("Вы - Админ. Поздравляю!");
-				
 				if(typeof callback == 'function') {
 					callback.call(request);
 				}
 			}
 			else {
 				console.log("Вы - не Админ. Херово!");
-			}	
+			}
 		}
 	};
 	var timeout = setTimeout(function() {
@@ -342,4 +378,10 @@ function isAdmin(callback) {
 	}, 60*1000);
 	request.open('HEAD', 'content/json.php', true);
 	request.send();
+}
+
+function appendScript(src) {
+	var script = document.createElement('script');
+	script.src = src;
+	document.body.appendChild(script);
 }

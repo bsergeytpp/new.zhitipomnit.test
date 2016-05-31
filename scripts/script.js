@@ -45,11 +45,11 @@ Admin.prototype.getIsAdmin = function() {
 
 Admin.prototype.checkIfAdmin = function() {
 	var self = this;
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function () {
-		if(request.readyState == 4) {
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
-			var resp = request.getResponseHeader('IsAdmin');
+			var resp = self._XMLHttpRequest.getResponseHeader('IsAdmin');
 			
 			if(resp !== null) {
 				console.log("Вы - Админ. Поздравляю!");
@@ -63,30 +63,28 @@ Admin.prototype.checkIfAdmin = function() {
 		}
 	};
 	var timeout = setTimeout(function() {
-		request.abort();
+		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	request.open('HEAD', 'content/json.php', true);
-	request.send();
+	this._XMLHttpRequest.open('HEAD', 'content/json.php', true);
+	this._XMLHttpRequest.send();
 };
 
 Admin.prototype.addEditBtn = function() {
-	var pattern = '';
-	if(document.getElementsByClassName('article-news').length > 0 ||
-	   document.getElementsByClassName('news-full-container').length > 0) {
-		pattern = 'news';
+	var elem = null;
+	
+	if(document.getElementsByClassName('article-news').length > 0) {
+		elem = document.getElementsByClassName('article-news');
+	} 
+	else if(document.getElementsByClassName('news-full-container').length > 0) {
+		elem = document.getElementsByClassName('news-full-container');
 	}
-	else if(document.getElementsByClassName('article-publs').length > 0 ||
-	        document.getElementsByClassName('publs-full-container').length > 0) {
-		pattern = 'publs';
+	else if(document.getElementsByClassName('article-publs').length > 0) {
+		elem = document.getElementsByClassName('article-publs');
+	}
+	else if(document.getElementsByClassName('publs-full-container').length > 0) {
+		elem = document.getElementsByClassName('publs-full-container');
 	}
 	else return;
-	
-	var elem = document.getElementsByClassName('article-'+pattern);
-	
-	// если элемент открыт
-	if(elem.length === 0) {
-		elem = document.getElementsByClassName(pattern+'-full-container');
-	}
 
 	for(var i=0, len=elem.length; i<len; i++) {
 		this._editBtns[i] = document.createElement('div');
@@ -203,41 +201,41 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 		(j++ < Object.keys(argArr).length) ? data += '&' : console.log('I dunno');
 	}
 	
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function() {
-		if(request.readyState == 4) {
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function() {
+		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
-			if(request.status != 200) {
-				console.log('Ошибка: ' + request.responseText);
+			if(self._XMLHttpRequest.status != 200) {
+				console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
 			}
 			else console.log('Запрос отправлен. Все - хорошо.');
 		}
 	};
 	var timeout = setTimeout(function() {
-		request.abort();
+		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	request.open(reqType, reqTarget, true);
-	request.setRequestHeader("Content-Type", contentType);
-	request.send(data);
+	this._XMLHttpRequest.open(reqType, reqTarget, true);
+	this._XMLHttpRequest.setRequestHeader("Content-Type", contentType);
+	this._XMLHttpRequest.send(data);
 }
 
 Admin.prototype._getElemByDBId = function(className, id, callback) {
-	var request = new XMLHttpRequest();
 	var pattern = (className === 'article-news') ? 'news' : 'publs' ;
 	var self = this;
 	
-	request.onreadystatechange = function () {
-		if(request.readyState == 4) {
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout); 
 			
-			if(request.status != 200) {
+			if(self._XMLHttpRequest.status != 200) {
 				console.log('wha?');
 			}
 			else {
-				var resp = request.responseText;
+				var resp = self._XMLHttpRequest.responseText;
 				if(resp != null) {
 					if(typeof callback  == 'function') {
-						callback.call(request);
+						callback.call(self._XMLHttpRequest);
 					}
 				}
 				else {
@@ -248,10 +246,10 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 	};
 	
 	var timeout = setTimeout(function() {
-		request.abort();
+		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	request.open('GET', 'admin/get_'+pattern+'_by_id.php?id=' + id, true);
-	request.send();
+	this._XMLHttpRequest.open('GET', 'admin/get_'+pattern+'_by_id.php?id=' + id, true);
+	this._XMLHttpRequest.send();
 };
 
 addEventListenerWithOptions(document, 'scroll', function(e) {
@@ -285,9 +283,6 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
 addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
 	var admin = new Admin();
 	admin.checkIfAdmin();
-	//admin.checkIfAdmin(appendScript.bind(null, 'scripts/tinymce/tinymce.min.js'));
-	//admin.checkIfAdmin(admin.addEditBtn.bind(admin,'news'));
-	//admin.checkIfAdmin(admin.addEditBtn.bind(admin,'publs'));
 }, {passive: true});
 
 function initTinyMCE(className, isInline) {

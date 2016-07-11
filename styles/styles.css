@@ -61,6 +61,8 @@ body::before {
     border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
     -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
+	transition: margin .3s linear;
+	transform: translate3d(0,0,0);
 }
 .full-width {
     width: 100%;

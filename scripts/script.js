@@ -258,14 +258,12 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var header = document.getElementsByClassName('header')[0];
         if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
 			if(article.style.width !== '100%') {
-			   //article.style.marginLeft = 5 + 'px';    
-			   //article.style.width = 100 + '%';
+			   article.style.marginLeft = 0;    
 			   scrollBtn.classList.add("scroll-button-active");
 			}
         }
         else {
-			//article.style.marginLeft = "";
-			//article.style.width = "";
+			article.style.marginLeft = "";
 			scrollBtn.classList.remove("scroll-button-active");
         }
 }, {passive: true});

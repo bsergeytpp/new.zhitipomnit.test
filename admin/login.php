@@ -10,12 +10,36 @@
 		
 		if(!$ref) $ref = '/admin/';
 		
-		if(checkUser($user, $pw)) {
-			$_SESSION['admin'] = true;
-			header("Location: $ref");
+		if(!checkUser($user, $pw)) {
+			echo 'No luck';
+		}
+		else {
+			$row = checkUser($user, $pw);
+			
+			if($row['user_group'] == 'admins') {
+				$_SESSION['admin'] = true;
+				$_SESSION['user'] = $row['user_login'];
+				header("Location: $ref");
+			}
+			else {
+				$_SESSION['user'] = $row['user_login'];
+				header("Location: ../users/user_profile.php");
+			}
 			exit;
 		}
-		else echo 'No luck';
+	}
+	else if($_SERVER['REQUEST_METHOD'] == 'GET') {
+		if(isset($_GET['logout'])) {
+			logOut();
+		}
+		if($_SESSION['admin'] === true) {
+			header("Location: index.php");
+		}
+		else if($_SESSION['user'] !== null) {
+			echo "Вы уже вошли под логином " . $_SESSION['user'];
+			exit;
+			//header("Location: ../users/user_profile.php");
+		}
 	}
 ?>
 <!DOCTYPE html>

@@ -3,7 +3,12 @@
 	
 	function logOut() {
 		session_destroy();
-		header('Location: /admin/login.php');
+		
+		if(isset($_SESSION['admin'])) {
+			unset($_SESSION['admin']);
+		}
+		
+		header('Location: ../users/login.php');
 		exit;
 	}
 	

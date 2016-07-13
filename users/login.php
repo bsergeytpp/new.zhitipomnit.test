@@ -1,14 +1,11 @@
 <?
 	session_start();
 	header("HTTP/1.0 401 Unauthorized");
-	require_once "secure.inc.php";
+	require_once "../admin/secure.inc.php";
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
 		$pw = trim(strip_tags($_POST['pw']));
-		$ref = trim(strip_tags($_GET['ref']));
-		
-		if(!$ref) $ref = '/admin/';
 		
 		if(!checkUser($user, $pw)) {
 			echo 'No luck';
@@ -19,26 +16,37 @@
 			if($row['user_group'] == 'admins') {
 				$_SESSION['admin'] = true;
 				$_SESSION['user'] = $row['user_login'];
-				header("Location: $ref");
+				header("Location: ../admin/index.php");
 			}
 			else {
+				$_SESSION['admin'] = false;
 				$_SESSION['user'] = $row['user_login'];
-				header("Location: ../users/user_profile.php");
+				header("Location: user_profile.php");
 			}
 			exit;
 		}
 	}
 	else if($_SERVER['REQUEST_METHOD'] == 'GET') {
+		if(!isset($_SESSION['admin'])) {
+			$_SESSION['admin'] = false;
+		}
+		
+		if(!isset($_SESSION['user'])) {
+			$_SESSION['user'] = null;
+		}
+		
 		if(isset($_GET['logout'])) {
 			logOut();
+			exit;
 		}
+		
 		if($_SESSION['admin'] === true) {
-			header("Location: index.php");
+			header("Location: ../admin/index.php");
 		}
 		else if($_SESSION['user'] !== null) {
 			echo "Вы уже вошли под логином " . $_SESSION['user'];
+			echo "<br><a href='login.php?logout'>Выйти</a>";
 			exit;
-			//header("Location: ../users/user_profile.php");
 		}
 	}
 ?>

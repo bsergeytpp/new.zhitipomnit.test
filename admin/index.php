@@ -1,10 +1,11 @@
 <?
-require "../functions/functions.php";
-require_once "session.inc.php";
-require_once "secure.inc.php";
-if(isset($_GET['logout'])) {
-	logOut();
-}
+	require "../functions/functions.php";
+	require_once "session.inc.php";
+	require_once "secure.inc.php";
+
+	if(isset($_GET['logout'])) {
+		logOut();
+	}
 ?>
 <!DOCTYPE html>
 <html>

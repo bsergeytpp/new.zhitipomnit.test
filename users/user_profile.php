@@ -29,8 +29,8 @@
 </head>
 <body>
 	<h1>Профиль пользователя</h1>
-	<a href="../admin/login.php">Назад</a><br> 
-	<a href="../admin/login.php?logout">Выйти</a>
+	<a href="login.php">Назад</a><br> 
+	<a href="login.php?logout">Выйти</a>
 	<h3>Данные:</h3>
 	<table border='1'>
 		<tr>

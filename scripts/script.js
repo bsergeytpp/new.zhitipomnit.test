@@ -257,7 +257,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
     var header = document.getElementsByClassName('header')[0];
         if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
-			if(article.style.width !== '100%') {
+			if(window.getComputedStyle(article).getPropertyValue('width') !== '100%') {
 			   article.style.marginLeft = 0;    
 			   scrollBtn.classList.add("scroll-button-active");
 			}
@@ -281,6 +281,21 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
 addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
 	var admin = new Admin();
 	admin.checkIfAdmin();
+}, {passive: true});
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+	var usersDiv = document.getElementsByClassName('users-div')[0];
+	var switcher = usersDiv.getElementsByClassName('users-switcher')[0];
+	
+	switcher.addEventListener('click', function(e) {
+		var style = window.getComputedStyle(usersDiv);
+		var left = parseInt(style.getPropertyValue('left'));
+		if(left < 0) {
+			usersDiv.style.left = 0;
+			usersDiv.style.color = 'white';
+		}
+		else usersDiv.style.left = '';
+	}, false);
 }, {passive: true});
 
 function initTinyMCE(className, isInline) {

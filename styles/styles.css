@@ -52,6 +52,7 @@ body::before {
     width: 90%;
     margin: 10px auto 10px;
     max-width: 1080px;
+	min-height: 68%;
 }
 .article {
     width: auto;
@@ -69,18 +70,15 @@ body::before {
 }
 .footer {
     width: 100%;
-    max-height: 50px;
     background: black;
-	/*background-image: url(/images/g_lenta.png);
-	background-size: 100%;
-	background-repeat: no-repeat;
-	background-position: right;*/
     color: white;
     left: 0;
     bottom: 0;
     z-index: 5;
     overflow: hidden;
     border-top: 1px solid #888;
+	position: relative;
+	min-height: 20%;
 }
 .footer-copyright {
     font-weight: bold;
@@ -498,6 +496,41 @@ p.quotes:before {
 .admin-edit-elem textarea {
 	width: 390px;
 	height: 270px;
+}
+.users-div {
+	position: fixed;
+	width: 20%;
+	left: -20%;
+	top: 40%;
+	background: rgba(150,150,150,.9);
+	color: white;
+	border: 1px solid red;
+	padding: 5px;
+	z-index: 999;
+	transition: background, left .2s linear;
+}
+.users-div:hover {
+	background: rgba(50,50,50,.9);
+	left: -19.5%;
+	transition: background, left .2s linear;
+}
+.users-actions a {
+	color: white;
+}
+.users-info {
+	font-weight: bold;
+}
+.users-info ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.users-switcher {
+	cursor: pointer;
+	text-align: right;
+	position: absolute;
+	top: 45%;
+	right: 0;
 }
 
 /*mobile, baby!*/

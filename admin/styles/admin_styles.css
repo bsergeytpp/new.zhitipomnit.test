@@ -1,0 +1,10 @@
+﻿.selected {
+	background: gray;
+	font-weight: bold;
+}
+table td {
+	cursor: pointer;
+}
+table td:hover {
+	background: lightgray;
+}

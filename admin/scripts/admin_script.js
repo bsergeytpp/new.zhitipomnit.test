@@ -22,10 +22,16 @@ function editBtnOnClick(pattern) {
 			
 			var parent = this.parentNode;
 			var prevNode = parent.previousSibling;
-			var textArea = prevNode.lastChild;
-			
+	
 			if(this.innerHTML.indexOf('Редактировать') != -1) {
-				textArea.className = pattern + '-textarea';
+				var editedArea = prevNode.getElementsByClassName('selected')[0];	//prevNode.lastChild;
+				
+				if(!editedArea) return;
+				
+				// не редактировать ID
+				if(editedArea == prevNode.firstChild) return;
+				
+				editedArea.className = pattern + '-textarea';
 				initTinyMCE('.' + pattern + '-textarea', true);
 				this.innerHTML = '<strong>Сохранить</strong>';
 				parent.style.background = 'lightgray';
@@ -34,8 +40,9 @@ function editBtnOnClick(pattern) {
 			else if(this.innerHTML.indexOf('Сохранить') != -1) {
 				if(!checkActiveEditors(pattern + '-textarea')) {
 					var updatedText = tinymce.activeEditor.getContent();
+					var name = tinymce.activeEditor.getElement().getAttribute('name');
 					var id = prevNode.firstChild.innerHTML;
-					saveEditedText(updatedText, id, pattern);
+					saveEditedText(updatedText, id, name, pattern);
 				}
 				else {
 					var totalEditors = tinymce.editors.length;
@@ -43,7 +50,8 @@ function editBtnOnClick(pattern) {
 						var elem = tinymce.editors[i].getElement();
 						var elemParent = elem.parentNode;
 						var elemId = elemParent.firstChild.innerHTML;
-						saveEditedText(tinymce.editors[i].getContent(), elemId, pattern);
+						var elemName = elem.getAttribute('name');
+						saveEditedText(tinymce.editors[i].getContent(), elemId, elemName, pattern);
 					}
 				}
 				document.location.reload(true);
@@ -52,9 +60,10 @@ function editBtnOnClick(pattern) {
 	}
 }
 
-function saveEditedText(text, id, pattern) {
+function saveEditedText(text, id, name, pattern) {
 	var data = "id=" + encodeURIComponent(id) + "&" +
-					  "text=" + encodeURIComponent(text);
+					  "text=" + encodeURIComponent(text) + "&" +
+					  "name=" + encodeURIComponent(name);
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if(request.readyState == 4) {
@@ -123,4 +132,12 @@ function sendRequest(data, reqType, reqTarget, contentType) {
 	request.open(reqType, reqTarget+'?'+reqData, true);
 	request.setRequestHeader("Content-Type", contentType);
 	request.send(data);
+}
+
+function removeSelection(parent) {
+	var selectedElems = parent.getElementsByClassName('selected');
+	
+	for(var i=0; i<selectedElems.length; i++) {
+		selectedElems[i].classList.remove('selected');
+	}
 }

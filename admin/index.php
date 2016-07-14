@@ -21,6 +21,7 @@
 		<li><a href='add_publs.php'>Добавление публикаций</a></li>
 		<li><a href='manage_news.php'>Управление новостями</a></li>
 		<li><a href='manage_publs.php'>Управление публикациями</a></li>
+		<li><a href='manage_users.php'>Управление пользователями</a></li>
 		<li><a href='settings.php'>Настройки</a></li>
 		<li><a href='index.php?logout'>Завершить сеанс</a></li>
 	</ul>

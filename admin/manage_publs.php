@@ -10,10 +10,23 @@
 		$query = 'SELECT * FROM publs ORDER BY publs_id';
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
+		$publsArr = [
+			0 => 'news_id',
+			1 => 'news_header',
+			2 => 'news_text',
+		];
+		
 		while($row = pg_fetch_assoc($res)) {
+			$i = 0;
 			echo '<tr>';
 			foreach($row as $val) {
-				echo '<td>' . $val . '</td>';
+				switch($i) {
+					case 0: echo '<td name='.$publsArr[$i].'>' . $val . '</td>'; break;
+					case 1: echo '<td name='.$publsArr[$i].'>' . $val . '</td>'; break;
+					case 2: echo '<td name='.$publsArr[$i].'>' . $val . '</td>'; break;
+					default: break;
+				}
+				$i++;
 			}
 			echo '</tr>';
 			echo '<tr>';
@@ -45,5 +58,17 @@
 		<? getPublsToTable(); ?>
 	</table> 
 	<script> editBtnOnClick('publs'); </script>
+	<script>
+		var table = document.getElementsByTagName('table')[0];
+		table.addEventListener('click', function(e) {
+			var target = e.target;
+			
+			if(target.tagName !== 'TD') return;
+			
+			removeSelection(table);
+			
+			target.classList.add('selected');
+		}, false);
+	</script>
 </body>
 </html>

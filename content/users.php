@@ -2,9 +2,10 @@
 		<div class="users-info">
 			<ul>
 				<li>
-					<? 
-						if($_SESSION['user']) {
-							echo "Логин: ".$_SESSION['user'];
+					<?
+						$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+						if($userLogin) {
+							echo "Логин: ".$userLogin;
 						}
 						else {
 							echo "Вы не авторизованы";
@@ -15,7 +16,7 @@
 		</div>
 		<div class="users-actions">
 			<? 
-				if($_SESSION['user']) {
+				if($userLogin) {
 					echo "<a href='../users/user_profile.php'>Профиль</a>";
 					echo "<a href='../users/login.php?logout'>Выйти</a>";
 				}

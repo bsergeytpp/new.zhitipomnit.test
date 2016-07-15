@@ -4,7 +4,7 @@
 	function getUserData() {
 		global $link;
 		$link = connectToPostgres();
-		$user = $_SESSION['user'];
+		$user = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 		
 		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$user."'";
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());

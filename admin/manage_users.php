@@ -70,7 +70,6 @@
 			if(target.tagName !== 'TD') return;
 			
 			removeSelection(table);
-			
 			target.classList.add('selected');
 		}, false);
 	</script>

@@ -11,9 +11,9 @@
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
 		$publsArr = [
-			0 => 'news_id',
-			1 => 'news_header',
-			2 => 'news_text',
+			0 => 'publs_id',
+			1 => 'publs_header',
+			2 => 'publs_text',
 		];
 		
 		while($row = pg_fetch_assoc($res)) {
@@ -44,6 +44,7 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<script src="../scripts/tinymce/tinymce.min.js"></script>
 	<script src="scripts/admin_script.js"></script>
+	<link type="text/css" rel="StyleSheet" href="styles/admin_styles.css" />
 </head>
 <body>
 	<h1>Управление публикациями</h1>
@@ -66,7 +67,6 @@
 			if(target.tagName !== 'TD') return;
 			
 			removeSelection(table);
-			
 			target.classList.add('selected');
 		}, false);
 	</script>

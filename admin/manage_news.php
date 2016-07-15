@@ -46,6 +46,7 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<script src="../scripts/tinymce/tinymce.min.js"></script>
 	<script src="scripts/admin_script.js"></script>
+	<link type="text/css" rel="StyleSheet" href="styles/admin_styles.css" />
 </head>
 <body>
 	<h1>Управление новостями</h1>
@@ -69,7 +70,6 @@
 			if(target.tagName !== 'TD') return;
 			
 			removeSelection(table);
-			
 			target.classList.add('selected');
 		}, false);
 	</script>

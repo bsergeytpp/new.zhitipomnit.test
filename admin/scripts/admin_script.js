@@ -1,3 +1,9 @@
+/*
+	Функция создания редактора TinyMCE
+	- принимает 
+		1) имя класса для элемента, который станет полем для редактирования 
+		2) переменную определяющую будет ли редактор встроенным в поле
+*/
 function initTinyMCE(className, isInline) {
 	tinymce.init({
 		inline: isInline,
@@ -8,6 +14,13 @@ function initTinyMCE(className, isInline) {
 	});
 }
 
+
+/*
+	Функция для кнопки редактирования\сохранения:
+	- принимает шаблон (новости, статьи, пользователи)
+	- вешает на каждую кнопку по событию
+	- проверяет текст кнопки и либо сохраняет изменения, либо вызывает редактор TinyMCE
+*/
 function editBtnOnClick(pattern) {
 	var editBtns = document.getElementsByClassName("edit-btn");
 		
@@ -24,7 +37,7 @@ function editBtnOnClick(pattern) {
 			var prevNode = parent.previousSibling;
 	
 			if(this.innerHTML.indexOf('Редактировать') != -1) {
-				var editedArea = prevNode.getElementsByClassName('selected')[0];	//prevNode.lastChild;
+				var editedArea = prevNode.getElementsByClassName('selected')[0];
 				
 				if(!editedArea) return;
 				
@@ -60,10 +73,19 @@ function editBtnOnClick(pattern) {
 	}
 }
 
+/*
+	Функция сохранения изменений в полях таблицы
+	- принимает 
+		1) отредактированный текст 
+		2) id элемента 
+		3) имя столбца 
+		4) шаблон (новости, статьи, пользователи)
+	- создает XML запрос и отправляет его на страницу update_шаблон.php
+*/
 function saveEditedText(text, id, name, pattern) {
 	var data = "id=" + encodeURIComponent(id) + "&" +
-					  "text=" + encodeURIComponent(text) + "&" +
-					  "name=" + encodeURIComponent(name);
+			   "text=" + encodeURIComponent(text) + "&" +
+			   "name=" + encodeURIComponent(name);
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if(request.readyState == 4) {
@@ -82,6 +104,10 @@ function saveEditedText(text, id, name, pattern) {
 	request.send(data);
 }
 
+/*
+	Функция проверяет активные редакторы TinyMCE
+	- принимает шаблон
+*/
 function checkActiveEditors(pattern) {
 	if(tinymce.editors.length == 1) return false;
 	
@@ -134,6 +160,10 @@ function sendRequest(data, reqType, reqTarget, contentType) {
 	request.send(data);
 }
 
+/*
+	Функция удаляет выделение ячейки таблицы
+	- принимает выделенной родителя ячейки
+*/
 function removeSelection(parent) {
 	var selectedElems = parent.getElementsByClassName('selected');
 	

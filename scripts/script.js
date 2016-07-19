@@ -171,7 +171,7 @@ Admin.prototype._createEditDiv = function(className) {
 	closeBtn.setAttribute('href', '#');
 	div.className = 'admin-edit-elem'; 
 	
-	if(className === 'article-news') {
+	if(className === 'news-full-container') {
 		form.innerHTML = 'ID: ' + this._responseObject['news_id'] + ' | ' + 
 						 'Загловок: ' + this._responseObject['news_header'];
 		textarea.innerHTML = this._responseObject['news_text'];
@@ -220,7 +220,8 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 }
 
 Admin.prototype._getElemByDBId = function(className, id, callback) {
-	var pattern = (className === 'article-news') ? 'news' : 'publs' ;
+	console.log('id: '+id);
+	var pattern = (className === 'news-full-container') ? 'news' : 'publs' ;
 	var self = this;
 	
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -248,7 +249,7 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 	var timeout = setTimeout(function() {
 		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'admin/get_'+pattern+'_by_id.php?id=' + id, true);
+	this._XMLHttpRequest.open('GET', 'admin/admin_'+pattern+'/get_'+pattern+'_by_id.php?id=' + id, true);
 	this._XMLHttpRequest.send();
 };
 

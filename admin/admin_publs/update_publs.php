@@ -1,7 +1,7 @@
 <?
-	require_once "session.inc.php";
-	require_once "secure.inc.php";
-	require_once "../functions/functions.php";
+	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../admin_security/secure.inc.php");
+	require_once (__DIR__."/../functions/admin_functions.php");
 	global $link;
 	$link = connectToPostgres();
 	
@@ -12,13 +12,13 @@
 				$text = clearStr($_POST['text']);
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE news " .
+				$query = "UPDATE publs " .
 						 "SET " . pg_escape_string($name) . " = '" . pg_escape_string($text) . "' " . 
-						 "WHERE news_id = " . $id;
+						 "WHERE publs_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Новость не была обновлена';
-				else echo 'Новость была обновлена';			
+				if($result === false) echo 'Публикация не была обновлена';
+				else echo 'Публикация была обновлена';			
 			}
 			echo "Нет данных для обновления.";
 		}

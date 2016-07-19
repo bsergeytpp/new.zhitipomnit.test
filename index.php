@@ -1,6 +1,6 @@
 <? 
 	require "functions/functions.php"; 
-	require_once "admin/session.inc.php";
+	require_once "admin/admin_security/session.inc.php";
 ?>
 <!DOCTYPE html>
 <html>

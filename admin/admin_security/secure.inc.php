@@ -1,5 +1,5 @@
 <?
-	require_once "../functions/functions.php";
+	require_once (__DIR__."/../functions/admin_functions.php");
 	
 	function logOut() {
 		session_destroy();
@@ -8,7 +8,7 @@
 			unset($_SESSION['admin']);
 		}
 		
-		header('Location: ../users/login.php');
+		header('Location: ../../users/login.php');
 		exit;
 	}
 	

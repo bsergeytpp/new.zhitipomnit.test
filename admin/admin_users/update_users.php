@@ -1,7 +1,7 @@
 <?
-	require_once "session.inc.php";
-	require_once "secure.inc.php";
-	require_once "../functions/functions.php";
+	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../admin_security/secure.inc.php");
+	require_once (__DIR__."/../functions/admin_functions.php");
 	global $link;
 	$link = connectToPostgres();
 	
@@ -9,16 +9,16 @@
 		$text = ''; $id = -1;
 		if($link) {
 			if(isset($_POST['text']) && isset($_POST['id'])) {
-				$text = clearStr($_POST['text']);
+				$text = strip_tags(clearStr($_POST['text']));
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE publs " .
+				$query = "UPDATE users " .
 						 "SET " . pg_escape_string($name) . " = '" . pg_escape_string($text) . "' " . 
-						 "WHERE publs_id = " . $id;
+						 "WHERE user_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Публикация не была обновлена';
-				else echo 'Публикация была обновлена';			
+				if($result === false) echo 'Логин пользователя не был обновлен';
+				else echo 'Логин пользователя был обновлен';			
 			}
 			echo "Нет данных для обновления.";
 		}

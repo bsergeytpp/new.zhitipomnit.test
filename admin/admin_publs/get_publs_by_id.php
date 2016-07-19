@@ -1,7 +1,7 @@
 <?
-	require_once "session.inc.php";
-	require_once "secure.inc.php";
-	require_once "../functions/functions.php";
+	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../admin_security/secure.inc.php");
+	require_once (__DIR__."/../functions/admin_functions.php");
 	global $link;
 	$link = connectToPostgres();
 	

@@ -4,6 +4,10 @@
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
 	define('PUBLS_MAXCOUNT', '10');	// статей на странице
 	define('PRESS_MAXCOUNT', '10');	// гaзет на странице
+	$NEWS_MAXCOUNT = 3;
+	$OLDNEWS_MAXCOUNT = 10;
+	$PUBLS_MAXCOUNT = 10;
+	$PRESS_MAXCOUNT = 10;
 	
 	$link = false;
 
@@ -101,6 +105,26 @@
 		$dateArr = explode('-', $date);
 
 		return date('d-m-y', strtotime(implode('-', array_reverse($dateArr))));
+	}
+	
+	/*
+		Функция вывода информации о пользователе
+	*/
+	function getUserData() {
+		global $link;
+		$link = connectToPostgres();
+		$user = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+		
+		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$user."'";
+		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+		
+		while($row = pg_fetch_assoc($res)) {
+			echo '<tr>';
+			foreach($row as $val) {
+				echo '<td>' . $val . '</td>';
+			}
+			echo '</tr>';
+		}
 	}
 	
 	// PostgreSQL functions

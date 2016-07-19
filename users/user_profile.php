@@ -1,23 +1,6 @@
 <?
 	session_start();
 	require_once "../functions/functions.php";
-	function getUserData() {
-		global $link;
-		$link = connectToPostgres();
-		$user = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
-		
-		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$user."'";
-		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
-		
-		while($row = pg_fetch_assoc($res)) {
-			echo '<tr>';
-			foreach($row as $val) {
-				echo '<td>' . $val . '</td>';
-			}
-			echo '</tr>';
-		}
-	}
-	
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,13 +1,13 @@
 <?
-	require_once "session.inc.php";
-	require_once "secure.inc.php";
+	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../admin_security/secure.inc.php");
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <title>Форма добавления публикаций</title>
-		<script src="../scripts/tinymce/tinymce.min.js"></script>
+		<script src="../../scripts/tinymce/tinymce.min.js"></script>
 		<script type="text/javascript">
 		  tinymce.init({
 			selector: '#publ-textarea',

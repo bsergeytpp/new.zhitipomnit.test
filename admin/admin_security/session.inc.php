@@ -6,10 +6,10 @@
 		if(strpos($_SERVER['REQUEST_URI'], 'admin') !== false) {
 			if($userLogin !== null) {
 				echo "Доступ запрещен!<br>";
-				echo "<a href='../users/user_profile.php'>Назад к профилю</a>";
+				echo "<a href='../../users/user_profile.php'>Назад к профилю</a>";
 			}
 			else {
-				header('Location: /users/login.php');
+				header('Location: ../../users/login.php');
 			}
 			exit;
 		}

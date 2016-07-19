@@ -1,7 +1,7 @@
 <?
 	session_start();
 	header("HTTP/1.0 401 Unauthorized");
-	require_once "../admin/secure.inc.php";
+	require_once "../admin/admin_security/secure.inc.php";
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));

@@ -220,7 +220,6 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 }
 
 Admin.prototype._getElemByDBId = function(className, id, callback) {
-	console.log('id: '+id);
 	var pattern = (className === 'news-full-container') ? 'news' : 'publs' ;
 	var self = this;
 	
@@ -297,6 +296,24 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) {
 		}
 		else usersDiv.style.left = '';
 	}, false);
+}, {passive: true});
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+	var commentsTable = document.getElementsByClassName('comments-table')[0];
+	
+	if(commentsTable) {
+		var trs = commentsTable.getElementsByTagName('TR');
+		
+		for(var i=0; i<trs.length; i++) {
+			var loginTd = trs[i].getElementsByTagName('TD')[0];
+			
+			if(!loginTd) continue;
+			
+			var userLogin = loginTd.innerHTML;
+			loginTd.innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+userLogin+'</a>';
+		}
+	}
+	
 }, {passive: true});
 
 function initTinyMCE(className, isInline) {

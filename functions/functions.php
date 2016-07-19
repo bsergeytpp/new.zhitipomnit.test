@@ -109,13 +109,14 @@
 	
 	/*
 		Функция вывода информации о пользователе
+		- получает ID пользователя
 	*/
-	function getUserData() {
+	function getUserData($userLogin) {
+		if(!$userLogin) return;
+		
 		global $link;
 		$link = connectToPostgres();
-		$user = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
-		
-		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$user."'";
+		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$userLogin."'";
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
 		while($row = pg_fetch_assoc($res)) {

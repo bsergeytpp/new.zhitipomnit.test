@@ -50,9 +50,9 @@
 		global $link;
 		
 		if($link) {
-			$query = "SELECT comments_author, comments_text " .
-					 "FROM comments " . 
-					 "WHERE comments_location = '" . pg_escape_string($uri) . "'";
+			$query = "SELECT users.user_login, comments.comments_text " .
+					 "FROM comments, users " . 
+					 "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
 			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			
 			if($result === false) echo 'Ошибка в выборке комментариев';

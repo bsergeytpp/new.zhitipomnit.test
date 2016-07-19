@@ -1,5 +1,5 @@
 <? 
-	require_once '../admin/session.inc.php';
+	require_once '../admin/admin_security/session.inc.php';
 	
 	if(isset($_SESSION['admin'])) {
 		if($_SESSION['admin'] === true) {

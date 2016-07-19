@@ -54,12 +54,12 @@ Admin.prototype.checkIfAdmin = function() {
 			if(resp !== null) {
 				console.log("Вы - Админ. Поздравляю!");
 				self._isAdmin = true;
-				appendScript('scripts/tinymce/tinymce.min.js');
 				self.addEditBtn();
 			}
 			else {
 				console.log("Вы - не Админ. Херово!");
 			}
+			//appendScript('scripts/tinymce/tinymce.min.js');
 		}
 	};
 	var timeout = setTimeout(function() {

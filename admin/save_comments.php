@@ -2,6 +2,9 @@
 	require_once "admin_security/session.inc.php";
 	require_once "admin_security/secure.inc.php";
 	require_once "functions/admin_functions.php";
+	global $link;
+	$link = connectToPostgres();
+	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($link) {

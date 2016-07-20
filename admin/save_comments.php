@@ -13,8 +13,9 @@
 				$login = clearStr($_POST['comments-login']);
 				$location = clearStr($_SERVER['HTTP_REFERER']);
 				$user_id = getUserId($login);
-				$query = "INSERT INTO comments (comments_author, comments_location, comments_text) " .
-						 "VALUES ('$user_id', '$location', '$text')";
+				$date = date('Y-m-d H:i:sO');
+				$query = "INSERT INTO comments (comments_author, comments_location, comments_text, comments_date) " .
+						 "VALUES ('$user_id', '$location', '$text', '$date')";
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Комментарий не был добавлен';

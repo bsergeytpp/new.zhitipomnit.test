@@ -1,4 +1,7 @@
-                <? require 'classes/Publs.class.php'; ?>
+                <? 
+					require 'classes/Publs.class.php'; 
+					require_once (__DIR__."/../admin/functions/admin_functions.php");
+				?>
 				<h2>Публикации</h2>
                 <div id="publs-container">
 					<div class="clear-div"></div>
@@ -23,6 +26,7 @@
 						else {
 							$publsClass = checkPublsExistence($pageNum, $customPubl);
 							echo $publsClass->getSinglePubl($customPubl);
+							include "admin/comments_form.php";
 						}
 					?>
                 </div>

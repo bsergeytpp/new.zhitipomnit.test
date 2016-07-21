@@ -299,32 +299,44 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) {
 }, {passive: true});
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
-	var commentsTable = document.getElementsByClassName('comments-table')[0];
+	var commentsTable = document.getElementsByClassName('comments-table');
 	
-	if(commentsTable) {
-		var trs = commentsTable.getElementsByTagName('TR');
-		
-		for(var i=0; i<trs.length; i++) {
-			var loginTd = trs[i].getElementsByTagName('TD')[0];
+	if(commentsTable.length || commentsTable) {
+		for(var j=0; j<commentsTable.length; j++) {
+			var trs = commentsTable[j].getElementsByTagName('TR');
 			
-			if(!loginTd) continue;
-			
-			var userLogin = loginTd.innerHTML;
-			loginTd.innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+userLogin+'</a>';
+			for(var i=0; i<trs.length; i++) {
+				if(trs[i].classList.contains('comments-respond')) continue;
+							
+				var loginTd = trs[i].getElementsByTagName('TD')[0];
+				
+				if(!loginTd) continue;
+				
+				var userLogin = loginTd.innerHTML;
+				loginTd.innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+userLogin+'</a>';
+			}
 		}
 	}
 	
 }, {passive: true});
 
-function initTinyMCE(className, isInline) {
+function initTinyMCE(className, isInline, width, height) {
+	if(!className) return;
+	
+	if(!isInline) isInline = false;
+	
+	if(!width) width = 400;
+	
+	if(!height) height = 170;
+
 	tinymce.init({
 		inline: isInline,
 		selector: className,
 		language: 'ru_RU',
 		plugins: 'code',
 		paste_data_images: true,
-		width: 400,
-		height: 170
+		width: width,
+		height: height
 	});
 }
 

@@ -1,6 +1,5 @@
                 <? 
 					require 'classes/Publs.class.php'; 
-					require_once (__DIR__."/../admin/functions/admin_functions.php");
 				?>
 				<h2>Публикации</h2>
                 <div id="publs-container">

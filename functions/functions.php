@@ -128,6 +128,73 @@
 		}
 	}
 	
+	/*
+		Функция вывода всех комментариев для страницы
+		- принимает адрес страницы в виде URI
+	*/
+	function getComments($uri) {
+		global $link;
+		
+		if($link) {
+			$query = "SELECT users.user_login, comments.comments_id, comments.comments_text, comments.comments_date, comments.comments_respond " .
+					 "FROM comments, users " . 
+					 "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
+			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$row = pg_fetch_assoc($result);
+
+			if($result === false) echo 'Ошибка в выборке комментариев';
+			else {
+				while($row = pg_fetch_assoc($result)) {
+					echo "<div class='comments-div'>";
+					$comm_id = $row['comments_id'];
+					
+					$query_responds = "SELECT users.user_login, comments.comments_text, comments.comments_date, comments.comments_respond " .
+									  "FROM comments, users " . 
+									  "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
+					
+					if($row['comments_respond'] !== null) {
+						echo "<table class='comments-table respond'>"; 
+					}
+					else echo "<table class='comments-table'>"; 
+					
+					echo "<tr><th>Логин</th><th>Сообщение</th><th>Дата</th></tr>";
+					echo "<tr>";
+					foreach($row as $val) {
+						if($val === $row['comments_respond']) continue;
+						
+						if($val === $row['comments_id']) continue;
+						
+						echo "<td>". $val ."</td>";
+					}
+					echo "</tr>";
+					echo "<tr class='comments-respond'><td colspan='3'><a href=''>Ответить</a></td></tr>";
+					echo "</table>";
+					echo "</div>";
+				}
+			}
+		}
+	}
+	
+	/*
+		Функция получения электронного адреса пользователя по логину
+		- принимает логин
+		- возвращает email
+		- TODO: пока не используется
+	*/
+	function getUserEmail($userLogin) {
+		global $link;
+		
+		if($link) {
+			$query = "SELECT user_email " .
+					 "FROM users " . 
+					 "WHERE user_login = '". pg_escape_string($userLogin) . "'";
+			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			
+			if($result === false) echo 'Такого пользователя нет';
+			else return pg_fetch_result($result, 0, 0);
+		}
+	}	
+	
 	// PostgreSQL functions
 	function connectToPostgres() {
 		global $link;

@@ -1,6 +1,5 @@
                 <? 
 					require 'classes/News.class.php'; 
-					require_once (__DIR__."/../admin/functions/admin_functions.php");
 				?>
 				<h2>Новости</h2>
                 <div id="news-container">

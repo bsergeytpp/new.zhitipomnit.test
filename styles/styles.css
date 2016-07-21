@@ -532,6 +532,46 @@ p.quotes:before {
 	top: 45%;
 	right: 0;
 }
+.comments-form {
+	clear: both;
+	width: 80%;
+	background: rgba(0,0,0,.75);
+	margin: 0 auto;
+	box-shadow: -1px 1px .3em black;
+}
+.comments-form p {
+	font-weight: bold;
+	color: rgba(255,255,255,.75);
+	background: darkred;
+	padding: 7px;
+}
+.comments-form span {
+	width: 100%;
+	display: block;
+}
+.comments-form input{
+	width: 100%;
+	text-align: center;
+}
+.comments-post-button {
+	width: 50% !important;
+	padding: 10px;
+}
+.comments-table {
+	margin: 20px auto 20px !important;
+}
+.comments-table td, th {
+	padding: 5px;
+}
+.comments-respond {
+	text-align: right;
+}
+.comments-div {
+	background: black;
+	padding: 5px;
+	width: 100%;
+	margin: 10px auto;
+}
 
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {

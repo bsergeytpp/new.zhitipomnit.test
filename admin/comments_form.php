@@ -1,7 +1,5 @@
 		<h2>Комментарии:</h2>
-		<table border='1' class="comments-table"> 
-			<? getComments('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); ?>
-		</table>
+		<? getComments('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); ?>
 		<h2>Добавить комментарий:</h2>
 		<? 
 			if($userLogin === null) {
@@ -9,15 +7,15 @@
 			} 
 			else {
 		?>
-				<form action="admin/save_comments.php" method="POST">
-					<p>Логин: <input name="comments-login" readonly="readonly" required type="text" value="<? echo $userLogin; ?>"></input></p>
-					<p>Email: <input name="comments-email" readonly="readonly" required type="text" value="<? echo getUserEmail($userLogin); ?>"></input></p>
-					<p>Текст: <textarea class="comments-textarea" name="comments-text" size="50"></textarea></p>
-					<p><input type="submit" value="Добавить"></p>
+				<form action="admin/save_comments.php" method="POST" class="comments-form">
+					<p><span>Логин:</span> <input name="comments-login" readonly="readonly" required type="text" value="<? echo $userLogin; ?>"></input></p>
+					<p><span>Email:</span> <input name="comments-email" readonly="readonly" required type="text" value="<? echo getUserEmail($userLogin); ?>"></input></p>
+					<p><span>Текст:</span> <textarea class="comments-textarea" name="comments-text" size="50"></textarea></p>
+					<p><input type="submit" class="comments-post-button" value="Добавить"></p>
 				</form>
 				<script>
 					document.addEventListener('DOMContentLoaded', function(e) { 
-						initTinyMCE('.comments-textarea', false);
+						initTinyMCE('.comments-textarea', false, '100%');
 					});
 				</script>
 		<? } ?>

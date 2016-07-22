@@ -256,16 +256,16 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var article = document.getElementsByClassName('article')[0];
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
     var header = document.getElementsByClassName('header')[0];
-        if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
-			if(window.getComputedStyle(article).getPropertyValue('width') !== '100%') {
-			   article.style.marginLeft = 0;    
-			   scrollBtn.classList.add("scroll-button-active");
-			}
-        }
-        else {
-			article.style.marginLeft = "";
-			scrollBtn.classList.remove("scroll-button-active");
-        }
+	if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
+		if(window.getComputedStyle(article).getPropertyValue('width') !== '100%') {
+		   article.style.marginLeft = 0;    
+		   scrollBtn.classList.add("scroll-button-active");
+		}
+	}
+	else {
+		article.style.marginLeft = "";
+		scrollBtn.classList.remove("scroll-button-active");
+	}
 }, {passive: true});
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
@@ -472,3 +472,31 @@ function appendScript(src) {
 	script.src = src;
 	document.body.appendChild(script);
 }
+
+function makeCommentsTree() {
+	//var comm_divs = document.getElementsByClassName('comments-div');
+	var comm_tables = document.getElementsByClassName('comments-table');
+	
+	for(var i=0; i<comm_tables.length; i++) {
+		var tr = comm_tables[i].getElementsByTagName('tr')[1];
+		var id = tr.firstChild.innerHTML;
+		var parent_id = tr.children[1].innerHTML;
+		if(parent_id !== '') {
+			//console.log('Parent: '+parent_id);
+			for(var j=0; j<comm_tables.length; j++) {
+				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
+				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
+				//console.log('Current id: '+temp_id);
+				if(temp_id == parent_id) {
+					//console.log('Parent is found: '+comm_tables[j]);
+					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
+				}
+			}
+		}
+		else if(parent_id === '') {
+			comm_tables[i].parentNode.style.width = '100%';
+		}
+	}
+}
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {passive: true});

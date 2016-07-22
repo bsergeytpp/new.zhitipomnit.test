@@ -558,10 +558,19 @@ p.quotes:before {
 	padding: 10px;
 }
 .comments-table {
-	margin: 20px auto 20px !important;
+	margin: 5px auto !important;
+	border: 1px solid gray;
+	table-layout: fixed;
 }
+.comments-table .row-id {width: 10%;}
+.comments-table .row-parent {width: 10%;}
+.comments-table .row-text {width: 50%;}
+.comments-table .row-date {width: 20%;}
+.comments-table .row-login {width: 10%;}
 .comments-table td, th {
 	padding: 5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .comments-respond {
 	text-align: right;
@@ -569,10 +578,9 @@ p.quotes:before {
 .comments-div {
 	background: black;
 	padding: 5px;
-	width: 100%;
-	margin: 10px auto;
+	width: 80%;
+	margin: 10px 0 10px auto;
 }
-
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {
     #wrapper {

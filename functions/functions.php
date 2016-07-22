@@ -135,39 +135,67 @@
 	function getComments($uri) {
 		global $link;
 		
+		$rec_query = "WITH RECURSIVE rec_comments as (
+						SELECT
+							comments_id as id, 
+							comments_text as text,
+							comments_author as author,
+							comments_date as date,
+							comments_parent_id as parent,
+							comments_location as path, 
+							comments_location as tree, 
+							0 as level
+						FROM comments
+						WHERE comments_parent_id is null 
+						UNION ALL
+						SELECT
+							current.comments_id as id,
+							current.comments_text as text,
+							current.comments_author as author,
+							current.comments_date as date,
+							current.comments_parent_id as parent,
+							current.comments_location as path,
+							repeat('  ', previous.level + 1) || current.comments_location as tree,
+							previous.level + 1 as level
+						FROM comments current
+						JOIN rec_comments as previous on current.comments_parent_id = previous.id
+					)
+					SELECT id, parent, users.user_login, text, date FROM rec_comments, users WHERE path = '".pg_escape_string($uri)."' AND author = users.user_id ORDER BY id";
+		
 		if($link) {
 			$query = "SELECT users.user_login, comments.comments_id, comments.comments_text, comments.comments_date, comments.comments_respond " .
 					 "FROM comments, users " . 
 					 "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
-			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
-			$row = pg_fetch_assoc($result);
+			//$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$result = pg_query($link, $rec_query) or die('Query error: '. pg_last_error());
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
 				while($row = pg_fetch_assoc($result)) {
 					echo "<div class='comments-div'>";
-					$comm_id = $row['comments_id'];
 					
-					$query_responds = "SELECT users.user_login, comments.comments_text, comments.comments_date, comments.comments_respond " .
-									  "FROM comments, users " . 
-									  "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
-					
-					if($row['comments_respond'] !== null) {
+					if($row['parent'] !== null) {
 						echo "<table class='comments-table respond'>"; 
 					}
 					else echo "<table class='comments-table'>"; 
 					
-					echo "<tr><th>Логин</th><th>Сообщение</th><th>Дата</th></tr>";
+					echo "<tr>
+							<th class='row-id'>ID</th>
+							<th class='row-parent'>Родитель</th>
+							<th class='row-login'>Логин</th>
+							<th class='row-text'>Сообщение</th>
+							<th class='row-date'>Дата</th>
+						 </tr>";
 					echo "<tr>";
 					foreach($row as $val) {
-						if($val === $row['comments_respond']) continue;
+						//if($val === $row['parent']) continue;
 						
-						if($val === $row['comments_id']) continue;
+						//if($val === $row['comments_id']) continue;
 						
 						echo "<td>". $val ."</td>";
 					}
 					echo "</tr>";
-					echo "<tr class='comments-respond'><td colspan='3'><a href=''>Ответить</a></td></tr>";
+					echo "<tr class='comments-respond'><td colspan='5'><a href=''>Ответить</a></td></tr>";
 					echo "</table>";
 					echo "</div>";
 				}

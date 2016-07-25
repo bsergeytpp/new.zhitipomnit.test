@@ -135,7 +135,8 @@
 	function getComments($uri) {
 		global $link;
 		
-		$rec_query = "WITH RECURSIVE rec_comments as (
+		if($link) {
+			$rec_query = "WITH RECURSIVE rec_comments as (
 						SELECT
 							comments_id as id, 
 							comments_text as text,
@@ -160,13 +161,11 @@
 						FROM comments current
 						JOIN rec_comments as previous on current.comments_parent_id = previous.id
 					)
-					SELECT id, parent, users.user_login, text, date FROM rec_comments, users WHERE path = '".pg_escape_string($uri)."' AND author = users.user_id ORDER BY id";
-		
-		if($link) {
-			$query = "SELECT users.user_login, comments.comments_id, comments.comments_text, comments.comments_date, comments.comments_respond " .
-					 "FROM comments, users " . 
-					 "WHERE comments.comments_location = '" . pg_escape_string($uri) . "' AND users.user_id = comments.comments_author";
-			//$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+					SELECT id, parent, users.user_login, text, date 
+					FROM rec_comments, users 
+					WHERE path = '".pg_escape_string($uri)."' 
+					AND author = users.user_id ORDER BY id";
+			
 			$result = pg_query($link, $rec_query) or die('Query error: '. pg_last_error());
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
@@ -195,7 +194,7 @@
 						echo "<td>". $val ."</td>";
 					}
 					echo "</tr>";
-					echo "<tr class='comments-respond'><td colspan='5'><a href=''>Ответить</a></td></tr>";
+					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
 					echo "</table>";
 					echo "</div>";
 				}

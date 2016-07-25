@@ -474,7 +474,6 @@ function appendScript(src) {
 }
 
 function makeCommentsTree() {
-	//var comm_divs = document.getElementsByClassName('comments-div');
 	var comm_tables = document.getElementsByClassName('comments-table');
 	
 	for(var i=0; i<comm_tables.length; i++) {
@@ -500,3 +499,25 @@ function makeCommentsTree() {
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {passive: true});
+
+function setCommentsParentId(e) {
+	var target = e.target;
+	
+	if(target.className !== 'respond-button') return;
+	
+	var parent = target.parentNode; // TD
+	
+	while(parent.tagName !== 'BODY') {
+		if(parent.className === 'comments-respond') break;
+		parent = parent.parentNode;
+	}
+	
+	var parentId = parent.previousSibling.getElementsByTagName('A')[0].innerHTML; // TR -> TR>A>textNode
+	var commentsInput = document.getElementsByClassName('comments-form')[0].elements['comments-parent'];
+
+	if(commentsInput.tagName !== 'INPUT') return;
+	
+	commentsInput.value = parentId;
+}
+
+addEventListenerWithOptions(document, 'click', setCommentsParentId, {passive: true});

@@ -16,7 +16,13 @@ function addEventListenerWithOptions(target, type, handler, options) {
 	if (!supportsPassive) {
 		optionsOrCapture = options.capture;
 	}
-	target.addEventListener(type, handler, optionsOrCapture);
+	
+	if(target.length !== undefined) {
+		for(var i=0; i<target.length; i++) {
+			target[i].addEventListener(type, handler, optionsOrCapture);
+		}
+	}
+	else target.addEventListener(type, handler, optionsOrCapture);
 }
 
 addEventListenerWithOptions(document, "touchstart", function(e) {}, {passive: true} );
@@ -268,7 +274,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 	}
 }, {passive: true});
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
+function addNavigationToList() {
 	var ul = document.getElementsByClassName('news-list');
 	
 	if(!ul) return;
@@ -276,14 +282,18 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function() {
 	for(var i=0; i<ul.length; i++) {
 		ul[i].addEventListener('click', navigateUlList, false);
 	}
-}, {passive: true});
+}
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {passive: true});
+
+function createAdminClass() {
 	var admin = new Admin();
 	admin.checkIfAdmin();
-}, {passive: true});
+}
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});
+
+function userSwitcher() {
 	var usersDiv = document.getElementsByClassName('users-div')[0];
 	var switcher = usersDiv.getElementsByClassName('users-switcher')[0];
 	
@@ -296,9 +306,11 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) {
 		}
 		else usersDiv.style.left = '';
 	}, false);
-}, {passive: true});
+}
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) { 
+addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {passive: true});
+
+function addLinksToCommentsId() {
 	var commentsTable = document.getElementsByClassName('comments-table');
 	
 	if(commentsTable.length || commentsTable) {
@@ -317,8 +329,9 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', function(e) {
 			}
 		}
 	}
-	
-}, {passive: true});
+}
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', addLinksToCommentsId, {passive: true});
 
 function initTinyMCE(className, isInline, width, height) {
 	if(!className) return;
@@ -507,17 +520,102 @@ function setCommentsParentId(e) {
 	
 	var parent = target.parentNode; // TD
 	
-	while(parent.tagName !== 'BODY') {
+	while(parent.tagName !== 'TABLE') {
 		if(parent.className === 'comments-respond') break;
 		parent = parent.parentNode;
 	}
 	
+	e.preventDefault();
+
 	var parentId = parent.previousSibling.getElementsByTagName('A')[0].innerHTML; // TR -> TR>A>textNode
 	var commentsInput = document.getElementsByClassName('comments-form')[0].elements['comments-parent'];
 
 	if(commentsInput.tagName !== 'INPUT') return;
 	
 	commentsInput.value = parentId;
+	
+	var test = document.getElementsByClassName('comments-post-button')[0];
+	test.value = 'Ответ сообщению '+parentId;
+	test.focus();
 }
 
-addEventListenerWithOptions(document, 'click', setCommentsParentId, {passive: true});
+addEventListenerWithOptions(document.getElementsByClassName('comments-table'), 'click', setCommentsParentId, {});
+
+function addCommentsAjax(commentsForm) {
+	var text, login, location, parentId;
+	text = tinymce.activeEditor.getContent();
+	login = commentsForm.elements['comments-login'].value;
+	location = window.location;
+	parentId = commentsForm.elements['comments-parent'].value;
+	if(parentId === '') parentId = '';
+	
+	var data = "comments-text=" + encodeURIComponent(text) + "&" +
+			   "comments-login=" + encodeURIComponent(login) + "&" +
+			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
+			   "location=" + encodeURIComponent(location);
+	console.log('Сформировали data: '+data);
+	var request = new XMLHttpRequest();
+	
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			
+			(request.status != 200) 
+			? console.log('Ошибка: ' + request.responseText)
+			: console.log('Запрос отправлен. Все - хорошо.');
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	request.open('POST', 'admin/save_comments.php', true);
+	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	request.send(data);
+	console.log('Отправили запрос');
+}
+
+addEventListenerWithOptions(document.getElementsByClassName('comments-post-button'), 'click', function(e) {
+	var target = e.target;
+	e.preventDefault();
+	if(target.tagName !== 'INPUT') return;
+	console.log('Вызываем функцию добавления комментария для: '+target);
+	addCommentsAjax(document.getElementsByClassName('comments-form')[0]);
+	var timeout = setTimeout(function() {
+		updateCommentsWrapper();
+	}, 1000);
+}, {});
+
+function updateCommentsWrapper() {
+	/*$.ajax({ url: 'admin/comments_form.php',
+		 data: {location: window.location.toString()},
+		 type: 'get',
+		 success: function(output) {
+					  console.log(output);
+					  var wrapper = document.getElementsByClassName('comments-wrapper')[0];
+					  wrapper.innerHTML = '';
+					  wrapper.innerHTML = output;
+				  }
+	});*/
+	var wrapper = document.getElementsByClassName('comments-wrapper')[0];
+	wrapper.innerHTML = '';
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			//console.log('Ответ сервера: ' + request.responseText);
+			(request.status != 200) 
+			? console.log('Ошибка: ' + request.responseText)
+			: console.log('Запрос отправлен. Все - хорошо.');
+			wrapper.innerHTML = request.responseText;
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	request.open('GET', 'admin/comments_form.php?location='+encodeURIComponent(window.location.href), true);
+	request.send();
+}

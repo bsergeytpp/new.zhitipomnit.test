@@ -12,6 +12,9 @@
 				$text = clearStr($_POST['comments-text']);
 				$login = clearStr($_POST['comments-login']);
 				$location = clearStr($_SERVER['HTTP_REFERER']);
+				if($location === '') {
+					clearStr($_POST['location']);
+				}
 				$user_id = getUserId($login);
 				$parent_id = $_POST['comments-parent'];
 				$date = date('Y-m-d H:i:sO');

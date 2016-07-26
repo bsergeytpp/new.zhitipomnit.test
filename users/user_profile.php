@@ -1,6 +1,6 @@
 <?
 	session_start();
-	require_once "../functions/functions.php";
+	require_once (__DIR__."/../functions/functions.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -22,6 +22,7 @@
 			<th>Группа</th>
 		</tr>
 		<? 
+			global $userLogin; 
 			$userLogin = (isset($_GET['user_login'])) ? $_GET['user_login'] : null;
 			
 			if($userLogin == 'self') $userLogin = (isset($_GET['user'])) ? $_GET['user'] : null;

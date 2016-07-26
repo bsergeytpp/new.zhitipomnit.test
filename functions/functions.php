@@ -10,6 +10,7 @@
 	$PRESS_MAXCOUNT = 10;
 	
 	$link = false;
+	$userLogin = null;
 
 	function clearStr($str) {
 		return preg_replace('~\R~u', "", trim($str));
@@ -135,6 +136,9 @@
 	function getComments($uri) {
 		global $link;
 		
+		if(!$link) {
+			$link = connectToPostgres();
+		}
 		if($link) {
 			$rec_query = "WITH RECURSIVE rec_comments as (
 						SELECT

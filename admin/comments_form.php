@@ -1,7 +1,20 @@
+		<?
+			session_start();
+			require_once(__DIR__.'/../functions/functions.php');
+		?>
 		<h2>Комментарии:</h2>
-		<? getComments('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); ?>
+		<? 
+			if(isset($_GET['location'])) {
+				getComments($_GET['location']); 
+			}
+			else getComments('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']); 
+		?>
 		<h2>Добавить комментарий:</h2>
 		<? 
+			global $userLogin;
+			if(isset($_SESSION['user'])) {
+				$userLogin = $_SESSION['user'];
+			}
 			if($userLogin === null) {
 				echo 'Гостям не разрешено осталять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.';
 			} 
@@ -20,3 +33,4 @@
 					});
 				</script>
 		<? } ?>
+		

@@ -576,7 +576,7 @@ p.quotes:before {
 	text-align: right;
 }
 .comments-div {
-	background: black;
+	background: lightgray;
 	padding: 5px;
 	width: 80%;
 	margin: 10px 0 10px auto;

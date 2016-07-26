@@ -32,7 +32,9 @@
 						else {
 							$newsClass = checkNewsExistence($customNewsDate, $pageNum);
 							echo $newsClass->getSingleNews();
+							echo "<div class='comments-wrapper'>";
 							include "admin/comments_form.php";
+							echo "</div>";
 						}
 					?>
                 </div>

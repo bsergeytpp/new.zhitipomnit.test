@@ -198,7 +198,7 @@
 						echo "<td>". $val ."</td>";
 					}
 					echo "</tr>";
-					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href=''>Ответить</a></td></tr>";
 					echo "</table>";
 					echo "</div>";
 				}

@@ -553,7 +553,6 @@ function addCommentsAjax(commentsForm) {
 			   "comments-login=" + encodeURIComponent(login) + "&" +
 			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
 			   "location=" + encodeURIComponent(location);
-	console.log('Сформировали data: '+data);
 	var request = new XMLHttpRequest();
 	
 	request.onreadystatechange = function() {
@@ -576,15 +575,12 @@ function addCommentsAjax(commentsForm) {
 	console.log('Отправили запрос');
 }
 
-addEventListenerWithOptions(document.getElementsByClassName('comments-post-button'), 'click', function(e) {
+addEventListenerWithOptions(document, 'click', function(e) {
 	var target = e.target;
+	if(target.className !== 'comments-post-button') return;
 	e.preventDefault();
-	if(target.tagName !== 'INPUT') return;
-	console.log('Вызываем функцию добавления комментария для: '+target);
 	addCommentsAjax(document.getElementsByClassName('comments-form')[0]);
-	var timeout = setTimeout(function() {
-		updateCommentsWrapper();
-	}, 1000);
+	updateCommentsWrapper();
 }, {});
 
 function updateCommentsWrapper() {
@@ -599,16 +595,24 @@ function updateCommentsWrapper() {
 				  }
 	});*/
 	var wrapper = document.getElementsByClassName('comments-wrapper')[0];
-	wrapper.innerHTML = '';
+	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
+	var commentsDiv = wrapper.getElementsByClassName('comments-list-div')[0];
+	wrapper.style.height = height;
+	wrapper.style.opacity = 0.5;
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if(request.readyState == 4) {
 			clearTimeout(timeout);
-			//console.log('Ответ сервера: ' + request.responseText);
 			(request.status != 200) 
 			? console.log('Ошибка: ' + request.responseText)
 			: console.log('Запрос отправлен. Все - хорошо.');
-			wrapper.innerHTML = request.responseText;
+			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
+			wrapper.removeChild(commentsDiv);
+			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
+			tinymce.EditorManager.execCommand('mceAddEditor', true, 'comments-text');
+			wrapper.style.height = '';
+			wrapper.style.opacity = '';
+			makeCommentsTree();
 		}
 	};
 	
@@ -616,6 +620,8 @@ function updateCommentsWrapper() {
 		request.abort();
 	}, 60*1000);
 	
-	request.open('GET', 'admin/comments_form.php?location='+encodeURIComponent(window.location.href), true);
-	request.send();
+	setTimeout(function() {
+		request.open('GET', 'admin/comments_list.php?location='+encodeURIComponent(window.location.href), true);
+		request.send();
+	}, 1500);
 }

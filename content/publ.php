@@ -25,7 +25,7 @@
 						else {
 							$publsClass = checkPublsExistence($pageNum, $customPubl);
 							echo $publsClass->getSinglePubl($customPubl);
-							include "admin/comments_form.php";
+							include "admin/comments.php";
 						}
 					?>
                 </div>

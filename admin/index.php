@@ -41,7 +41,7 @@
 			Прочее
 			<ul>
 				<li><a href='admin_settings/settings.php'>Настройки</a></li>
-				<li><a href='admin_settings/index.php?logout'>Завершить сеанс</a></li>
+				<li><a href='index.php?logout'>Завершить сеанс</a></li>
 			</ul>
 		</li>
 	</ul>

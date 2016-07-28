@@ -24,7 +24,8 @@
 		
 		$row = pg_fetch_array($result);
 		
-		if($row['user_password'] == $password) {
+		if(password_verify($password, $row['user_password'])) {
+			echo "Password is correct";
 			return $row;
 		}
 		

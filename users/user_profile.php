@@ -25,8 +25,8 @@
 			global $userLogin; 
 			$userLogin = (isset($_GET['user_login'])) ? $_GET['user_login'] : null;
 			
-			if($userLogin == 'self') $userLogin = (isset($_GET['user'])) ? $_GET['user'] : null;
-			
+			if($userLogin == null) $userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+
 			if($userLogin !== null) {
 				getUserData($userLogin);
 			}

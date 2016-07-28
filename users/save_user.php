@@ -6,9 +6,13 @@
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($link) {
-			$login = $_POST['user-login'];
-			$password = $_POST['user-password'];
-			$email = $_POST['user-email'];
+			$login = filter_input(INPUT_POST, $_POST['user-login'], FILTER_SANITIZE_STRING);
+			$password = password_hash($_POST['user-password'], PASSWORD_DEFAULT);
+			$email = filter_input(INPUT_POST, $_POST['user-email'], FILTER_SANITIZE_EMAIL);
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				echo "Email не прошел валидацию. Отмена.";
+				return;
+			}
 			$group = $_POST['user-group'];
 			$query = "INSERT INTO users (user_login, user_password, user_email, user_group)
 					  VALUES ('$login', '$password', '$email', '$group')";

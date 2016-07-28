@@ -11,6 +11,8 @@
 			if(isset($_POST['comments-text']) && isset($_POST['comments-login'])) {
 				$text = clearStr($_POST['comments-text']);
 				$login = clearStr($_POST['comments-login']);
+				$text = filter_var($text, FILTER_SANITIZE_STRING);
+				$login = filter_var($login, FILTER_SANITIZE_STRING);
 				$location = clearStr($_SERVER['HTTP_REFERER']);
 				if($location === '') {
 					clearStr($_POST['location']);

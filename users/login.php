@@ -5,6 +5,7 @@
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
+		$user = filter_var($user, FILTER_SANITIZE_STRING);
 		$pw = trim(strip_tags($_POST['pw']));
 		
 		if(!checkUser($user, $pw)) {

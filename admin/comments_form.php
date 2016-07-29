@@ -17,11 +17,15 @@
 						<p><span>Текст:</span> <textarea class="comments-textarea" name="comments-text" size="50"></textarea></p>
 						<p><input type="submit" class="comments-post-button" value="Добавить"></p>
 					</form>
-					<script>
-						document.addEventListener('DOMContentLoaded', function(e) { 
-							initTinyMCE('.comments-textarea', false, '100%');
-						});
-					</script>
 			<? } ?>
 		</div>
-		
+		<script>
+			var timer;
+			clearTimeout(timer);
+			document.addEventListener('DOMContentLoaded', function(e) { 
+				appendScript('scripts/tinymce/tinymce.min.js');
+				timer = setTimeout(function() {
+					initTinyMCE('.comments-textarea', false, '100%');
+				}, 1000);
+			});
+		</script>

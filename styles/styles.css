@@ -581,6 +581,9 @@ p.quotes:before {
 	width: 80%;
 	margin: 10px 0 10px auto;
 }
+.disable-hover, .disable-hover * {
+	pointer-events: none !important;
+}
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {
     #wrapper {

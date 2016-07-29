@@ -261,9 +261,10 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 addEventListenerWithOptions(document, 'scroll', function(e) {
     var article = document.getElementsByClassName('article')[0];
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
-    var header = document.getElementsByClassName('header')[0];
+	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
+    //var header = document.getElementsByClassName('header')[0];
 	if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
-		if(window.getComputedStyle(article).getPropertyValue('width') !== '100%') {
+		if(articleWidth !== '100%') {
 		   article.style.marginLeft = 0;    
 		   scrollBtn.classList.add("scroll-button-active");
 		}
@@ -272,6 +273,18 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 		article.style.marginLeft = "";
 		scrollBtn.classList.remove("scroll-button-active");
 	}
+	
+	// делаем элементы при прокрутке ненажимаемыми
+	var timer, body = document.body;
+	clearTimeout(timer);
+	
+	if(!body.classList.contains('disable-hover')) {
+		body.classList.add('disable-hover');
+	}
+	
+	timer = setTimeout(function() {
+		body.classList.remove('disable-hover');
+	}, 500);
 }, {passive: true});
 
 function addNavigationToList() {
@@ -455,7 +468,7 @@ function isFileExists(url) {
 	return http.status != 404;
 }
 
-function checkIfAdmin(callback) {
+/*function checkIfAdmin(callback) {
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function () {
 		if(request.readyState == 4) {
@@ -478,7 +491,7 @@ function checkIfAdmin(callback) {
 	}, 60*1000);
 	request.open('HEAD', 'content/json.php', true);
 	request.send();
-}
+}*/
 
 function appendScript(src) {
 	var script = document.createElement('script');

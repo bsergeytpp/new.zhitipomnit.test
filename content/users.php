@@ -17,7 +17,7 @@
 		<div class="users-actions">
 			<? 
 				if($userLogin) {
-					echo "<a href='../users/user_profile.php?user_login=self'>Профиль</a>";
+					echo "<a href='../users/user_profile.php?user_login=$userLogin'>Профиль</a>";
 					echo "<a href='../users/login.php?logout'>Выйти</a>";
 				}
 				else {

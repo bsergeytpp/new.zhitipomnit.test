@@ -60,7 +60,7 @@ Admin.prototype.checkIfAdmin = function() {
 			if(resp !== null) {
 				console.log("Вы - Админ. Поздравляю!");
 				self._isAdmin = true;
-				self.addEditBtn();
+				//self.checkForEditableContent();
 			}
 			else {
 				console.log("Вы - не Админ. Херово!");
@@ -75,27 +75,38 @@ Admin.prototype.checkIfAdmin = function() {
 	this._XMLHttpRequest.send();
 };
 
-Admin.prototype.addEditBtn = function() {
+
+Admin.prototype.checkForEditableContent = function() {
 	var elem = null;
 	
 	if(document.getElementsByClassName('article-news').length > 0) {
 		elem = document.getElementsByClassName('article-news');
+		this.addEditBtn(elem);
 	} 
-	else if(document.getElementsByClassName('news-full-container').length > 0) {
+	
+	if(document.getElementsByClassName('news-full-container').length > 0) {
 		elem = document.getElementsByClassName('news-full-container');
+		this.addEditBtn(elem);
 	}
-	else if(document.getElementsByClassName('article-publs').length > 0) {
+	
+	if(document.getElementsByClassName('article-publs').length > 0) {
 		elem = document.getElementsByClassName('article-publs');
+		this.addEditBtn(elem);
 	}
-	else if(document.getElementsByClassName('publs-full-container').length > 0) {
+	
+	if(document.getElementsByClassName('publs-full-container').length > 0) {
 		elem = document.getElementsByClassName('publs-full-container');
-	}
-	else return;
+		this.addEditBtn(elem);
+	}	
+};
 
-	for(var i=0, len=elem.length; i<len; i++) {
+Admin.prototype.addEditBtn = function(elem) {
+	appendScript('scripts/tinymce/tinymce.min.js');
+	
+	for(var i=0, len=elem.length, firstChild; i<len; i++) {
 		this._editBtns[i] = document.createElement('div');
 		this._editBtns[i].className = 'admin-edit-button';
-		var firstChild = elem[i].children[0];
+		firstChild = elem[i].children[0];
 		elem[i].insertBefore(this._editBtns[i], firstChild);
 	}
 
@@ -302,6 +313,13 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {
 function createAdminClass() {
 	var admin = new Admin();
 	admin.checkIfAdmin();
+	setTimeout(function() { 
+		console.log('admin: ' + admin.getIsAdmin()); 
+		if(admin.getIsAdmin()) {
+			//appendScript('scripts/tinymce/tinymce.min.js');
+			admin.checkForEditableContent();	// расставляем кнопки редактирования
+		}
+	}, 1000);	// даем время на выполнение запроса в checkIfAdmin
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});

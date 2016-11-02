@@ -75,34 +75,89 @@ Admin.prototype.checkIfAdmin = function() {
 	this._XMLHttpRequest.send();
 };
 
-
 Admin.prototype.checkForEditableContent = function() {
 	var elem = null;
 	
 	if(document.getElementsByClassName('article-news').length > 0) {
 		elem = document.getElementsByClassName('article-news');
-		this.addEditBtn(elem);
 	} 
 	
 	if(document.getElementsByClassName('news-full-container').length > 0) {
 		elem = document.getElementsByClassName('news-full-container');
-		this.addEditBtn(elem);
 	}
 	
 	if(document.getElementsByClassName('article-publs').length > 0) {
 		elem = document.getElementsByClassName('article-publs');
-		this.addEditBtn(elem);
 	}
 	
 	if(document.getElementsByClassName('publs-full-container').length > 0) {
 		elem = document.getElementsByClassName('publs-full-container');
-		this.addEditBtn(elem);
-	}	
+	}
+	
+	if(elem != null) this.addEditBtn(elem);
+	
+	// комментарии
+	if(document.getElementsByClassName('comments-table').length > 0) {
+		elem = document.getElementsByClassName('comments-table');
+		this.addCommentsEditBtn(elem);
+	}
 };
 
+Admin.prototype.addCommentsEditBtn = function(elem) {
+	appendScript('scripts/tinymce/tinymce.min.js');
+	
+	for(var i=0, len=elem.length; i<len; i++) {
+		var commId = elem[i].getElementsByTagName('A')[0].innerHTML;
+		elem[i].getElementsByTagName('TBODY')[0].appendChild(createEditCommentsTr(commId));
+	}
+	
+	this.initCommentsEditBtns(elem);
+};
+
+Admin.prototype.initCommentsEditBtns = function(elem) {
+	for(var i=0, len=elem.length; i<len; i++) {
+		var btns = elem[i].getElementsByTagName('A');
+		
+		for(var j=0, secLen=btns.length; j<secLen; j++) {
+			btns[j].addEventListener('click', function(e) {
+				var target = e.target;
+				//e.preventDefault();
+				
+				if(target.className == 'edit-comm') {
+					console.log('Редактирование: '+target.getAttribute('data-id'));
+					
+				}
+				else if(target.className == 'del-comm') {
+					console.log('Удаление: '+target.getAttribute('data-id'));
+					
+				}
+			}, false);
+		}
+	}
+};
+
+function createEditCommentsTr(commId) {
+	var tr = document.createElement('TR');
+	tr.classList.add('comments-edit');
+	var editTd = document.createElement('TD');
+	var removeTd = document.createElement('TD');
+	var infoTd = document.createElement('TD');
+	infoTd.setAttribute('colspan', 3);
+	infoTd.innerHTML = '<strong>Управление</strong>';
+	editTd.innerHTML = '<a href="#" class="edit-comm" data-id="'+commId+'">Редактировать</a>';
+	removeTd.innerHTML = '<a href="#" class="del-comm" data-id="'+commId+'">Удалить</a>';
+	tr.appendChild(infoTd);
+	tr.appendChild(editTd);
+	tr.appendChild(removeTd);
+	
+	return tr;
+}
+
+// функция для добавления кнопки редактирования (новости/статьи)
 Admin.prototype.addEditBtn = function(elem) {
 	appendScript('scripts/tinymce/tinymce.min.js');
 	
+	// создаем для каждого редактируемого элемента кнопку
 	for(var i=0, len=elem.length, firstChild; i<len; i++) {
 		this._editBtns[i] = document.createElement('div');
 		this._editBtns[i].className = 'admin-edit-button';
@@ -113,6 +168,7 @@ Admin.prototype.addEditBtn = function(elem) {
 	this.initAdminEdit();
 };
 
+// вешаем на каждую кнопку событие на нажатие
 Admin.prototype.initAdminEdit = function() {
 	var self = this;
 	for(var i=0, len=this._editBtns.length; i<len; i++) {
@@ -122,12 +178,13 @@ Admin.prototype.initAdminEdit = function() {
 	}
 };
 
+// 
 Admin.prototype.addHandlerOnEditBtns = function(e) {
 	var id = e.target.parentNode.getAttribute('id');
 	var className = e.target.parentNode.className;
 	var self = this;
 	
-	this._getElemByDBId(className, id, function() {
+	this._getElemByDBId(className, id, function() {	// 
 		var response = this.responseText;
 		
 		if(typeof response === 'string') {
@@ -176,6 +233,7 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 	});
 };
 
+// функция создает DIV элемент, в котором можно редактировать элементы новости или статьи
 Admin.prototype._createEditDiv = function(className) {
 	var div = document.createElement('div');
 	var form = document.createElement('form');
@@ -208,6 +266,13 @@ Admin.prototype._createEditDiv = function(className) {
 	this._editDiv = div;
 };
 
+// функция применяет изменения новости или статьи
+/*
+	argArr -> параметры (id, текст...) элемента
+	reqType -> тип запроса (обычно POST)
+	reqTarget -> какой php файл используем для сохранения 
+	contentType -> Content-Type в заголовок
+*/
 Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentType) {
 	var data = '', j = 1;
 	var self = this;
@@ -236,7 +301,9 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 	this._XMLHttpRequest.send(data);
 }
 
+// функция делает AJAX запрос на выборку новости/статьи по ID
 Admin.prototype._getElemByDBId = function(className, id, callback) {
+	// новость или статья определяет переменная pattern
 	var pattern = (className === 'news-full-container') ? 'news' : 'publs' ;
 	var self = this;
 	
@@ -245,14 +312,14 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout); 
 			
-			if(self._XMLHttpRequest.status != 200) {
+			if(self._XMLHttpRequest.status != 200) {			// сервер сказал "НЕТ"
 				console.log('wha?');
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
-				if(resp != null) {
+				if(resp != null) {								// в ответ что-то пришло
 					if(typeof callback  == 'function') {
-						callback.call(self._XMLHttpRequest);
+						callback.call(self._XMLHttpRequest);	// в ответ приходит json строка, которая отдается в виде параметра в функцию callback
 					}
 				}
 				else {
@@ -269,6 +336,11 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 	this._XMLHttpRequest.send();
 };
 
+// общая функция-событие на прокрутку
+/*
+	- меняет ширину блока с контентом
+	- показывает/скрывает кнопку прокрутки
+*/
 addEventListenerWithOptions(document, 'scroll', function(e) {
     var article = document.getElementsByClassName('article')[0];
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
@@ -298,6 +370,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 	}, 500);
 }, {passive: true});
 
+// добавляет событие по клику на нумерацию
 function addNavigationToList() {
 	var ul = document.getElementsByClassName('news-list');
 	
@@ -310,6 +383,7 @@ function addNavigationToList() {
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {passive: true});
 
+// создаем класс Admin
 function createAdminClass() {
 	var admin = new Admin();
 	admin.checkIfAdmin();
@@ -319,11 +393,12 @@ function createAdminClass() {
 			//appendScript('scripts/tinymce/tinymce.min.js');
 			admin.checkForEditableContent();	// расставляем кнопки редактирования
 		}
-	}, 1000);	// даем время на выполнение запроса в checkIfAdmin
+	}, 1000);									// даем время на выполнение запроса в checkIfAdmin
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});
 
+// мини-профиль на основном сайте
 function userSwitcher() {
 	var usersDiv = document.getElementsByClassName('users-div')[0];
 	var switcher = usersDiv.getElementsByClassName('users-switcher')[0];
@@ -341,6 +416,7 @@ function userSwitcher() {
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {passive: true});
 
+// делаем ссылку на профиль автора комментария
 function addLinksToCommentsId() {
 	var commentsTable = document.getElementsByClassName('comments-table');
 	
@@ -349,14 +425,17 @@ function addLinksToCommentsId() {
 			var trs = commentsTable[j].getElementsByTagName('TR');
 			
 			for(var i=0; i<trs.length; i++) {
-				if(trs[i].classList.contains('comments-respond')) continue;
+				if(trs[i].classList.contains('comments-respond') ||
+				   trs[i].classList.contains('comments-edit')) continue;
 							
-				var loginTd = trs[i].getElementsByTagName('TD')[0];
+				var loginTd = trs[i].getElementsByTagName('TD');
 				
-				if(!loginTd) continue;
+				if(!loginTd[2]) continue;	// TD с ником автора
 				
-				var userLogin = loginTd.innerHTML;
-				loginTd.innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+userLogin+'</a>';
+				//console.log("loginTd: "+ loginTd[2].innerHTML);
+				var userLogin = loginTd[2].innerHTML;
+				var commId = loginTd[0].innerHTML;
+				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
 			}
 		}
 	}
@@ -364,6 +443,7 @@ function addLinksToCommentsId() {
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', addLinksToCommentsId, {passive: true});
 
+// инициализируем элемент TinyMCE
 function initTinyMCE(className, isInline, width, height) {
 	if(!className) return;
 	
@@ -384,6 +464,7 @@ function initTinyMCE(className, isInline, width, height) {
 	});
 }
 
+// создаем нумерованный список для навигации по материалам
 function navigateUlList(e) {
 	var target = e.target;
 	
@@ -443,17 +524,20 @@ function getUrlParam(value, obj) {
 	return false;
 }
 
+// функция для исправления ссылок в общем списке старых новостей
 function replaceNewsLinks() {
 	var container = document.body.getElementsByClassName('article')[0];
 	var parents = container.getElementsByTagName('P');
 	
 	for(var i=0, len=parents.length; i<len; i++) {
 		var link = parents[i].getElementsByTagName('A')[0];
-		link.setAttribute('href', 'index.php?pages=news&custom-news-date=' + link.getAttribute('href').substring(0, link.getAttribute('href').length - 5));
+		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
+		link.setAttribute('href', 'index.php?pages=news&custom-news-date=' + linkHref);
 		//console.log(link.getAttribute('href'));
 	}
 }
 
+// функция для исправления ссылок в общем списке старых статей
 function replacePressLinks() {
 	var press = document.body.getElementsByClassName('article-press');
 	
@@ -464,10 +548,12 @@ function replacePressLinks() {
 	}
 }
 
+// функция для исправления стилей старых новостей
 function changeStyle() {
 	document.getElementById('news-container').style.display = 'block';
 }
 
+// не используется: добавляет миниатюру к новости
 function displayNewsImage() {
 	var imgs = document.body.getElementsByClassName('article-news-image');
 	
@@ -479,6 +565,7 @@ function displayNewsImage() {
 	}
 }
 
+// проверяем есть ли файл
 function isFileExists(url) {
 	var http = new XMLHttpRequest();
 	http.open('HEAD', url, true);
@@ -511,12 +598,14 @@ function isFileExists(url) {
 	request.send();
 }*/
 
+// подключаем скрипт
 function appendScript(src) {
 	var script = document.createElement('script');
 	script.src = src;
 	document.body.appendChild(script);
 }
 
+// делаем дерево комментариев
 function makeCommentsTree() {
 	var comm_tables = document.getElementsByClassName('comments-table');
 	
@@ -544,41 +633,47 @@ function makeCommentsTree() {
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {passive: true});
 
+// при клике на кнопку "Ответить" записываем в скрытое поле формы комментирования ID комментария
+// ссылаемся на ID в тексте кнопки "Ответ"
 function setCommentsParentId(e) {
 	var target = e.target;
 	
 	if(target.className !== 'respond-button') return;
 	
-	var parent = target.parentNode; // TD
+	var parent = target.parentNode; 									// TD - родитель кнопки "Ответить"
 	
 	while(parent.tagName !== 'TABLE') {
-		if(parent.className === 'comments-respond') break;
+		if(parent.className === 'comments-respond') break;				// ищем TR с классом 'comments-respond'
 		parent = parent.parentNode;
 	}
 	
 	e.preventDefault();
 
-	var parentId = parent.previousSibling.getElementsByTagName('A')[0].innerHTML; // TR -> TR>A>textNode
+	var parentLink = parent.previousSibling.getElementsByTagName('A')[0];
+	var parentId = parentLink.innerHTML; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
+	var parentAuthor = parentLink.getAttribute('href'); 				// автор комментария, на который отвечаем
+	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = document.getElementsByClassName('comments-form')[0].elements['comments-parent'];
 
 	if(commentsInput.tagName !== 'INPUT') return;
 	
 	commentsInput.value = parentId;
 	
-	var test = document.getElementsByClassName('comments-post-button')[0];
-	test.value = 'Ответ сообщению '+parentId;
-	test.focus();
+	var postBtn = document.getElementsByClassName('comments-post-button')[0];
+	postBtn.value = 'Ответ сообщению '+parentId+' за авторством '+parentAuthor;
+	postBtn.focus();
 }
 
-addEventListenerWithOptions(document.getElementsByClassName('comments-table'), 'click', setCommentsParentId, {});
+addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 
+// добавляем комментарии без перезагрузки страницы
 function addCommentsAjax(commentsForm) {
-	var text, login, location, parentId;
-	text = tinymce.activeEditor.getContent();
-	login = commentsForm.elements['comments-login'].value;
-	location = window.location;
-	parentId = commentsForm.elements['comments-parent'].value;
-	if(parentId === '') parentId = '';
+	var text = tinymce.activeEditor.getContent();
+	var login = commentsForm.elements['comments-login'].value;
+	var parentId = commentsForm.elements['comments-parent'].value;
+	var location = window.location;
+	
+	if(parentId === '') parentId = '';			// ???
 	
 	var data = "comments-text=" + encodeURIComponent(text) + "&" +
 			   "comments-login=" + encodeURIComponent(login) + "&" +
@@ -614,6 +709,7 @@ addEventListenerWithOptions(document, 'click', function(e) {
 	updateCommentsWrapper();
 }, {});
 
+// обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
 	/*$.ajax({ url: 'admin/comments_form.php',
 		 data: {location: window.location.toString()},
@@ -630,6 +726,7 @@ function updateCommentsWrapper() {
 	var commentsDiv = wrapper.getElementsByClassName('comments-list-div')[0];
 	wrapper.style.height = height;
 	wrapper.style.opacity = 0.5;
+	
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function() {
 		if(request.readyState == 4) {

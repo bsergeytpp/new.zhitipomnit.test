@@ -49,6 +49,7 @@ Admin.prototype.getIsAdmin = function() {
 	return this._isAdmin;
 };
 
+// выясняем являемся ли мы админом
 Admin.prototype.checkIfAdmin = function() {
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -75,6 +76,7 @@ Admin.prototype.checkIfAdmin = function() {
 	this._XMLHttpRequest.send();
 };
 
+// проверяем есть ли на странице редактируемые элементы
 Admin.prototype.checkForEditableContent = function() {
 	var elem = null;
 	
@@ -96,13 +98,14 @@ Admin.prototype.checkForEditableContent = function() {
 	
 	if(elem != null) this.addEditBtn(elem);
 	
-	// комментарии
+	// редактирвоание комментариев
 	if(document.getElementsByClassName('comments-table').length > 0) {
 		elem = document.getElementsByClassName('comments-table');
 		this.addCommentsEditBtn(elem);
 	}
 };
 
+// добавляем еще один TR к каждому комментарию
 Admin.prototype.addCommentsEditBtn = function(elem) {
 	appendScript('scripts/tinymce/tinymce.min.js');
 	
@@ -114,18 +117,22 @@ Admin.prototype.addCommentsEditBtn = function(elem) {
 	this.initCommentsEditBtns(elem);
 };
 
+// вешаем события на кнопки редактировать/удалить
 Admin.prototype.initCommentsEditBtns = function(elem) {
 	for(var i=0, len=elem.length; i<len; i++) {
 		var btns = elem[i].getElementsByTagName('A');
 		
-		for(var j=0, secLen=btns.length; j<secLen; j++) {
+		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
 			btns[j].addEventListener('click', function(e) {
 				var target = e.target;
-				//e.preventDefault();
 				
 				if(target.className == 'edit-comm') {
-					console.log('Редактирование: '+target.getAttribute('data-id'));
-					
+					e.preventDefault();
+					//console.log('Редактирование: '+target.getAttribute('data-id'));
+					var commentsTextTd = target.parentNode.parentNode.parentNode.children[1].children[3];
+					//console.log('commentsTextTd: '+commentsTextTd);
+					commentsTextTd.classList.add('edit-this');
+					initTinyMCE('.edit-this', true);	// делаем из td объект tinymce
 				}
 				else if(target.className == 'del-comm') {
 					console.log('Удаление: '+target.getAttribute('data-id'));
@@ -136,6 +143,7 @@ Admin.prototype.initCommentsEditBtns = function(elem) {
 	}
 };
 
+// создаем TR с кнопками редактировать/удалить 
 function createEditCommentsTr(commId) {
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
@@ -178,13 +186,13 @@ Admin.prototype.initAdminEdit = function() {
 	}
 };
 
-// 
+// функция добавляет обработчики на кнопки DIVa, в котором редактируются данные новости/статьи
 Admin.prototype.addHandlerOnEditBtns = function(e) {
 	var id = e.target.parentNode.getAttribute('id');
 	var className = e.target.parentNode.className;
 	var self = this;
 	
-	this._getElemByDBId(className, id, function() {	// 
+	this._getElemByDBId(className, id, function() {		// ищем элементы для редактирования по их ID
 		var response = this.responseText;
 		
 		if(typeof response === 'string') {
@@ -192,9 +200,11 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 		}
 		
 		if(typeof self._responseObject === 'object') {
-			if(document.getElementsByClassName('admin-edit-elem')[0] !== undefined) {
+			var editElem = document.getElementsByClassName('admin-edit-elem')[0];
+			
+			if(editElem !== undefined) {
 				self._editDiv = null;
-				document.body.removeChild(document.getElementsByClassName('admin-edit-elem')[0]);
+				document.body.removeChild(editElem);
 			}
 	
 			// создаем все необходимые элементы

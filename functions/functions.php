@@ -190,13 +190,15 @@
 							<th class='row-text'>Сообщение</th>
 							<th class='row-date'>Дата</th>
 						 </tr>";
-					echo "<tr>";
+					echo "<tr class='comments-content'>";
+					$i = 0;
 					foreach($row as $val) {
 						//if($val === $row['parent']) continue;
 						
 						//if($val === $row['comments_id']) continue;
-						
-						echo "<td>". $val ."</td>";
+						if($i == 3)	echo "<td class='comment-text'>". $val ."</td>";
+						else echo "<td>". $val ."</td>";
+						$i++;
 					}
 					echo "</tr>";
 					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href=''>Ответить</a></td></tr>";

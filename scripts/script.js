@@ -107,44 +107,124 @@ Admin.prototype.checkForEditableContent = function() {
 
 // добавляем еще один TR к каждому комментарию
 Admin.prototype.addCommentsEditBtn = function(elem) {
-	appendScript('scripts/tinymce/tinymce.min.js');
+	if(typeof tinymce === 'undefined') {
+		appendScript('scripts/tinymce/tinymce.min.js');
+	}
 	
 	for(var i=0, len=elem.length; i<len; i++) {
 		var commId = elem[i].getElementsByTagName('A')[0].innerHTML;
-		elem[i].getElementsByTagName('TBODY')[0].appendChild(createEditCommentsTr(commId));
+		elem[i].getElementsByTagName('TBODY')[0].appendChild(this.createEditCommentsTr(commId));
 	}
 	
 	this.initCommentsEditBtns(elem);
 };
 
-// вешаем события на кнопки редактировать/удалить
+// вешаем события на кнопки редактировать/удалить/сохранить
 Admin.prototype.initCommentsEditBtns = function(elem) {
+	var self = this;
 	for(var i=0, len=elem.length; i<len; i++) {
 		var btns = elem[i].getElementsByTagName('A');
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-			btns[j].addEventListener('click', function(e) {
-				var target = e.target;
+			(function() {
+				btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
+			})();
+		}
+	}
+};
+
+// описываем события для кнопок (редактировать/удалить/сохранить)
+Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
+	var target = e.target;
 				
-				if(target.className == 'edit-comm') {
-					e.preventDefault();
-					//console.log('Редактирование: '+target.getAttribute('data-id'));
-					var commentsTextTd = target.parentNode.parentNode.parentNode.children[1].children[3];
-					//console.log('commentsTextTd: '+commentsTextTd);
-					commentsTextTd.classList.add('edit-this');
-					initTinyMCE('.edit-this', true);	// делаем из td объект tinymce
+	if(target.className == 'edit-comm') {
+		e.preventDefault();
+		
+		if(target.innerHTML === 'Редактировать') {
+			// уже есть редактируемый комментарий
+			if(tinymce.editors.length > 1) {
+				if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
+					this.disablePrevEditors();							// убираем предыдущие объект tinymce
+					this.initEditorForComment(target);					// делаем из td объект tinymce
 				}
-				else if(target.className == 'del-comm') {
-					console.log('Удаление: '+target.getAttribute('data-id'));
-					
-				}
-			}, false);
+				else return; 											// решили закончить с предыдущим комментарием
+			} 
+			else {
+				this.initEditorForComment(target);						// делаем из td объект tinymce
+			}
+		}
+		else if(target.innerHTML === 'Сохранить') {
+			e.stopPropagation();
+			var id = target.getAttribute('data-id');
+			var updatedText = tinymce.activeEditor.getContent();
+			var adminLogin = document.getElementsByClassName('users-info')[0];
+			adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
+			updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
+			console.log(id + "|" + updatedText);
+			// запрос на сохранение элемента
+			this._sendSaveRequest({
+				'comment-id': id,
+				'comment-text': updatedText
+			   },
+			   'POST', 
+			   'admin/admin_comments/update_comment.php', 
+			   'application/x-www-form-urlencoded');
+			//updateCommentsWrapper();
+		}
+	}
+	else if(target.className == 'del-comm') {
+		e.preventDefault();
+		e.stopPropagation();
+		var id = target.getAttribute('data-id');
+		if(confirm('Точно удалить комментарий №'+id+'?')) { 
+			console.log('Удаление: '+target.getAttribute('data-id'));
+			
+			// запрос на удаление элемента
+			this._sendSaveRequest({
+				'comment-id': id
+			   },
+			   'POST', 
+			   'admin/admin_comments/delete_comment.php', 
+			   'application/x-www-form-urlencoded');
+			//updateCommentsWrapper();
+		}
+		else return;
+ 	}
+};
+
+// инициализируем объект tinymce
+Admin.prototype.initEditorForComment = function(elem) {
+	var commentsTextTd = elem.parentNode.parentNode.parentNode.children[1].children[3]; // ???
+	//console.log('commentsTextTd: '+commentsTextTd);
+	//console.log('Редактирование: '+elem.getAttribute('data-id'));
+	var commId = elem.getAttribute('data-id');
+	commentsTextTd.classList.add('edit-this');
+	elem.innerHTML = 'Сохранить';
+	initTinyMCE('.edit-this', true, 'auto', 'auto');
+};
+
+// убираем предыдущий объект tinymce и меняем назначение кнопок
+Admin.prototype.disablePrevEditors = function() {
+	var prevTinymceElems = document.getElementsByClassName('edit-this');
+	var saveLinks = document.getElementsByClassName('edit-comm');
+	var activeEditorId = tinymce.activeEditor.getParam('id');
+	tinymce.remove('#'+activeEditorId);
+	
+	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
+		if(prevTinymceElems[i].classList.contains('edit-this')) {
+			prevTinymceElems[i].classList.remove('edit-this');
+		}
+	}
+	
+	for(i=0, len=saveLinks.length; i<len; i++) {
+		if(saveLinks[i].innerHTML === 'Сохранить') {
+			saveLinks[i].innerHTML = 'Редактировать';
 		}
 	}
 };
 
 // создаем TR с кнопками редактировать/удалить 
-function createEditCommentsTr(commId) {
+Admin.prototype.createEditCommentsTr = function(commId) {
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
 	var editTd = document.createElement('TD');
@@ -159,11 +239,13 @@ function createEditCommentsTr(commId) {
 	tr.appendChild(removeTd);
 	
 	return tr;
-}
+};
 
 // функция для добавления кнопки редактирования (новости/статьи)
 Admin.prototype.addEditBtn = function(elem) {
-	appendScript('scripts/tinymce/tinymce.min.js');
+	if(typeof tinymce === 'undefined') {
+		appendScript('scripts/tinymce/tinymce.min.js');
+	}
 	
 	// создаем для каждого редактируемого элемента кнопку
 	for(var i=0, len=elem.length, firstChild; i<len; i++) {
@@ -290,7 +372,7 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 	for(var key in argArr) {
 		var val = argArr[key];
 		data += key + '=' + val;
-		(j++ < Object.keys(argArr).length) ? data += '&' : console.log('I dunno');
+		(Object.keys(argArr).length > j++) ? data += '&' : console.log('Параметр всего 1');	// TODO: тут лажа какая-то
 	}
 	
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -300,7 +382,11 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 			if(self._XMLHttpRequest.status != 200) {
 				console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
 			}
-			else console.log('Запрос отправлен. Все - хорошо.');
+			else {
+				console.log('Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				updateCommentsWrapper();
+				self.setPrivilegious();
+			}
 		}
 	};
 	var timeout = setTimeout(function() {
@@ -397,14 +483,19 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {
 function createAdminClass() {
 	var admin = new Admin();
 	admin.checkIfAdmin();
-	setTimeout(function() { 
-		console.log('admin: ' + admin.getIsAdmin()); 
-		if(admin.getIsAdmin()) {
-			//appendScript('scripts/tinymce/tinymce.min.js');
-			admin.checkForEditableContent();	// расставляем кнопки редактирования
-		}
-	}, 1000);									// даем время на выполнение запроса в checkIfAdmin
+	admin.setPrivilegious();						
 }
+
+Admin.prototype.setPrivilegious = function() {
+	var self = this;
+	setTimeout(function() { 
+		console.log('admin: ' + self.getIsAdmin()); 
+		if(self.getIsAdmin()) {
+			//appendScript('scripts/tinymce/tinymce.min.js');
+			self.checkForEditableContent();			// расставляем кнопки редактирования
+		}
+	}, 1500);										// даем время на выполнение запроса в checkIfAdmin
+};
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});
 
@@ -697,7 +788,7 @@ function addCommentsAjax(commentsForm) {
 			
 			(request.status != 200) 
 			? console.log('Ошибка: ' + request.responseText)
-			: console.log('Запрос отправлен. Все - хорошо.');
+			: console.log('Запрос отправлен. Все - хорошо. Ответ сервера: '+request.responseText);
 		}
 	};
 	
@@ -721,16 +812,6 @@ addEventListenerWithOptions(document, 'click', function(e) {
 
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
-	/*$.ajax({ url: 'admin/comments_form.php',
-		 data: {location: window.location.toString()},
-		 type: 'get',
-		 success: function(output) {
-					  console.log(output);
-					  var wrapper = document.getElementsByClassName('comments-wrapper')[0];
-					  wrapper.innerHTML = '';
-					  wrapper.innerHTML = output;
-				  }
-	});*/
 	var wrapper = document.getElementsByClassName('comments-wrapper')[0];
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = wrapper.getElementsByClassName('comments-list-div')[0];
@@ -743,7 +824,7 @@ function updateCommentsWrapper() {
 			clearTimeout(timeout);
 			(request.status != 200) 
 			? console.log('Ошибка: ' + request.responseText)
-			: console.log('Запрос отправлен. Все - хорошо.');
+			: console.log('Запрос отправлен. Все - хорошо. Ответ сервера: '+request.responseText);
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
 			wrapper.removeChild(commentsDiv);
 			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
@@ -761,5 +842,5 @@ function updateCommentsWrapper() {
 	setTimeout(function() {
 		request.open('GET', 'admin/comments_list.php?location='+encodeURIComponent(window.location.href), true);
 		request.send();
-	}, 1500);
+	}, 500);
 }

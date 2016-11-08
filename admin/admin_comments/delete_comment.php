@@ -8,22 +8,20 @@
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$text = ''; $id = -1;
 		if($link) {
-			if(isset($_POST['text']) && isset($_POST['id'])) {
-				$text = clearStr($_POST['comments-text']);
-				$id = (int)$_POST['comments-id'];
-				$query = "UPDATE comments " .
-						 "SET comments_text = '" . pg_escape_string($text) . "' " . 
+			if(isset($_POST['comment-id'])) {
+				$id = (int)$_POST['comment-id'];
+				$query = "DELETE FROM comments " . 
 						 "WHERE comments_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Комментарий не был обновлен';
-				else echo 'Комментарий был обновлен';			
+				if($result === false) echo 'Комментарий не был удален';
+				else echo 'Комментарий был удален';			
 			}
-			echo "Нет данных для обновления.";
+			else echo "Нет данных для удаления.";
 		}
 		else {
 			echo "Нет соединения с БД.";
 		}
 	}
-	else echo "Ничего не было обновлено...";
+	else echo "Ничего не было удалено...";
 ?>

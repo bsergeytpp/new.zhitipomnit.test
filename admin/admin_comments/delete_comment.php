@@ -13,7 +13,7 @@
 				$query = "DELETE FROM comments " . 
 						 "WHERE comments_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
-				
+
 				if($result === false) echo 'Комментарий не был удален';
 				else echo 'Комментарий был удален';			
 			}

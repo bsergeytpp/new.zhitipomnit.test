@@ -61,7 +61,7 @@
 			global $link;
 			$query = 'SELECT * FROM news';
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
-			echo "<h4>Новости из базы данных</h4>";
+			//echo "<h4>Новости из базы данных</h4>";
 			
 			while($row = pg_fetch_assoc($res)) {
 				$this->newsArr[] = $row;

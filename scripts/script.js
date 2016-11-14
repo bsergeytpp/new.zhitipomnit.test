@@ -46,6 +46,78 @@ function Admin() {
 	this._commentsTables = null;
 };
 
+function User() {
+	this._userLogin = false;
+	this._XMLHttpRequest = null;
+};
+
+// выясняем являемся ли мы пользователем
+User.prototype.checkIfUser = function() {
+	var self = this;
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(self._XMLHttpRequest.readyState == 4) {
+			clearTimeout(timeout);
+			var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
+
+			if(resp !== null) {
+				console.log("Ваш логин: "+resp);
+				self._userLogin = resp;
+				self.checkForUserComments();
+			}
+			else {
+				console.log("Вы не авторизованы!");
+			}
+		}
+	};
+	var timeout = setTimeout(function() {
+		self._XMLHttpRequest.abort();
+	}, 60*1000);
+	this._XMLHttpRequest.open('HEAD', 'content/json.php', true);
+	this._XMLHttpRequest.send();
+};
+
+User.prototype.checkForUserComments = function() {
+	var commentsTables = null;
+	
+	if(document.getElementsByClassName('comments-table').length > 0) {
+		commentsTables = document.getElementsByClassName('comments-table');
+		var location = window.location.origin + window.location.pathname + window.location.search;
+		this.getUserCommentsFromUrl(location);
+		//this.addCommentsEditBtn();
+	}
+};
+
+User.prototype.getUserCommentsFromUrl = function(location) {
+	var self = this;
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(self._XMLHttpRequest.readyState == 4) {
+			clearTimeout(timeout); 
+			
+			if(self._XMLHttpRequest.status != 200) {			
+				console.log('wha?');
+			}
+			else {
+				var resp = self._XMLHttpRequest.responseText;
+				//console.log('Пришло: '+resp);
+				if(resp != null) {								
+					console.log("Хорошо!");
+				}
+				else {
+					console.log("Нет!");
+				}	
+			}
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		self._XMLHttpRequest.abort();
+	}, 60*1000);
+	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self._userLogin + '&location=' + location, true);
+	this._XMLHttpRequest.send();
+}
+
 Admin.prototype.getIsAdmin = function() {
 	return this._isAdmin;
 };
@@ -82,19 +154,19 @@ Admin.prototype.checkForEditableContent = function() {
 	var elem = null;
 	
 	if(document.getElementsByClassName('article-news').length > 0) {
-		elem = document.getElementsByClassName('article-news');
+		elem = document.getElementsByClassName('article-news');					// если это список новостей
 	} 
 	
 	if(document.getElementsByClassName('news-full-container').length > 0) {
-		elem = document.getElementsByClassName('news-full-container');
+		elem = document.getElementsByClassName('news-full-container');			// если это полная новость
 	}
 	
-	if(document.getElementsByClassName('article-publs').length > 0) {
-		elem = document.getElementsByClassName('article-publs');
+	if(document.getElementsByClassName('article-publs').length > 0) {	
+		elem = document.getElementsByClassName('article-publs');				// если это список статей
 	}
 	
 	if(document.getElementsByClassName('publs-full-container').length > 0) {
-		elem = document.getElementsByClassName('publs-full-container');
+		elem = document.getElementsByClassName('publs-full-container');			// если это полная статья
 	}
 	
 	if(elem != null) this.addEditBtn(elem);
@@ -102,8 +174,6 @@ Admin.prototype.checkForEditableContent = function() {
 
 // проверяем есть ли на странице редактируемые комментарии
 Admin.prototype.checkForComments = function() {
-	var commentsTables = null;
-	
 	if(document.getElementsByClassName('comments-table').length > 0) {
 		this._commentsTables = document.getElementsByClassName('comments-table');
 		this.addCommentsEditBtn();
@@ -113,8 +183,9 @@ Admin.prototype.checkForComments = function() {
 // добавляем еще один TR к каждому комментарию
 Admin.prototype.addCommentsEditBtn = function() {
 	if(typeof tinymce === 'undefined') {
-		appendScript('scripts/tinymce/tinymce.min.js');
+		appendScript('scripts/tinymce/tinymce.min.js');							
 	}
+	
 	if(this._commentsTables === null) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
@@ -149,20 +220,19 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 		e.preventDefault();
 		
 		if(target.innerHTML === 'Редактировать') {
-			// уже есть редактируемый комментарий
 			var totalEditors = 1;
-			if(tinymce.activeEditor.getElement.id === 'comments-text') {
+			if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
 				totalEditors = 2;
 			} 
-			if(tinymce.editors.length > totalEditors) {					// если есть форма комментирования, то пропускаем ее
+			if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
 				if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
-					this.disablePrevEditors();							// убираем предыдущие объект tinymce
-					this.initEditorForComment(target);					// делаем из td объект tinymce
+					this.disablePrevEditors();								// убираем предыдущие объект tinymce
+					this.initEditorForComment(target);						// делаем из td объект tinymce
 				}
-				else return; 											// решили закончить с предыдущим комментарием
+				else return; 												// решили закончить с предыдущим комментарием
 			} 
 			else {
-				this.initEditorForComment(target);						// делаем из td объект tinymce
+				this.initEditorForComment(target);							// делаем из td объект tinymce
 			}
 		}
 		else if(target.innerHTML === 'Сохранить') {
@@ -505,12 +575,19 @@ function findParent(child, parentClass) {
 	return null;
 }
 
-// создаем класс Admin
+// создаем объект класса Admin
 var admin;
 function createAdminClass() {
 	admin = new Admin();
 	admin.checkIfAdmin();
 	admin.setPrivilege();						
+}
+
+// создаем объект класса Admin
+var user;
+function createUserClass() {
+	user = new User();
+	user.checkIfUser();
 }
 
 // для админа ставим кнопки редактирования
@@ -527,6 +604,7 @@ Admin.prototype.setPrivilege = function() {
 };
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});
+addEventListenerWithOptions(document, 'DOMContentLoaded', createUserClass, {passive: true});
 
 // мини-профиль на основном сайте
 function userSwitcher() {
@@ -702,31 +780,6 @@ function isFileExists(url) {
 	http.send();
 	return http.status != 404;
 }
-
-/*function checkIfAdmin(callback) {
-	var request = new XMLHttpRequest();
-	request.onreadystatechange = function () {
-		if(request.readyState == 4) {
-			clearTimeout(timeout);
-			var resp = request.getResponseHeader('IsAdmin');
-			
-			if(resp !== null) {
-				console.log("Вы - Админ. Поздравляю!");
-				if(typeof callback == 'function') {
-					callback.call(request);
-				}
-			}
-			else {
-				console.log("Вы - не Админ. Херово!");
-			}
-		}
-	};
-	var timeout = setTimeout(function() {
-		request.abort();
-	}, 60*1000);
-	request.open('HEAD', 'content/json.php', true);
-	request.send();
-}*/
 
 // подключаем скрипт
 function appendScript(src) {

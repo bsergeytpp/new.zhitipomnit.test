@@ -1,8 +1,8 @@
 <?
 	define('DB_CONNECT', 'host=192.168.0.4 port=5432 dbname=new.zip user=zip.admin password=123');
-	define('NEWS_MAXCOUNT', '3');	// новостей на странице
+	define('NEWS_MAXCOUNT', '5');	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
-	define('PUBLS_MAXCOUNT', '10');	// статей на странице
+	define('PUBLS_MAXCOUNT', '5');	// статей на странице
 	define('PRESS_MAXCOUNT', '10');	// гaзет на странице
 	$NEWS_MAXCOUNT = 3;
 	$OLDNEWS_MAXCOUNT = 10;
@@ -175,6 +175,9 @@
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
+				if(pg_num_rows($result) === 0) {
+					echo 'Комментариев пока нет.';
+				}
 				while($row = pg_fetch_assoc($result)) {
 					echo "<div class='comments-div'>";
 					

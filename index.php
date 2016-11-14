@@ -47,6 +47,7 @@
 						default:
 							include "content/main.php";
 							include "content/news.php";
+							include "content/publ.php";
 							break;
 					}
 				?>

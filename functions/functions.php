@@ -11,7 +11,7 @@
 	
 	$link = false;
 	$userLogin = null;
-
+	
 	function clearStr($str) {
 		return preg_replace('~\R~u', "", trim($str));
 	}
@@ -231,6 +231,37 @@
 			else return pg_fetch_result($result, 0, 0);
 		}
 	}	
+	
+	/*
+		Функция подключения частей сайта
+		- принимает путь к контету
+		- path может быть и массивом строк
+		- можно упростить вывод и обойтись без буффера
+	*/
+	function includeContent($path) {
+		$type = gettype($path);
+		//echo "TYPE: $type";
+		switch($type) {
+			case 'array': 
+				$len = count($path);
+				for($i=0; $i<$len; $i++) {
+					ob_start();
+					include($path[$i]);
+					$buffer = ob_get_contents();
+					ob_end_clean();
+					echo $buffer;
+				}
+				break;
+			case 'string': 
+				ob_start();
+				include($path);
+				$buffer = ob_get_contents();
+				ob_end_clean();
+				echo $buffer;
+				break;
+			case 'default': break;
+		}
+	}
 	
 	// PostgreSQL functions
 	function connectToPostgres() {

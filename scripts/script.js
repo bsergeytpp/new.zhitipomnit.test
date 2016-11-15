@@ -37,6 +37,8 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
+var _DEBUG = true;
+
 function Admin() {
 	this._isAdmin = false;
 	this._XMLHttpRequest = null;
@@ -61,12 +63,16 @@ User.prototype.checkIfUser = function() {
 			var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
 
 			if(resp !== null) {
-				console.log("Ваш логин: "+resp);
+				if(_DEBUG) {
+					console.log("Ваш логин: "+resp);
+				}
 				self._userLogin = resp;
 				self.checkForUserComments();
 			}
 			else {
-				console.log("Вы не авторизованы!");
+				if(_DEBUG) {
+					console.log("Вы не авторизованы!");
+				}
 			}
 		}
 	};
@@ -96,16 +102,22 @@ User.prototype.getUserCommentsFromUrl = function(location) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			
-				console.log('wha?');
+				if(_DEBUG) {
+					console.log('wha?');
+				}
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
 				//console.log('Пришло: '+resp);
 				if(resp != null) {								
-					console.log("Хорошо!");
+					if(_DEBUG) {
+						console.log("Хорошо!");
+					}
 				}
 				else {
-					console.log("Нет!");
+					if(_DEBUG) {
+						console.log("Нет!");
+					}
 				}	
 			}
 		}
@@ -132,12 +144,16 @@ Admin.prototype.checkIfAdmin = function() {
 			var resp = self._XMLHttpRequest.getResponseHeader('IsAdmin');
 			
 			if(resp !== null) {
-				//console.log("Вы - Админ. Поздравляю!");
+				if(_DEBUG) {
+					console.log("Вы - Админ. Поздравляю!");
+				}
 				self._isAdmin = true;
 				//self.checkForEditableContent();
 			}
 			else {
-				//console.log("Вы - не Админ. Херово!");
+				if(_DEBUG) {
+					console.log("Вы - не Админ. Херово!");
+				}
 			}
 			//appendScript('scripts/tinymce/tinymce.min.js');
 		}
@@ -242,7 +258,9 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			var adminLogin = document.getElementsByClassName('users-info')[0];
 			adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
 			updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
-			console.log(id + "|" + updatedText);
+			if(_DEBUG) {
+				console.log(id + "|" + updatedText);
+			}
 			// запрос на сохранение элемента
 			this._sendSaveRequest({
 				'comment-id': id,
@@ -258,7 +276,9 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 		e.stopPropagation();
 		var id = target.getAttribute('data-id');
 		if(confirm('Точно удалить комментарий №'+id+'?')) { 
-			console.log('Удаление: '+target.getAttribute('data-id'));
+			if(_DEBUG) {
+				console.log('Удаление: '+target.getAttribute('data-id'));
+			}
 			
 			// запрос на удаление элемента
 			this._sendSaveRequest({
@@ -279,8 +299,10 @@ Admin.prototype.initEditorForComment = function(elem) {
 	if(elemParent === null) return;
 	var commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	
-	//console.log('commentsTextTd: '+commentsTextTd);
-	//console.log('Редактирование: '+elem.getAttribute('data-id'));
+	if(_DEBUG) {
+		console.log('commentsTextTd: '+commentsTextTd);
+		console.log('Редактирование: '+elem.getAttribute('data-id'));
+	}
 	var commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
 	elem.innerHTML = 'Сохранить';
@@ -405,7 +427,9 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 				
 			}, false);
 		}
-		else console.log(response);
+		else if(_DEBUG) {
+			console.log(response);
+		}
 	});
 };
 
@@ -464,10 +488,14 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
 			if(self._XMLHttpRequest.status != 200) {
-				console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
+				if(_DEBUG) {
+					console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
+				}
 			}
 			else {
-				console.log('Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				if(_DEBUG) {
+					console.log('Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				}
 				updateCommentsWrapper();
 			}
 		}
@@ -492,7 +520,9 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			// сервер сказал "НЕТ"
-				console.log('wha?');
+				if(_DEBUG) {
+					console.log('wha?');
+				}
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
@@ -502,7 +532,9 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 					}
 				}
 				else {
-					console.log("Херово!");
+					if(_DEBUG) {
+						console.log("Херово!");
+					}
 				}	
 			}
 		}
@@ -594,7 +626,9 @@ function createUserClass() {
 Admin.prototype.setPrivilege = function() {
 	var self = this;
 	setTimeout(function() { 
-		//console.log('admin: ' + self.getIsAdmin()); 
+		if(_DEBUG) {
+			console.log('admin: ' + self.getIsAdmin()); 
+		}
 		if(self.getIsAdmin()) {
 			//appendScript('scripts/tinymce/tinymce.min.js');
 			self.checkForEditableContent();			// расставляем кнопки редактирования
@@ -640,7 +674,9 @@ function addLinksToCommentsId() {
 				
 				if(!loginTd[2]) continue;	// TD с ником автора
 				
-				//console.log("loginTd: "+ loginTd[2].innerHTML);
+				if(_DEBUG) {
+					console.log("loginTd: "+ loginTd[2].innerHTML);
+				}
 				var userLogin = loginTd[2].innerHTML;
 				var commId = loginTd[0].innerHTML;
 				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
@@ -681,9 +717,11 @@ function navigateUlList(e) {
 		return;
 	}
 	
+	// рабиваем часть URL по параметрам
 	var urlArr = decodeURIComponent(location.search.substr(1)).split('&');
 	var pair, urlParams = new Object;
 	
+	// запоминаем параметры и их значения
 	for(var i=0, len=urlArr.length; i<len; i++) {
 		pair = urlArr[i].split("=");
 		urlParams[pair[0]] = pair[1];
@@ -691,35 +729,39 @@ function navigateUlList(e) {
 	
 	var pageNum = getUrlParam('page', urlParams);
 	
+	// одна страница есть всегда
 	if(!pageNum) pageNum = 1;
-				
-	if(target == this.firstChild) {
-		if(target.innerHTML.indexOf("«")) {
+
+	// самый первый/последний элемент списка
+	if(target === this.firstChild || target === this.lastChild) {
+		// идем назад
+		if(target.innerHTML.indexOf("«") !== -1) {
+			if(_DEBUG) {
+				console.log("Назад");
+				console.log(target.innerHTML);
+			}
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
 				urlArr = [];
-				
-				for(var elem in urlParams) {
-					urlArr.push(elem + "=" + urlParams[elem]); 
-				}
-				location.search = urlArr.join('&');
-				
 			}
 		}
-	}
-	else if(target == this.lastChild) {
-		if(target.innerHTML.indexOf("«")) {
+		// идем вперед
+		else if(target.innerHTML.indexOf("»") !== -1) {
+			if(_DEBUG) {
+				console.log("Вперед");
+				console.log(target.innerHTML);
+			}
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;
 				urlArr = [];
-				
-				for(var elem in urlParams) {
-					urlArr.push(elem + "=" + urlParams[elem]); 
-				}
-				location.search = urlArr.join('&');
 			}
 		}
-	}		
+		// создаем новый URL и открываем его
+		for(var elem in urlParams) {
+			urlArr.push(elem + "=" + urlParams[elem]); 
+		}
+		location.search = urlArr.join('&');
+	}
 }
 
 function getUrlParam(value, obj) {
@@ -741,7 +783,9 @@ function replaceNewsLinks() {
 		var link = parents[i].getElementsByTagName('A')[0];
 		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
 		link.setAttribute('href', 'index.php?pages=news&custom-news-date=' + linkHref);
-		//console.log(link.getAttribute('href'));
+		if(_DEBUG) {
+			console.log(link.getAttribute('href'));
+		}
 	}
 }
 
@@ -752,7 +796,9 @@ function replacePressLinks() {
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
-		//console.log(press[i].getAttribute('href'));
+		if(_DEBUG) {
+			console.log(press[i].getAttribute('href'));
+		}
 	}
 }
 
@@ -797,13 +843,19 @@ function makeCommentsTree() {
 		var id = tr.firstChild.innerHTML;
 		var parent_id = tr.children[1].innerHTML;
 		if(parent_id !== '') {
-			//console.log('Parent: '+parent_id);
+			if(_DEBUG) {
+				console.log('Parent: '+parent_id);
+			}
 			for(var j=0; j<comm_tables.length; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
-				//console.log('Current id: '+temp_id);
+				if(_DEBUG) {
+					console.log('Current id: '+temp_id);
+				}
 				if(temp_id == parent_id) {
-					//console.log('Parent is found: '+comm_tables[j]);
+					if(_DEBUG) {
+						console.log('Parent is found: '+comm_tables[j]);
+					}
 					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
 				}
 			}
@@ -881,7 +933,9 @@ function addCommentsAjax(commentsForm) {
 	request.open('POST', 'admin/save_comments.php', true);
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.send(data);
-	console.log('Отправили запрос');
+	if(_DEBUG) {
+		console.log('Отправили запрос');
+	}
 }
 
 addEventListenerWithOptions(document, 'click', function(e) {
@@ -897,6 +951,8 @@ function updateCommentsWrapper() {
 	var wrapper = document.getElementsByClassName('comments-wrapper')[0];
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = wrapper.getElementsByClassName('comments-list-div')[0];
+	
+	// визульано показываем, что что-то происходит =)
 	wrapper.style.height = height;
 	wrapper.style.opacity = 0.5;
 	
@@ -907,12 +963,19 @@ function updateCommentsWrapper() {
 			(request.status != 200) 
 			? console.log('Ошибка: ' + request.responseText)
 			: console.log('Запрос отправлен. Все - хорошо.');
+			
+			// выключаем форму комментирования
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
+			// удаляем div с комментариями 
 			wrapper.removeChild(commentsDiv);
+			// вставляем обновленный список комментариев + старую форму
 			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
+			// включаем обратно форму комментирования
 			tinymce.EditorManager.execCommand('mceAddEditor', true, 'comments-text');
+			// обнуляем стили
 			wrapper.style.height = '';
 			wrapper.style.opacity = '';
+			
 			makeCommentsTree();
 			addLinksToCommentsId();
 			admin.setPrivilege();
@@ -929,3 +992,50 @@ function updateCommentsWrapper() {
 		request.send();
 	}, 1500);
 }
+
+// добавляем к заголовку название новости/статьи
+function updatePageTitle() {
+	var title = document.title;
+	var params = window.location.search;
+	var container, header;
+	
+	// пропускаем старые новости/статьи
+	if(params.indexOf('all-old') !== -1) {
+		document.title = 'Старые ' + document.title;
+		return; 						
+	}
+	
+	// новость
+	if(title === 'Новости' && params.indexOf('custom-news-date') !== -1) {
+		container = document.getElementsByClassName('news-full-container')[0];
+		
+		// в старых новостях может не быть заголовков
+		if(container === undefined) return;
+		
+		header = container.getElementsByTagName('H4')[0];
+	}
+	// статья
+	else if(title === 'Статьи' && params.indexOf('custom-publ') !== -1) {
+		container = document.getElementsByClassName('publs-full-container')[0];
+		
+		if(container === undefined) return;
+		
+		header = container.getElementsByTagName('H3')[0];
+	}
+	// газета
+	else if(title === 'Газета' && params.indexOf('custom-press') !== -1) {
+		container = document.getElementById('press-container');
+		
+		if(container === undefined) return;
+		
+		header = container.getElementsByTagName('H1')[0];
+	}
+	
+	if(!header) return;
+	
+	// http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
+	header = header.innerHTML.replace(/<(?:.|\n)*?>/gm, '');	
+	document.title += ' - ' + header.substr(0, 25) + '...';
+}
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});

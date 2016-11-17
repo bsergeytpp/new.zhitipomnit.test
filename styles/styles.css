@@ -191,7 +191,6 @@ body::before {
     position: absolute;
     left: 0;
     border-right: 33px solid rgba(255, 255, 255, 0.851);
-    /*border-top: 24px solid transparent;*/
     border-bottom: 20px solid transparent;
 }
 .nav ul li:last-child:after {
@@ -230,10 +229,37 @@ body::before {
     font-family: "Book Antiqua";
 }
 .article h2 {
-    padding: 5px 10px;
+    padding: 0 40px;
     font-size: 1.6em;
 	text-align: right;
+	background: black;
+	color: white;
+	margin-right: -40px;
+	position: relative;
+	border-top: 1px solid red;
+	border-left: 1px solid red;
+	border-radius: 15px 0 0 15px;
+}
+.comments-list-div h2, .comments-form-div h2 {
+	width: 70%;
+	background: none;
+	color: black;
 	text-decoration: underline;
+	text-align: left;
+	border: none;
+}
+.comments-list-div h2:after, .comments-form-div h2:after {
+	display: none;
+}
+.article h2:after {
+	content: "";
+    width: 0;
+    z-index: -1;
+    position: absolute;
+    right: 0;
+	top: 25px;
+    border-left: 31px solid rgba(255, 255, 255, 0.851);
+    border-bottom: 30px solid transparent;
 }
 .article p {
     padding: 5px 10px;
@@ -261,6 +287,9 @@ body::before {
     margin: 0 auto;
 	margin-left: 5%;
     float: left;
+}
+#publs-container h3 {
+	text-align: right;
 }
 .publs-full-container {
 	position: relative;
@@ -337,9 +366,13 @@ body::before {
 #news-container:first-child {
     flex-grow: 2 !important;
 }
-#news-container  h3 {
+#news-container h3 {
     text-align: right;
     width: 50%;
+	margin-top: 0;
+}
+#news-container > strong {
+	width: 50%;
 }
 #news-container hr {
     width: 100%;
@@ -459,6 +492,7 @@ p.quotes:before {
     cursor: pointer;
     border-top: 1px solid #888;
     border-left: 1px solid #888;
+	z-index: 999;
 }
 .scroll-button-active {
     bottom: 100px;
@@ -640,7 +674,7 @@ p.quotes:before {
         display: none;
     }
     .article {
-        width: 100%;
+        width: auto;
         margin: 5px;
     }
     #news-container {
@@ -661,6 +695,13 @@ p.quotes:before {
     .article p {
         padding: 5px 15px;
     }
+	.article h2 {
+		margin-right: 0;
+		width: auto;
+	}
+	.article h2:after {
+		display: none;
+	}
     .scroll-button {
         display: none;
     }
@@ -700,9 +741,16 @@ p.quotes:before {
         display: none;
     }
     .article {
-        width: 100%;
+        width: auto;
         margin: 5px;
     }
+	.article h2 {
+		margin-right: 0;
+		width: auto;
+	}
+	.article h2:after {
+		display: none;
+	}
     .footer-copyright {
         font-size: .9em;
     }

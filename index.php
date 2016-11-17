@@ -82,6 +82,8 @@
         ?> 
         <div class="scroll-button" onclick="window.scrollTo(0,0);">↑ Наверх</div>
         <script src="scripts/script.js"></script>
+        <script src="scripts/admin.class.js"></script>
+        <script src="scripts/user.class.js"></script>
 		<!--<script src="scripts/tinymce/tinymce.min.js"></script>-->
     </body>
 </html>

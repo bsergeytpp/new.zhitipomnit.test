@@ -69,7 +69,7 @@
 		if(file_exists('content/news/'.convertDate($date).'.html')) {	// формат гггг-мм-дд
 			return new OldNewsClass(convertDate($date), $page);
 		}
-		if(file_exists('content/news/'.$date.'.html')) {	// формат дд-мм-гггг
+		if(file_exists('content/news/'.$date.'.html')) {				// формат дд-мм-гггг
 			return new OldNewsClass($date, $page);
 		}
 		if(file_exists('content/news/'.$date.'.txt')) {
@@ -85,7 +85,7 @@
 		if(substr($date, -3, 3) == 'txt') {
 			return new OtherPublsClass($page);
 		}
-		if(file_exists($date)) {	// скорее всего файл
+		if(file_exists($date)) {										// скорее всего файл
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/octet-strem');
 			header('Content-Disposition: attachment; filename='.basename($date));

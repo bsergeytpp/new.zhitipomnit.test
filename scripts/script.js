@@ -1,3 +1,4 @@
+'use strict';
 /*Passive event listeners for Blink*/
 var supportsPassive = false;
 
@@ -36,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = false;
+var _DEBUG = true;
 
 // общая функция-событие на прокрутку
 /*
@@ -132,9 +133,7 @@ function addLinksToCommentsId() {
 				
 				if(!loginTd[2]) continue;	// TD с ником автора
 				
-				if(_DEBUG) {
-					console.log("loginTd: "+ loginTd[2].innerHTML);
-				}
+				DEBUG("func: addLinksToCommentsId; output: loginTd: "+ loginTd[2].innerHTML);
 				var userLogin = loginTd[2].innerHTML;
 				var commId = loginTd[0].innerHTML;
 				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
@@ -194,10 +193,8 @@ function navigateUlList(e) {
 	if(target === this.firstChild || target === this.lastChild) {
 		// идем назад
 		if(target.innerHTML.indexOf("«") !== -1) {
-			if(_DEBUG) {
-				console.log("Назад");
-				console.log(target.innerHTML);
-			}
+			DEBUG("func: navigateUlList; output: Назад: " + target.innerHTML);
+
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
 				urlArr = [];
@@ -205,10 +202,8 @@ function navigateUlList(e) {
 		}
 		// идем вперед
 		else if(target.innerHTML.indexOf("»") !== -1) {
-			if(_DEBUG) {
-				console.log("Вперед");
-				console.log(target.innerHTML);
-			}
+			DEBUG("func: navigateUlList; output: Вперед: " + target.innerHTML);
+
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;
 				urlArr = [];
@@ -241,9 +236,7 @@ function replaceNewsLinks() {
 		var link = parents[i].getElementsByTagName('A')[0];
 		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
 		link.setAttribute('href', 'index.php?pages=news&custom-news-date=' + linkHref);
-		if(_DEBUG) {
-			console.log(link.getAttribute('href'));
-		}
+		DEBUG('func: replaceNewsLinks; output: ' + link.getAttribute('href'));
 	}
 }
 
@@ -254,9 +247,7 @@ function replacePressLinks() {
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
-		if(_DEBUG) {
-			console.log(press[i].getAttribute('href'));
-		}
+		DEBUG('func: replacePressLinks; output: ' + press[i].getAttribute('href'));
 	}
 }
 
@@ -300,20 +291,17 @@ function makeCommentsTree() {
 		var tr = comm_tables[i].getElementsByTagName('tr')[1];
 		var id = tr.firstChild.innerHTML;
 		var parent_id = tr.children[1].innerHTML;
+		
 		if(parent_id !== '') {
-			if(_DEBUG) {
-				console.log('Parent: '+parent_id);
-			}
+			DEBUG('func: makeCommentsTree; output: Parent: '+parent_id);
+			
 			for(var j=0; j<comm_tables.length; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
-				if(_DEBUG) {
-					console.log('Current id: '+temp_id);
-				}
+				DEBUG('func: makeCommentsTree; output: Current id: '+temp_id);
+				
 				if(temp_id == parent_id) {
-					if(_DEBUG) {
-						console.log('Parent is found: '+comm_tables[j]);
-					}
+					DEBUG('func: makeCommentsTree; output: Parent is found: '+comm_tables[j]);
 					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
 				}
 			}
@@ -391,9 +379,7 @@ function addCommentsAjax(commentsForm) {
 	request.open('POST', 'admin/save_comments.php', true);
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.send(data);
-	if(_DEBUG) {
-		console.log('Отправили запрос');
-	}
+	DEBUG('func: addCommentsAjax; output: Отправили запрос');
 }
 
 addEventListenerWithOptions(document, 'click', function(e) {
@@ -499,3 +485,17 @@ function updatePageTitle() {
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});
+
+// Вывод отладочной информации
+function DEBUG(str) {
+	if(_DEBUG) {
+		if(typeof str !== 'string') {
+			var str = str.toString();
+		}
+		console.log(str);
+	}
+}
+
+/* TODO 
+	* innerHTML -> innerText
+*/

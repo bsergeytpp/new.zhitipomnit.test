@@ -1,4 +1,5 @@
 function Admin() {
+	'use strict';
 	this._XMLHttpRequest = null;
 	this._editBtns = [];
 	this._responseObject;
@@ -15,18 +16,14 @@ function Admin() {
 			if(self._XMLHttpRequest.readyState == 4) {
 				clearTimeout(timeout);
 				var resp = self._XMLHttpRequest.getResponseHeader('IsAdmin');
-				console.log("RESP: "+resp);
+				DEBUG("func: checkIfAdmin; output: RESP: "+resp);
 				if(resp !== null) {
-					if(_DEBUG) {
-						console.log("Вы - Админ. Поздравляю!");
-					}
+					DEBUG("func: checkIfAdmin; output: Вы - Админ. Поздравляю!");
 					isAdmin = true;
 				}
 				else {
-					if(_DEBUG) {
-						console.log("Вы - не Админ. Херово!");
-					}
-					delete admin;
+					DEBUG("func: checkIfAdmin; output: Вы - не Админ. Херово!");
+					admin = null;
 				}
 			}
 		};
@@ -45,11 +42,13 @@ function Admin() {
 };
 
 Admin.prototype.getIsAdmin = function() {
+	'use strict';
 	return this.getIsAdmin();
 };
 
 // проверяем есть ли на странице редактируемые элементы
 Admin.prototype.checkForEditableContent = function() {
+	'use strict';
 	var elem = null;
 	
 	if(document.getElementsByClassName('article-news').length > 0) {
@@ -73,6 +72,7 @@ Admin.prototype.checkForEditableContent = function() {
 
 // проверяем есть ли на странице редактируемые комментарии
 Admin.prototype.checkForComments = function() {
+	'use strict';
 	if(document.getElementsByClassName('comments-table').length > 0) {
 		this._commentsTables = document.getElementsByClassName('comments-table');
 		this.addCommentsEditBtn();
@@ -82,6 +82,7 @@ Admin.prototype.checkForComments = function() {
 // добавляем еще один TR к каждому комментарию
 // TODO: проверить, есть ли кнопки перед добавлением
 Admin.prototype.addCommentsEditBtn = function() {
+	'use strict';
 	if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');							
 	}
@@ -99,6 +100,7 @@ Admin.prototype.addCommentsEditBtn = function() {
 
 // вешаем события на кнопки редактировать/удалить/сохранить
 Admin.prototype.initCommentsEditBtns = function() {
+	'use strict';
 	var self = this;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
@@ -114,6 +116,7 @@ Admin.prototype.initCommentsEditBtns = function() {
 
 // описываем события для кнопок (редактировать/удалить/сохранить)
 Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
+	'use strict';
 	var target = e.target;
 				
 	if(target.classList.contains('edit-comm')) {
@@ -142,9 +145,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			var adminLogin = document.getElementsByClassName('users-info')[0];
 			adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
 			updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
-			if(_DEBUG) {
-				console.log(id + "|" + updatedText);
-			}
+			DEBUG('func: addHandlerOnCommentsEditBtns; output: ' + id + "|" + updatedText);
 			// запрос на сохранение элемента
 			this._sendSaveRequest({
 				'comment-id': id,
@@ -160,10 +161,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 		e.stopPropagation();
 		var id = target.getAttribute('data-id');
 		if(confirm('Точно удалить комментарий №'+id+'?')) { 
-			if(_DEBUG) {
-				console.log('Удаление: '+target.getAttribute('data-id'));
-			}
-			
+			DEBUG('func: addHandlerOnCommentsEditBtns; output: Удаление: '+target.getAttribute('data-id'));			
 			// запрос на удаление элемента
 			this._sendSaveRequest({
 				'comment-id': id
@@ -178,15 +176,13 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 
 // инициализируем объект tinymce
 Admin.prototype.initEditorForComment = function(elem) {
+	'use strict';
 	var elemParent = findParent(elem, 'comments-table');
 	
 	if(elemParent === null) return;
 	var commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
-	
-	if(_DEBUG) {
-		console.log('commentsTextTd: '+commentsTextTd);
-		console.log('Редактирование: '+elem.getAttribute('data-id'));
-	}
+	DEBUG('func: initEditorForComment; output: commentsTextTd: '+commentsTextTd);
+	DEBUG('func: initEditorForComment; output: Редактирование: '+elem.getAttribute('data-id'));
 	var commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
 	elem.innerHTML = 'Сохранить';
@@ -195,6 +191,7 @@ Admin.prototype.initEditorForComment = function(elem) {
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 Admin.prototype.disablePrevEditors = function() {
+	'use strict';
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
 	var activeEditorId = tinymce.activeEditor.getParam('id');
@@ -215,6 +212,7 @@ Admin.prototype.disablePrevEditors = function() {
 
 // создаем TR с кнопками редактировать/удалить 
 Admin.prototype.createEditCommentsTr = function(commId) {
+	'use strict';
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
 	var editTd = document.createElement('TD');
@@ -233,6 +231,7 @@ Admin.prototype.createEditCommentsTr = function(commId) {
 
 // функция для добавления кнопки редактирования (новости/статьи)
 Admin.prototype.addEditBtn = function(elem) {
+	'use strict';
 	if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');
 	}
@@ -250,6 +249,7 @@ Admin.prototype.addEditBtn = function(elem) {
 
 // вешаем на каждую кнопку событие на нажатие
 Admin.prototype.initAdminEdit = function() {
+	'use strict';
 	var self = this;
 	for(var i=0, len=this._editBtns.length; i<len; i++) {
 		(function() {
@@ -260,6 +260,7 @@ Admin.prototype.initAdminEdit = function() {
 
 // функция добавляет обработчики на кнопки DIVa, в котором редактируются данные новости/статьи
 Admin.prototype.addHandlerOnEditBtns = function(e) {
+	'use strict';
 	var id = e.target.parentNode.getAttribute('id');
 	var className = e.target.parentNode.className;
 	var self = this;
@@ -311,14 +312,13 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 				
 			}, false);
 		}
-		else if(_DEBUG) {
-			console.log(response);
-		}
+		else DEBUG('func: addHandlerOnEditBtns; output: ' + response);
 	});
 };
 
 // функция создает DIV элемент, в котором можно редактировать элементы новости или статьи
 Admin.prototype._createEditDiv = function(className) {
+	'use strict';
 	var div = document.createElement('div');
 	var form = document.createElement('form');
 	var textarea = document.createElement('textarea');
@@ -358,6 +358,7 @@ Admin.prototype._createEditDiv = function(className) {
 	contentType -> Content-Type в заголовок
 */
 Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentType) {
+	'use strict';
 	var data = '', j = 1;
 	var self = this;
 	
@@ -372,14 +373,10 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
 			if(self._XMLHttpRequest.status != 200) {
-				if(_DEBUG) {
-					console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
-				}
+				DEBUG('func: _sendSaveRequest; output: Ошибка: ' + self._XMLHttpRequest.responseText);
 			}
 			else {
-				if(_DEBUG) {
-					console.log('Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
-				}
+				DEBUG('func: _sendSaveRequest; output: Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
 				updateCommentsWrapper();
 			}
 		}
@@ -394,6 +391,7 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 
 // функция делает AJAX запрос на выборку новости/статьи по ID
 Admin.prototype._getElemByDBId = function(className, id, callback) {
+	'use strict';
 	// новость или статья определяет переменная pattern
 	var pattern = (className === 'news-full-container') ? 'news' : 'publs' ;
 	var self = this;
@@ -404,9 +402,7 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			// сервер сказал "НЕТ"
-				if(_DEBUG) {
-					console.log('wha?');
-				}
+				DEBUG('func: _getElemByDBId; output: wha?');
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
@@ -416,9 +412,7 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 					}											// которая отдается в виде параметра в функцию callback
 				}
 				else {
-					if(_DEBUG) {
-						console.log("Херово!");
-					}
+					DEBUG("func: _getElemByDBId; output: Херово!");
 				}	
 			}
 		}
@@ -434,6 +428,7 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 // создаем объект класса Admin
 admin = null;
 function createAdminClass() {
+	'use strict';
 	admin = new Admin();
 	//admin.checkIfAdmin();
 	admin.setPrivilege();						
@@ -441,20 +436,18 @@ function createAdminClass() {
 
 // для админа ставим кнопки редактирования
 Admin.prototype.setPrivilege = function() {
+	'use strict';
 	var self = this;
 	setTimeout(function() { 
-		if(_DEBUG) {
-			console.log('admin: ' + self.getIsAdmin()); 
-		}
+		DEBUG('func: setPrivilege; output: admin: ' + self.getIsAdmin());
+		
 		if(self.getIsAdmin()) {
 			//appendScript('scripts/tinymce/tinymce.min.js');
 			self.checkForEditableContent();			// расставляем кнопки редактирования
 			self.checkForComments();
 		}
 		else {
-			if(_DEBUG) {
-				console.log('Вы не админ. Хватит хулиганить!'); 
-			}
+			DEBUG('func: setPrivilege; output: Вы не админ. Хватит хулиганить!');
 		}
 	}, 1500);										// даем время на выполнение запроса в checkIfAdmin
 };

@@ -1,4 +1,5 @@
 function User() {
+	'use strict';
 	this._userLogin = false;
 	this._XMLHttpRequest = null;
 	this._commentsTables = null;
@@ -6,6 +7,7 @@ function User() {
 
 // выясняем являемся ли мы пользователем
 User.prototype.checkIfUser = function() {
+	'use strict';
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function () {
@@ -14,16 +16,12 @@ User.prototype.checkIfUser = function() {
 			var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
 
 			if(resp !== null) {
-				if(_DEBUG) {
-					console.log("Ваш логин: "+resp);
-				}
+				DEBUG("func: checkIfUser; output: Ваш логин: "+resp);
 				self._userLogin = resp;
 				self.checkForUserComments();
 			}
 			else {
-				if(_DEBUG) {
-					console.log("Вы не авторизованы!");
-				}
+				DEBUG("func: checkIfUser; output: Вы не авторизованы!");
 			}
 		}
 	};
@@ -35,6 +33,7 @@ User.prototype.checkIfUser = function() {
 };
 
 User.prototype.checkForUserComments = function() {
+	'use strict';
 	var commentsTables = null;
 	var self = this;
 	
@@ -51,21 +50,17 @@ User.prototype.checkForUserComments = function() {
 			}
 			
 			if(typeof responseObject === 'object') {
-				if(_DEBUG) {
-					console.log(response + ' это объект');
-				}
-				
+				DEBUG('func: checkForUserComments; output: ' + response + ' это объект');				
 				self.addCommentsEditBtn(responseObject);
 			}
-			else if(_DEBUG) {
-				console.log(response);
-			}
+			else DEBUG('func: checkForUserComments; output: ' + response);
 		});
 		//this.addCommentsEditBtn();
 	}
 };
 
 User.prototype.addCommentsEditBtn = function(commentsIds) {
+	'use strict';
 	var commTables = document.getElementsByClassName('comments-table');
 
 	if(!commTables) return;
@@ -99,13 +94,9 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 		for(var i=0, len=commTables.length; i<len; i++) {
 			var contentTd = commTables[i].getElementsByClassName('comments-content')[0];
 			var id = contentTd.getElementsByTagName('A')[0].innerHTML;			// TODO: надо TD с ID дать класс
-			if(_DEBUG) {
-				console.log(id);
-			}
+			DEBUG('func: getUserComments; output: '+id);
 			if(checkId(id, commentsIds)) {
-				if(_DEBUG) {
-					console.log('cut '+i);
-				}
+				DEBUG('func: getUserComments; output: cut '+i);
 				temp.push(commTables[i]);
 			}
 		}
@@ -116,6 +107,7 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 
 // вешаем события на кнопки редактировать/удалить/сохранить
 User.prototype.initCommentsEditBtns = function(userComments) {
+	'use strict';
 	var self = this;
 	
 	for(var i=0, len=userComments.length; i<len; i++) {
@@ -131,6 +123,7 @@ User.prototype.initCommentsEditBtns = function(userComments) {
 
 // описываем события для кнопок (редактировать/удалить/сохранить)
 User.prototype.addHandlerOnCommentsEditBtns = function(e) {
+	'use strict';
 	var target = e.target;
 				
 	if(target.classList.contains('edit-comm')) {
@@ -157,9 +150,7 @@ User.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			var id = target.getAttribute('data-id');
 			var updatedText = tinymce.activeEditor.getContent();
 			updatedText += "<em>Отредактировано " + new Date().toLocaleString() + '</em>';
-			if(_DEBUG) {
-				console.log(id + "|" + updatedText);
-			}
+			DEBUG('func: addHandlerOnCommentsEditBtns; output: '+id + "|" + updatedText);
 			// запрос на сохранение элемента
 			this._sendSaveRequest({
 				'comment-id': id,
@@ -174,16 +165,15 @@ User.prototype.addHandlerOnCommentsEditBtns = function(e) {
 
 // инициализируем объект tinymce
 User.prototype.initEditorForComment = function(elem) {
+	'use strict';
 	var elemParent = findParent(elem, 'comments-table');
 	console.log(elem);
 	
 	if(elemParent === null) return;
 	var commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	
-	if(_DEBUG) {
-		console.log('commentsTextTd: '+commentsTextTd);
-		console.log('Редактирование: '+elem.getAttribute('data-id'));
-	}
+	DEBUG('func: initEditorForComment; output: commentsTextTd: '+commentsTextTd);
+	DEBUG('func: initEditorForComment; output: Редактирование: '+elem.getAttribute('data-id'));
 	var commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
 	elem.innerHTML = 'Сохранить';
@@ -192,6 +182,7 @@ User.prototype.initEditorForComment = function(elem) {
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 User.prototype.disablePrevEditors = function() {
+	'use strict';
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
 	var activeEditorId = tinymce.activeEditor.getParam('id');
@@ -212,6 +203,7 @@ User.prototype.disablePrevEditors = function() {
 
 // создаем TR с кнопками редактировать/удалить 
 User.prototype.createEditCommentsTr = function(commId) {
+	'use strict';
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
 	var editTd = document.createElement('TD');
@@ -229,6 +221,7 @@ User.prototype.createEditCommentsTr = function(commId) {
 };
 
 User.prototype.getUserCommentsFromUrl = function(location, callback) {
+	'use strict';
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function () {
@@ -236,24 +229,18 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			
-				if(_DEBUG) {
-					console.log('wha?');
-				}
+				DEBUG('func: getUserCommentsFromUrl; output: wha?');
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
-				if(_DEBUG) {
-					console.log('Пришло: '+resp);
-				}
+				DEBUG('func: getUserCommentsFromUrl; output: Пришло: '+resp);
 				if(resp != null) {								// в ответ что-то пришло
 					if(typeof callback  == 'function') {
 						callback.call(self._XMLHttpRequest);	// в ответ приходит json строка, 
 					}											// которая отдается в виде параметра в функцию callback
 				}
 				else {
-					if(_DEBUG) {
-						console.log("Херово!");
-					}
+					DEBUG("func: getUserCommentsFromUrl; output: Херово!");
 				}	
 			}
 		}
@@ -267,6 +254,7 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 }
 
 User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentType) {
+	'use strict';
 	var data = '', j = 1;
 	var self = this;
 	
@@ -281,14 +269,10 @@ User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentTy
 		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
 			if(self._XMLHttpRequest.status != 200) {
-				if(_DEBUG) {
-					console.log('Ошибка: ' + self._XMLHttpRequest.responseText);
-				}
+				DEBUG('func: _sendSaveRequest; output: Ошибка: ' + self._XMLHttpRequest.responseText);
 			}
 			else {
-				if(_DEBUG) {
-					console.log('Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
-				}
+				DEBUG('func: _sendSaveRequest; output: Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
 				updateCommentsWrapper();
 			}
 		}
@@ -304,6 +288,7 @@ User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentTy
 // создаем объект класса User
 var user;
 function createUserClass() {
+	'use strict';
 	user = new User();
 	user.checkIfUser();
 }

@@ -1,5 +1,4 @@
 <?
-	define('DB_CONNECT', 'host=192.168.0.4 port=5432 dbname=new.zip user=zip.admin password=123');
 	define('NEWS_MAXCOUNT', '5');	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
 	define('PUBLS_MAXCOUNT', '5');	// статей на странице
@@ -269,8 +268,15 @@
 		
 		if(!function_exists('pg_connect')) 
 			return false;
+
+		$config = parse_ini_file(__DIR__.'/../config.ini');
+		$connectStr = "host=".$config['host'].
+					  " port=".$config['port'].
+					  " dbname=".$config['dbname'].
+					  " user=".$config['user'].
+					  " password=".$config['password'];
 		
-		$link = pg_connect(DB_CONNECT);
+		$link = pg_connect($connectStr);
 		return $link;
 	}
 ?>

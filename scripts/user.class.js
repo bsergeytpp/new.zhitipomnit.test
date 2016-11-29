@@ -1,37 +1,53 @@
+/*
+	1) сделать User "подклассом" Admin или наоборот
+	2) сделать из некоторых переменных свойства объекта 
+	   (userLogin -> this._userLogin и т.д.)
+*/
+
 function User() {
 	'use strict';
-	this._userLogin = false;
 	this._XMLHttpRequest = null;
 	this._commentsTables = null;
-};
-
-// выясняем являемся ли мы пользователем
-User.prototype.checkIfUser = function() {
-	'use strict';
+	this._userComments = null;
+	
+	var userLogin = false;
 	var self = this;
-	this._XMLHttpRequest = new XMLHttpRequest();
-	this._XMLHttpRequest.onreadystatechange = function () {
-		if(self._XMLHttpRequest.readyState == 4) {
-			clearTimeout(timeout);
-			var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
+	
+	// выясняем текущий логин
+	var checkIfUser = function() {
+		'use strict';
+		self._XMLHttpRequest = new XMLHttpRequest();
+		self._XMLHttpRequest.onreadystatechange = function () {
+			if(self._XMLHttpRequest.readyState == 4) {
+				clearTimeout(timeout);
+				var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
 
-			if(resp !== null) {
-				DEBUG("func: checkIfUser; output: Ваш логин: "+resp);
-				self._userLogin = resp;
-				self.checkForUserComments();
+				if(resp !== null) {
+					DEBUG("func: checkIfUser; output: Ваш логин: "+resp);
+					userLogin = resp;
+					self.checkForUserComments();
+				}
+				else {
+					DEBUG("func: checkIfUser; output: Вы не авторизованы!");
+					user = null;
+				}
 			}
-			else {
-				DEBUG("func: checkIfUser; output: Вы не авторизованы!");
-			}
-		}
+		};
+		var timeout = setTimeout(function() {
+			self._XMLHttpRequest.abort();
+		}, 60*1000);
+		self._XMLHttpRequest.open('HEAD', 'content/json.php', true);
+		self._XMLHttpRequest.send();
 	};
-	var timeout = setTimeout(function() {
-		self._XMLHttpRequest.abort();
-	}, 60*1000);
-	this._XMLHttpRequest.open('HEAD', 'content/json.php', true);
-	this._XMLHttpRequest.send();
+	
+	checkIfUser();
+	
+	this.getUserLogin = function() {
+		return userLogin;
+	};
 };
 
+// ищем комментарии пользователя
 User.prototype.checkForUserComments = function() {
 	'use strict';
 	var commentsTables = null;
@@ -43,17 +59,25 @@ User.prototype.checkForUserComments = function() {
 		
 		this.getUserCommentsFromUrl(location, function() {
 			var response = this.responseText;
-			var responseObject;
+			var responseObject = null;
+			DEBUG('func: checkForUserComments; output: ' + response + ' это объект');
 		
 			if(typeof response === 'string') {
-				responseObject = JSON.parse(response);
+				try {
+					responseObject = JSON.parse(response);
+				}
+				catch(e) {
+					DEBUG('func: checkForUserComments; Пришла на JSON строка');
+				}
 			}
 			
-			if(typeof responseObject === 'object') {
+			if(responseObject !== null) {
 				DEBUG('func: checkForUserComments; output: ' + response + ' это объект');				
 				self.addCommentsEditBtn(responseObject);
 			}
-			else DEBUG('func: checkForUserComments; output: ' + response);
+			else {
+				DEBUG('func: checkForUserComments; output: ' + response);
+			}
 		});
 		//this.addCommentsEditBtn();
 	}
@@ -68,17 +92,17 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 	/*if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');							
 	}*/
-	var userComments = [];
-	userComments = getUserComments(commTables, commentsIds);
+	//var userComments = [];
+	this._userComments = getUserComments(commTables, commentsIds);
 		
-	for(var i=0, len=userComments.length; i<len; i++) {
+	for(var i=0, len=this._userComments.length; i<len; i++) {
 		// TODO...
-		var commId = userComments[i].getElementsByTagName('A')[0].innerHTML;
+		var commId = this._userComments[i].getElementsByTagName('A')[0].innerHTML;
 		var editTr = this.createEditCommentsTr(commId);
-		userComments[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
+		this._userComments[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}
 	
-	this.initCommentsEditBtns(userComments);
+	this.initCommentsEditBtns();
 	
 	function checkId(id, object) {
 		for(var i=0, len=object.length; i<len; i++) {
@@ -106,12 +130,12 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 };
 
 // вешаем события на кнопки редактировать/удалить/сохранить
-User.prototype.initCommentsEditBtns = function(userComments) {
+User.prototype.initCommentsEditBtns = function() {
 	'use strict';
 	var self = this;
 	
-	for(var i=0, len=userComments.length; i<len; i++) {
-		var btns = userComments[i].getElementsByClassName('user-edit');
+	for(var i=0, len=this._userComments.length; i<len; i++) {
+		var btns = this._userComments[i].getElementsByClassName('user-edit');
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
 			(function() {
@@ -234,10 +258,10 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 			else {
 				var resp = self._XMLHttpRequest.responseText;
 				DEBUG('func: getUserCommentsFromUrl; output: Пришло: '+resp);
-				if(resp != null) {								// в ответ что-то пришло
-					if(typeof callback  == 'function') {
-						callback.call(self._XMLHttpRequest);	// в ответ приходит json строка, 
-					}											// которая отдается в виде параметра в функцию callback
+				if(resp !== null) {								// в ответ что-то пришло
+					if(typeof callback == 'function') {			// в ответ приходит json строка, 
+						callback.call(self._XMLHttpRequest);	// которая отдается в виде параметра в функцию callback
+					}											
 				}
 				else {
 					DEBUG("func: getUserCommentsFromUrl; output: Херово!");
@@ -249,7 +273,7 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 	var timeout = setTimeout(function() {
 		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self._userLogin + '&location=' + encodeURIComponent(location), true);
+	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() + '&location=' + encodeURIComponent(location), true);
 	this._XMLHttpRequest.send();
 }
 
@@ -290,7 +314,6 @@ var user;
 function createUserClass() {
 	'use strict';
 	user = new User();
-	user.checkIfUser();
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createUserClass, {passive: true});

@@ -269,7 +269,12 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 		var response = this.responseText;
 		
 		if(typeof response === 'string') {
-			self._responseObject = JSON.parse(response);
+			try{
+				self._responseObject = JSON.parse(response);
+			}
+			catch(e) {
+				DEBUG('func: _getElemByDBId; Пришла не JSON строка');
+			}
 		}
 		
 		if(typeof self._responseObject === 'object') {

@@ -67,7 +67,7 @@ User.prototype.checkForUserComments = function() {
 					responseObject = JSON.parse(response);
 				}
 				catch(e) {
-					DEBUG('func: checkForUserComments; Пришла на JSON строка');
+					DEBUG('func: checkForUserComments; Пришла не JSON строка: ' + e.toString());
 				}
 			}
 			
@@ -87,46 +87,53 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 	'use strict';
 	var commTables = document.getElementsByClassName('comments-table');
 
+	// если есть комментарии
 	if(!commTables) return;
+	
+	// если пришли ID
 	if(commentsIds === null) return;
+	
 	/*if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');							
 	}*/
-	//var userComments = [];
-	this._userComments = getUserComments(commTables, commentsIds);
-		
+
+	this._userComments = this.getUserComments(commTables, commentsIds);
+	
+	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
-		// TODO...
-		var commId = this._userComments[i].getElementsByTagName('A')[0].innerHTML;
-		var editTr = this.createEditCommentsTr(commId);
+		var commId = this._userComments[i].getElementsByClassName('comment-id')[0];
+		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
 		this._userComments[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}
 	
 	this.initCommentsEditBtns();
+};
+
+User.prototype.checkId = function(id, object) {
+	for(var i=0, len=object.length; i<len; i++) {
+		if(id === object[i]['comments_id']) {
+			return true;
+		}
+	}
 	
-	function checkId(id, object) {
-		for(var i=0, len=object.length; i<len; i++) {
-			if(id === object[i]['comments_id'])
-				return true;
+	return false;
+};
+	
+User.prototype.getUserComments = function(commTables, commentsIds) {
+	var temp = [];
+	
+	for(var i=0, len=commTables.length; i<len; i++) {
+		var contentTr = commTables[i].getElementsByClassName('comments-content')[0];
+		var idTd = contentTr.getElementsByClassName('comment-id')[0];
+		var id = idTd.getElementsByTagName('A')[0].innerHTML;
+		DEBUG('func: getUserComments; output: '+id);
+		if(this.checkId(id, commentsIds)) {
+			DEBUG('func: getUserComments; output: cut '+i);
+			temp.push(commTables[i]);
 		}
-		
-		return false;
 	}
-	function getUserComments(commTables, commentsIds) {
-		var temp = [];
-		
-		for(var i=0, len=commTables.length; i<len; i++) {
-			var contentTd = commTables[i].getElementsByClassName('comments-content')[0];
-			var id = contentTd.getElementsByTagName('A')[0].innerHTML;			// TODO: надо TD с ID дать класс
-			DEBUG('func: getUserComments; output: '+id);
-			if(checkId(id, commentsIds)) {
-				DEBUG('func: getUserComments; output: cut '+i);
-				temp.push(commTables[i]);
-			}
-		}
-		
-		return temp;
-	}
+	
+	return temp;
 };
 
 // вешаем события на кнопки редактировать/удалить/сохранить
@@ -190,15 +197,18 @@ User.prototype.addHandlerOnCommentsEditBtns = function(e) {
 // инициализируем объект tinymce
 User.prototype.initEditorForComment = function(elem) {
 	'use strict';
-	var elemParent = findParent(elem, 'comments-table');
-	console.log(elem);
+	var elemParent, commentsTextTd, commId;
+	elemParent = findParent(elem, 'comments-table');
+	DEBUG("func: initEditorForComment; elem: " + elem);
 	
 	if(elemParent === null) return;
-	var commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	
+	commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	
 	DEBUG('func: initEditorForComment; output: commentsTextTd: '+commentsTextTd);
 	DEBUG('func: initEditorForComment; output: Редактирование: '+elem.getAttribute('data-id'));
-	var commId = elem.getAttribute('data-id');
+	
+	commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
 	elem.innerHTML = 'Сохранить';
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
@@ -285,9 +295,9 @@ User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentTy
 	for(var key in argArr) {
 		var val = argArr[key];
 		data += key + '=' + val;
-		(Object.keys(argArr).length > j++) ? data += '&' : console.log('Параметр всего 1');	// TODO: тут лажа какая-то
+		(Object.keys(argArr).length > j++) ? data += '&' : DEBUG('func: _sendSaveRequest; Параметр всего 1');	// TODO: тут лажа какая-то
 	}
-	console.log("data: "+data);
+	DEBUG("func: _sendSaveRequest; data: "+data);
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function() {
 		if(self._XMLHttpRequest.readyState == 4) {

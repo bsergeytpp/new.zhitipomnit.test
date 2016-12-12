@@ -198,7 +198,8 @@
 						//if($val === $row['parent']) continue;
 						
 						//if($val === $row['comments_id']) continue;
-						if($i == 3)	echo "<td class='comment-text'>". $val ."</td>";
+						if($i == 0)	echo "<td class='comment-id'>". $val ."</td>";
+						else if($i == 3)	echo "<td class='comment-text'>". $val ."</td>";
 						else echo "<td>". $val ."</td>";
 						$i++;
 					}

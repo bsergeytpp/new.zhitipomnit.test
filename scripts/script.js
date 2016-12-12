@@ -31,7 +31,7 @@ addEventListenerWithOptions(document, "touchmove", function(e) {}, {passive: tru
 addEventListenerWithOptions(document, "touchend", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "wheel", function(e) {
 	//var respTime = performance.now() - e.timeStamp;
-	//console.log(respTime);
+	//DEBUG("event on wheel; respTime: " + respTime);
 	
 }, {passive: true} );
 
@@ -298,7 +298,7 @@ function makeCommentsTree() {
 			for(var j=0; j<comm_tables.length; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
-				DEBUG('func: makeCommentsTree; output: Current id: '+temp_id);
+				//DEBUG('func: makeCommentsTree; output: Current id: '+temp_id);
 				
 				if(temp_id == parent_id) {
 					DEBUG('func: makeCommentsTree; output: Parent is found: '+comm_tables[j]);
@@ -367,8 +367,8 @@ function addCommentsAjax(commentsForm) {
 			clearTimeout(timeout);
 			
 			(request.status != 200) 
-			? console.log('Ошибка: ' + request.responseText)
-			: console.log('Запрос отправлен. Все - хорошо. Ответ сервера: '+request.responseText);
+			? DEBUG('func: addCommentsAjax; Ошибка: ' + request.responseText)
+			: DEBUG('func: addCommentsAjax; Запрос отправлен. Все - хорошо. Ответ сервера: '+request.responseText);
 		}
 	};
 	
@@ -405,8 +405,8 @@ function updateCommentsWrapper() {
 		if(request.readyState == 4) {
 			clearTimeout(timeout);
 			(request.status != 200) 
-			? console.log('Ошибка: ' + request.responseText)
-			: console.log('Запрос отправлен. Все - хорошо.');
+			? DEBUG('func: updateCommentsWrapper; Ошибка: ' + request.responseText)
+			: DEBUG('func: updateCommentsWrapper; Запрос отправлен. Все - хорошо.');
 			
 			// выключаем форму комментирования
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');

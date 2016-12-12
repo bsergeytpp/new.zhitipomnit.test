@@ -87,11 +87,12 @@ Admin.prototype.addCommentsEditBtn = function() {
 		appendScript('scripts/tinymce/tinymce.min.js');							
 	}
 	
+	// если комментарии есть
 	if(this._commentsTables === null) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		var commId = this._commentsTables[i].getElementsByTagName('A')[0].innerHTML;
-		var editTr = this.createEditCommentsTr(commId);
+		var commId = this._commentsTables[i].getElementsByClassName()[0];
+		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
 		this._commentsTables[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}
 	
@@ -273,7 +274,7 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 				self._responseObject = JSON.parse(response);
 			}
 			catch(e) {
-				DEBUG('func: _getElemByDBId; Пришла не JSON строка');
+				DEBUG('func: _getElemByDBId; Пришла не JSON строка: ' + e.toString());
 			}
 		}
 		
@@ -370,9 +371,9 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 	for(var key in argArr) {
 		var val = argArr[key];
 		data += key + '=' + val;
-		(Object.keys(argArr).length > j++) ? data += '&' : console.log('Параметр всего 1');	// TODO: тут лажа какая-то
+		(Object.keys(argArr).length > j++) ? data += '&' : DEBUG('func: _sendSaveRequest; Параметр всего 1');	// TODO: тут лажа какая-то
 	}
-	console.log("data: "+data);
+	DEBUG("func: _sendSaveRequest; data: " + data);
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function() {
 		if(self._XMLHttpRequest.readyState == 4) {

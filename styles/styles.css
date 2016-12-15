@@ -413,7 +413,7 @@ body::before {
 }
 .article-news strong {
     padding: 5px;
-    width: 100%;
+    width: 80%;
     box-sizing: border-box;
 }
 .article-news-header {
@@ -617,6 +617,17 @@ p.quotes:before {
 	padding: 5px;
 	width: 80%;
 	margin: 10px 0 10px auto;
+}
+.comments-num {
+	width: 15%;
+    right: 0;
+    position: absolute;
+    top: 5px;
+}
+.comments-num img {}
+.comments-num strong {
+	padding: 0;
+    vertical-align: super;
 }
 .disable-hover, .disable-hover * {
 	pointer-events: none !important;

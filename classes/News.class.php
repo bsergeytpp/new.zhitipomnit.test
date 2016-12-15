@@ -72,6 +72,11 @@
 			
 			for($i = 0; $i<$this->totalNews; $i++) {
 				$this->newsArr[$i] = $this->createExceptNews($this->newsArr[$i]);
+				$commentsCount = $this->getNewsCommentsCount($this->newsArr[$i]);
+				
+				if(!$commentsCount) $commentsCount = 0;
+				
+				$this->newsArr[$i] = str_replace('commentsNum', $commentsCount, $this->newsArr[$i]);
 			}
 
 			$this->createNewsList();
@@ -97,6 +102,26 @@
 				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
+		}
+		
+		private function getNewsCommentsCount($news) {
+			global $link;
+			$begin = strpos($news, 'index.php');
+			$end = strpos($news, '" class="article-news-more"');
+			$fullUrl = 'http://'.$_SERVER['HTTP_HOST'].'/'.substr($news, $begin, $end - $begin);
+			
+			if($link) {
+				$query = "SELECT * FROM comments WHERE comments_location = '" . $fullUrl . "'";
+				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				
+				if($result === false) echo 'Новость не найдена';
+				else {
+					$num_rows = pg_num_rows($result);
+					return $num_rows;				
+				}
+			}
+			
+			return false;
 		}
 		
 		private function getSingleDbNews($pageNum) {

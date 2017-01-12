@@ -57,6 +57,13 @@
 	}
 	
 	class DbNewsClass extends NewsClass {
+		protected $id = null;
+		
+		public function __construct($id, $date, $page) {
+			if(isset($id)) $this->id = $id;
+			parent::__construct($date, $page);
+		}
+		
 		public function getNews() {
 			global $link;
 			$query = 'SELECT * FROM news';
@@ -95,7 +102,7 @@
 				
 				$this->newsDate = implode('-', $dateArr);*/
 				
-				return $this->getSingleDbNews($this->pageNum);
+				return $this->getSingleDbNews($this->pageNum, $this->id);
 			}
 			else {
 				echo "<h1>Такой новости не существует!</h1>";
@@ -124,9 +131,9 @@
 			return false;
 		}
 		
-		private function getSingleDbNews($pageNum) {
+		private function getSingleDbNews($pageNum, $id) {
 			global $link;
-			$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."'";
+			$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."' AND news_id = ".$id;
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			$news = pg_fetch_assoc($res);
 			
@@ -152,7 +159,7 @@
 			$news['news_header'] = exceptStr(strip_tags($news['news_header']));
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
 			$pattern = ['newsId', 'newsDate', 'newsText', 'newsUrl'];
-			$replacement = [$news['news_id'], $news['news_date'], $news['news_header'], $news['news_date']];
+			$replacement = [$news['news_id'], $news['news_date'], $news['news_header'], $news['news_date']."&id=".$news['news_id']];
 			$newsTemplate = str_replace($pattern, $replacement, $newsTemplate);
 
 			return $newsTemplate;

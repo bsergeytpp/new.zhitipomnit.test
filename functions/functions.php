@@ -64,7 +64,7 @@
 		return $tempArr;
 	}
 	
-	function checkNewsExistence($date, $page) {
+	function checkNewsExistence($date, $page, $id) {
 		if(file_exists('content/news/'.convertDate($date).'.html')) {	// формат гггг-мм-дд
 			return new OldNewsClass(convertDate($date), $page);
 		}
@@ -74,7 +74,7 @@
 		if(file_exists('content/news/'.$date.'.txt')) {
 			return new OtherNewsClass($date, $page);
 		}
-		return new DbNewsClass($date, $page);
+		return new DbNewsClass($id, $date, $page);
 	}
 	
 	function checkPublsExistence($page, $date) {

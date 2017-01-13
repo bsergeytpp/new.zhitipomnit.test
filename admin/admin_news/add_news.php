@@ -27,7 +27,9 @@
 			<p>Заголовок: <input type="text" name="news-header" size="20" required></p>
 			<p>Текст: <textarea id="news-textarea" name="news-text" size="50"></textarea></p>
 			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->
-			<p>Добавить картинку: <input type="file" name="news-image"></p>
+			<p>Добавить картинку:</p> 
+			<p class="image-file">[1]<input type="file" name="news-image[]"></p>
+			<p><a class="add-image-btn" href="#more-images">+</a></p>
 			<p>
 				<input type="radio" name="news-image-align" value="left">Слева
 				<input type="radio" name="news-image-align" value="center">По центру
@@ -36,4 +38,20 @@
 			<p><input type="submit" value="Добавить"></p>
 		</form>
     </body>
+	<script>
+		var addBtn = document.getElementsByClassName('add-image-btn')[0];
+		addBtn.addEventListener('click', function (e) {
+			var target = e.target;
+			var targetParent = target.parentNode;
+			var prevFileField = targetParent.previousElementSibling;
+			var newFileField = document.createElement('P');
+			var newInput = prevFileField.lastChild.cloneNode();
+			var totalFileFields = document.getElementsByClassName('image-file').length + 1;
+			
+			newFileField.classList.add('image-file');
+			newFileField.innerHTML = "[" + totalFileFields + "]";
+			newFileField.appendChild(newInput);
+			targetParent.parentNode.insertBefore(newFileField, targetParent);
+		}, false);
+	</script>
 </html>

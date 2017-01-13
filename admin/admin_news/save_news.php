@@ -7,27 +7,39 @@
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($link) {
-			$tmpName = $_FILES['news-image']['tmp_name'];
-			$img = null;
+			$tmpNames = [];
+			foreach($_FILES['news-image']['error'] as $key => $error) {
+				if($error == UPLOAD_ERR_OK) {
+					$tmpNames[] = $_FILES['news-image']['tmp_name'][$key];
+				}
+			} 
+			
+			$img = [];
 			$imgAlign = 'center';
 			
-			if(is_uploaded_file($tmpName)) {
-				//if(!file_exists($_FILES['news-image']['name'])) {
-					move_uploaded_file($tmpName, 'admin/images/'.$_FILES['news-image']['name']);
-					$img = 'admin/images/'.$_FILES['news-image']['name'];
+			$totalFiles = count($tmpNames);
+			
+			for($i=0; $i<$totalFiles; $i++) {
+				if(is_uploaded_file($tmpNames[$i])) {
+					move_uploaded_file($tmpNames[$i], '../images/'.$_FILES['news-image']['name'][$i]);
+					$img[] = '/admin/images/'.$_FILES['news-image']['name'][$i];
 					$imgAlign = $_POST['news-image-align'];
-				//}
+				}
 			}
 			
 			$date = $_POST['news-date'];
 			$header = clearStr($_POST['news-header']);
 			$text = clearStr($_POST['news-text']);
 			
-			if($img !== null) {
-				$tmpDiv = "<div style='text-align: $imgAlign'><img src='$img' alt=''></div>";
-				$text = pg_escape_string(str_replace('$IMAGE1', $tmpDiv, $text));
-				echo "новый текст: ".$text;
+			if(count($img) >= 0) {
+				for($i=0, $j=1; $i<$totalFiles; $i++, $j++) {
+					$tmpDiv = "<div style='text-align: $imgAlign'><img src='$img[$i]' alt=''></div>";
+					$text = str_replace('$IMAGE'.$j, $tmpDiv, $text);
+				}
+				//echo "новый текст: ".$text;
 			}
+			
+			$text = pg_escape_string($text);
 			
 			$author = (isset($_SESSION['user'])) ? $_SESSION['user'] : 'default';
 			$query = "INSERT INTO news (news_date, news_header, news_text, news_author)
@@ -35,7 +47,7 @@
 			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			
 			if($result === false) echo 'Новость не была добавлена';
-			else echo 'Новость была добавлена';			
+			else echo 'Новость была добавлена';	
 		}
 		else {
 			/*$newsArr[] = clearStr($_POST['news-date']);

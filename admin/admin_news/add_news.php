@@ -28,7 +28,7 @@
 			<p>Текст: <textarea id="news-textarea" name="news-text" size="50"></textarea></p>
 			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->
 			<p>Добавить картинку:</p> 
-			<p class="image-file">[1]<input type="file" name="news-image[]">
+			<p class="image-file">[$IMAGE1]<input type="file" name="news-image[]">
 				<select size="1" name="image-align[]">
 					<option value="left">Слева</option>
 					<option selected value="center">По центру</option>
@@ -49,7 +49,7 @@
 			var totalFileFields = document.getElementsByClassName('image-file').length + 1;
 			console.log(totalFileFields);
 			
-			newFileField.firstChild.textContent = "[" + totalFileFields + "]";
+			newFileField.firstChild.textContent = "[$IMAGE" + totalFileFields + "]";
 			targetParent.parentNode.insertBefore(newFileField, targetParent);
 		}, false);
 	</script>

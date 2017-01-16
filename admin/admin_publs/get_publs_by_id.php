@@ -10,8 +10,10 @@
 		if($link) {
 			if(isset($_GET['id'])) {
 				$id = (int)$_GET['id'];
-				$query = "SELECT * FROM publs WHERE publs_id = " . $id;
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "SELECT * FROM publs WHERE publs_id = $1";
+				$result = pg_prepare($link, "get_publs_query", $query);
+				$result = pg_execute($link, "get_publs_query", array("$id")) 
+						  or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Публикация не найдена';
 				else {

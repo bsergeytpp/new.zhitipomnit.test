@@ -31,6 +31,7 @@
 			$date = $_POST['news-date'];
 			$header = clearStr($_POST['news-header']);
 			$text = clearStr($_POST['news-text']);
+			$author = clearStr((isset($_SESSION['user'])) ? $_SESSION['user'] : 'default');
 			
 			// вставляем ссылки на картинки
 			if(count($img) >= 0) {
@@ -39,14 +40,15 @@
 					$text = str_replace('$IMAGE'.$j, $tmpDiv, $text);
 				}
 			}
-						
+			
 			$text = pg_escape_string($text);
 			
-			$author = (isset($_SESSION['user'])) ? $_SESSION['user'] : 'default';
 			$query = "INSERT INTO news (news_date, news_header, news_text, news_author)
-					  VALUES ('$date', '$header', '$text', '" . $author . "')";
-			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
-			
+					  VALUES ($1, $2, $3, $4)";
+			$result = pg_prepare($link, "save_news_query", $query);
+			$result = pg_execute($link, "save_news_query", array("$date", "$header", "$text", "$author"))
+					  or die('Query error: '. pg_last_error());;
+						
 			if($result === false) echo 'Новость не была добавлена';
 			else echo 'Новость была добавлена';
 		}

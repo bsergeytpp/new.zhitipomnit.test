@@ -12,10 +12,10 @@
 				$text = clearStr($_POST['text']);
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE news " .
-						 "SET " . pg_escape_string($name) . " = '" . pg_escape_string($text) . "' " . 
-						 "WHERE news_id = " . $id;
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "UPDATE news SET " . pg_escape_string($name) . " = $1 WHERE news_id = $2";
+				$result = pg_prepare($link, "update_news_query", $query);
+				$result = pg_execute($link, "update_news_query", array("$text", "$id")) 
+						  or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Новость не была обновлена';
 				else echo 'Новость была обновлена';			

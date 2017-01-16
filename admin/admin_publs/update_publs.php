@@ -12,10 +12,11 @@
 				$text = clearStr($_POST['text']);
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE publs " .
-						 "SET " . pg_escape_string($name) . " = '" . pg_escape_string($text) . "' " . 
-						 "WHERE publs_id = " . $id;
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "UPDATE publs SET " . pg_escape_string($name) . " = $1 " . 
+						 "WHERE publs_id = $2";
+				$result = pg_query($link, "update_publs_query", $query);
+				$result = pg_query($link, "update_publs_query", array("$text", "$id")) 
+						  or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Публикация не была обновлена';
 				else echo 'Публикация была обновлена';			

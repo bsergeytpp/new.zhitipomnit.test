@@ -8,22 +8,23 @@
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($link) {
 			$tmpNames = [];
+			$img = [];
+			$imgAlign = $_POST['image-align'];
+			
+			// получаем список файлов
 			foreach($_FILES['news-image']['error'] as $key => $error) {
 				if($error == UPLOAD_ERR_OK) {
 					$tmpNames[] = $_FILES['news-image']['tmp_name'][$key];
 				}
-			} 
-			
-			$img = [];
-			$imgAlign = 'center';
-			
+			}
+
 			$totalFiles = count($tmpNames);
 			
+			// загружаем файлы в папку
 			for($i=0; $i<$totalFiles; $i++) {
 				if(is_uploaded_file($tmpNames[$i])) {
 					move_uploaded_file($tmpNames[$i], '../images/'.$_FILES['news-image']['name'][$i]);
 					$img[] = '/admin/images/'.$_FILES['news-image']['name'][$i];
-					$imgAlign = $_POST['news-image-align'];
 				}
 			}
 			
@@ -31,14 +32,14 @@
 			$header = clearStr($_POST['news-header']);
 			$text = clearStr($_POST['news-text']);
 			
+			// вставляем ссылки на картинки
 			if(count($img) >= 0) {
 				for($i=0, $j=1; $i<$totalFiles; $i++, $j++) {
-					$tmpDiv = "<div style='text-align: $imgAlign'><img src='$img[$i]' alt=''></div>";
+					$tmpDiv = "<div style='text-align: $imgAlign[$i]'><img src='$img[$i]' alt=''></div>";
 					$text = str_replace('$IMAGE'.$j, $tmpDiv, $text);
 				}
-				//echo "новый текст: ".$text;
 			}
-			
+						
 			$text = pg_escape_string($text);
 			
 			$author = (isset($_SESSION['user'])) ? $_SESSION['user'] : 'default';
@@ -47,7 +48,7 @@
 			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			
 			if($result === false) echo 'Новость не была добавлена';
-			else echo 'Новость была добавлена';	
+			else echo 'Новость была добавлена';
 		}
 		else {
 			/*$newsArr[] = clearStr($_POST['news-date']);

@@ -28,13 +28,14 @@
 			<p>Текст: <textarea id="news-textarea" name="news-text" size="50"></textarea></p>
 			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->
 			<p>Добавить картинку:</p> 
-			<p class="image-file">[1]<input type="file" name="news-image[]"></p>
-			<p><a class="add-image-btn" href="#more-images">+</a></p>
-			<p>
-				<input type="radio" name="news-image-align" value="left">Слева
-				<input type="radio" name="news-image-align" value="center">По центру
-				<input type="radio" name="news-image-align" value="right">Справа
+			<p class="image-file">[1]<input type="file" name="news-image[]">
+				<select size="1" name="image-align[]">
+					<option value="left">Слева</option>
+					<option selected value="center">По центру</option>
+					<option value="right">Справа</option>
+				</select>
 			</p>
+			<p><a class="add-image-btn" href="#more-images">+</a></p>
 			<p><input type="submit" value="Добавить"></p>
 		</form>
     </body>
@@ -44,13 +45,11 @@
 			var target = e.target;
 			var targetParent = target.parentNode;
 			var prevFileField = targetParent.previousElementSibling;
-			var newFileField = document.createElement('P');
-			var newInput = prevFileField.lastChild.cloneNode();
+			var newFileField = prevFileField.cloneNode(true);
 			var totalFileFields = document.getElementsByClassName('image-file').length + 1;
+			console.log(totalFileFields);
 			
-			newFileField.classList.add('image-file');
-			newFileField.innerHTML = "[" + totalFileFields + "]";
-			newFileField.appendChild(newInput);
+			newFileField.firstChild.textContent = "[" + totalFileFields + "]";
 			targetParent.parentNode.insertBefore(newFileField, targetParent);
 		}, false);
 	</script>

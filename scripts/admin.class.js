@@ -155,6 +155,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			   'POST', 
 			   'admin/admin_comments/update_comment.php', 
 			   'application/x-www-form-urlencoded');
+			updateCommentsWrapper();
 		}
 	}
 	else if(target.classList.contains('del-comm')) {
@@ -170,6 +171,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			   'POST', 
 			   'admin/admin_comments/delete_comment.php', 
 			   'application/x-www-form-urlencoded');
+			updateCommentsWrapper();
 		}
 		else return;
  	}
@@ -305,13 +307,14 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 					e.stopPropagation();
 					var updatedText = tinymce.activeEditor.getContent();
 					// запрос на сохранение элемента
-					var reqTarget = (this.className === 'article-news') ? 'news' : 'publs';
-					this._sendSaveRequest({
+					var reqTarget = (className.includes('news')) ? 'news' : 'publs';
+					self._sendSaveRequest({
 						'id': id,
-						'text': updatedText
+						'text': updatedText,
+						'name': reqTarget+'_text'
 					   },
 					   'POST', 
-					   'admin/update_'+reqTarget+'.php', 
+					   'admin/admin_'+reqTarget+'/update_'+reqTarget+'.php', 
 					   'application/x-www-form-urlencoded');
 					document.body.removeChild(this);	// удаляем div редактирования
 				} 
@@ -336,7 +339,7 @@ Admin.prototype._createEditDiv = function(className) {
 	closeBtn.setAttribute('href', '#');
 	div.className = 'admin-edit-elem'; 
 	
-	if(className === 'news-full-container') {
+	if(className.includes('news')) {
 		form.innerHTML = 'ID: ' + this._responseObject['news_id'] + ' | ' + 
 						 'Загловок: ' + this._responseObject['news_header'];
 		textarea.innerHTML = this._responseObject['news_text'];
@@ -383,7 +386,7 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 			}
 			else {
 				DEBUG('func: _sendSaveRequest; output: Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
-				updateCommentsWrapper();
+				//updateCommentsWrapper();
 			}
 		}
 	};
@@ -398,8 +401,8 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 // функция делает AJAX запрос на выборку новости/статьи по ID
 Admin.prototype._getElemByDBId = function(className, id, callback) {
 	'use strict';
-	// новость или статья определяет переменная pattern
-	var pattern = (className === 'news-full-container') ? 'news' : 'publs' ;
+	// новость или статья
+	var pattern = (className.includes('news')) ? 'news' : 'publs';
 	var self = this;
 	
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -414,7 +417,7 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 				var resp = self._XMLHttpRequest.responseText;
 				if(resp != null) {								// в ответ что-то пришло
 					if(typeof callback  == 'function') {
-						callback.call(self._XMLHttpRequest);	// в ответ приходит json строка, 
+						callback.call(self._XMLHttpRequest);	// и это json строка, 
 					}											// которая отдается в виде параметра в функцию callback
 				}
 				else {

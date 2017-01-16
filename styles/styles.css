@@ -513,7 +513,7 @@ p.quotes:before {
 	height: 25px;
 	color: black;
 	font-weight: bold;
-	right: 0;
+	left: 0;
 	cursor: pointer;
 	text-align: center;
 }

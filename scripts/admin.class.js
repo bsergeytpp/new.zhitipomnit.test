@@ -307,7 +307,7 @@ Admin.prototype.addHandlerOnEditBtns = function(e) {
 					e.stopPropagation();
 					var updatedText = tinymce.activeEditor.getContent();
 					// запрос на сохранение элемента
-					var reqTarget = (className.includes('news')) ? 'news' : 'publs';
+					var reqTarget = (className.indexOf('news') > -1) ? 'news' : 'publs';
 					self._sendSaveRequest({
 						'id': id,
 						'text': updatedText,
@@ -339,17 +339,11 @@ Admin.prototype._createEditDiv = function(className) {
 	closeBtn.setAttribute('href', '#');
 	div.className = 'admin-edit-elem'; 
 	
-	if(className.includes('news')) {
-		form.innerHTML = 'ID: ' + this._responseObject['news_id'] + ' | ' + 
-						 'Загловок: ' + this._responseObject['news_header'];
-		textarea.innerHTML = this._responseObject['news_text'];
-	}
-	else {
-		form.innerHTML = 'ID: ' + this._responseObject['publs_id'] + ' | ' + 
-						 'Загловок: ' + this._responseObject['publs_header'];
-		textarea.innerHTML = this._responseObject['publs_text'];
-	} 
-		
+	var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';
+	form.innerHTML = 'ID: ' + this._responseObject[pattern+'_id'] + ' | ' + 
+					 'Загловок: ' + this._responseObject[pattern+'_header'];
+	textarea.innerHTML = this._responseObject[pattern+'_text'];
+
 	form.appendChild(textarea);
 	form.appendChild(saveBtn);
 	form.appendChild(closeBtn);
@@ -396,13 +390,13 @@ Admin.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentT
 	this._XMLHttpRequest.open(reqType, reqTarget, true);
 	this._XMLHttpRequest.setRequestHeader("Content-Type", contentType);
 	this._XMLHttpRequest.send(data);
-}
+};
 
 // функция делает AJAX запрос на выборку новости/статьи по ID
 Admin.prototype._getElemByDBId = function(className, id, callback) {
 	'use strict';
 	// новость или статья
-	var pattern = (className.includes('news')) ? 'news' : 'publs';
+	var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';
 	var self = this;
 	
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -417,8 +411,8 @@ Admin.prototype._getElemByDBId = function(className, id, callback) {
 				var resp = self._XMLHttpRequest.responseText;
 				if(resp != null) {								// в ответ что-то пришло
 					if(typeof callback  == 'function') {
-						callback.call(self._XMLHttpRequest);	// и это json строка, 
-					}											// которая отдается в виде параметра в функцию callback
+						callback.call(self._XMLHttpRequest);	// отдаем это в виде параметра в callback-функцию 
+					}
 				}
 				else {
 					DEBUG("func: _getElemByDBId; output: Херово!");

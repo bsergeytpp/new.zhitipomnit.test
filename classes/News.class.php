@@ -4,13 +4,15 @@
 		protected $pageNum = 1;
 		protected $newsArr = [];
 		protected $totalNews = null;
+		protected $newsType = null;
 		
 		abstract public function getNews();
 		abstract public function getSingleNews();
 		
-		public function __construct($date, $page) {
+		public function __construct($date, $page, $type) {
 			if(isset($date)) $this->newsDate = $date;
 			if(isset($page)) $this->pageNum = $page;
+			if(isset($type)) $this->newsType = $type;
 		}
 		
 		public function setDate($date) {
@@ -59,14 +61,20 @@
 	class DbNewsClass extends NewsClass {
 		protected $id = null;
 		
-		public function __construct($id, $date, $page) {
+		public function __construct($id, $date, $page, $type) {
 			if(isset($id)) $this->id = $id;
-			parent::__construct($date, $page);
+			parent::__construct($date, $page, $type);
 		}
 		
 		public function getNews() {
 			global $link;
-			$query = 'SELECT * FROM news';
+			
+			if($this->newsDate !== '') {
+				$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."'";
+			}
+			else {
+				$query = 'SELECT * FROM news';
+			}
 			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 			//echo "<h4>Новости из базы данных</h4>";
 			
@@ -75,6 +83,11 @@
 			}
 			
 			$this->totalNews = count($this->newsArr);
+			if($this->totalNews < 1) {
+				echo "Новости не найдены";
+				return;
+			} 
+			
 			$this->sortNews();
 			
 			for($i = 0; $i<$this->totalNews; $i++) {
@@ -87,6 +100,36 @@
 			}
 
 			$this->createNewsList();
+		}
+		
+		public function getNewsByDate() {
+			global $link;
+			
+			$query = "SELECT * FROM news WHERE news_date = $1";
+			$result = pg_prepare($link, "get_news_by_date", $query);
+			$result = pg_execute($link, "get_news_by_date", array($this->newsDate))
+					  or die('Query error: '. pg_last_error());;
+			
+			if($result === false) echo "$this->newsDate не было новостей";
+			else {
+				while($row = pg_fetch_assoc($result)) {
+					$this->newsArr[] = $row;
+				}
+				
+				$this->totalNews = count($this->newsArr);
+				$this->sortNews();
+				
+				for($i = 0; $i<$this->totalNews; $i++) {
+					$this->newsArr[$i] = $this->createExceptNews($this->newsArr[$i]);
+					$commentsCount = $this->getNewsCommentsCount($this->newsArr[$i]);
+					
+					if(!$commentsCount) $commentsCount = 0;
+					
+					$this->newsArr[$i] = str_replace('commentsNum', $commentsCount, $this->newsArr[$i]);
+				}
+
+				$this->createNewsList();
+			}
 		}
 	
 		public function getSingleNews() {
@@ -130,7 +173,7 @@
 			
 			return false;
 		}
-		
+				
 		private function getSingleDbNews($pageNum, $id) {
 			global $link;
 			$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."' AND news_id = ".$id;
@@ -205,7 +248,7 @@
 			$this->totalNews = $p_elems->length;
 			
 			// делаем ссылки на страницы списка
-			$list = getULlist($this->totalNews, OLDNEWS_MAXCOUNT, 'index.php?pages=news&custom-news-date=all-old&page=', $this->pageNum);
+			$list = getULlist($this->totalNews, OLDNEWS_MAXCOUNT, 'index.php?pages=news&type=old&page=', $this->pageNum);
 			
 			// новостей мало, список не делаем
 			if($this->totalNews <= OLDNEWS_MAXCOUNT) {
@@ -234,7 +277,7 @@
 		}
 		
 		private function getSingleOldNews() {		
-			echo "<strong><a href='index.php?pages=news&custom-news-date=all-old&page=".$this->pageNum."'>К новостям</a></strong>";
+			echo "<strong><a href='index.php?pages=news&type=old&page=".$this->pageNum."'>К новостям</a></strong>";
 			echo "<script>document.addEventListener('DOMContentLoaded', function() { changeStyle(); }, false);</script>";
 			
 			return $this->adaptOldNews(file_get_contents('content/news/'.$this->newsDate.'.html'));

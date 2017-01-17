@@ -11,6 +11,11 @@
 			if(isset($_POST['text']) && isset($_POST['id'])) {
 				$text = clearStr($_POST['text']);
 				$name = clearStr($_POST['name']);
+				
+				if($name === 'news_header') {
+					$text = strip_tags($text);
+				}
+				
 				$id = (int)$_POST['id'];
 				$query = "UPDATE news SET " . pg_escape_string($name) . " = $1 WHERE news_id = $2";
 				$result = pg_prepare($link, "update_news_query", $query);

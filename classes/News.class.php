@@ -42,7 +42,7 @@
 
 		protected function sortNews() {
 			for($i=1; $i<$this->totalNews; $i++) {					
-				for($j= $i-1; $j>=0; $j--) {
+				for($j=$i-1; $j>=0; $j--) {
 					$tempCur = reverseDate($this->newsArr[$j][0]);
 					$tempNext = reverseDate($this->newsArr[$j+1][0]);
 					
@@ -168,7 +168,7 @@
 		protected function sortNews() {
 			for($i=1; $i<$this->totalNews; $i++) {					
 				for($j=$i-1; $j>=0; $j--) {
-					if($this->newsArr[$j]['news_date'] < $this->newsArr[$j+1]['news_date']) {
+					if($this->newsArr[$j]['news_id'] < $this->newsArr[$j+1]['news_id']) {
 						$temp = $this->newsArr[$j+1];
 						$this->newsArr[$j+1] = $this->newsArr[$j];
 						$this->newsArr[$j] = $temp;

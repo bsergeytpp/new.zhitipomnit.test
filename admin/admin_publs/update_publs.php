@@ -11,6 +11,11 @@
 			if(isset($_POST['text']) && isset($_POST['id'])) {
 				$text = clearStr($_POST['text']);
 				$name = clearStr($_POST['name']);
+				
+				if($name === 'publs_header') {
+					$text = strip_tags($text);
+				}
+				
 				$id = (int)$_POST['id'];
 				$query = "UPDATE publs SET " . pg_escape_string($name) . " = $1 " . 
 						 "WHERE publs_id = $2";

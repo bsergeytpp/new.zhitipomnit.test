@@ -91,7 +91,7 @@ Admin.prototype.addCommentsEditBtn = function() {
 	if(this._commentsTables === null) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		var commId = this._commentsTables[i].getElementsByClassName()[0];
+		var commId = this._commentsTables[i].getElementsByClassName('comment-id')[0];
 		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
 		this._commentsTables[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}

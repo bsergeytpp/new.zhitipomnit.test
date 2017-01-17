@@ -131,15 +131,15 @@
 	
 	/*
 		Функция вывода всех комментариев для страницы
-		- принимает адрес страницы в виде URI
+		- принимает ID материала
 	*/
-	function getComments($uri) {
+	function getComments($id) {
 		global $link;
 		
 		if(!$link) {
 			$link = connectToPostgres();
 		}
-		if($link) {
+		if($link) { // repeat('  ', previous.level + 1) ||  ???
 			$rec_query = "WITH RECURSIVE rec_comments as (
 						SELECT
 							comments_id as id, 
@@ -147,8 +147,8 @@
 							comments_author as author,
 							comments_date as date,
 							comments_parent_id as parent,
-							comments_location as path, 
-							comments_location as tree, 
+							comments_location_id as path, 
+							comments_location_id as tree, 
 							0 as level
 						FROM comments
 						WHERE comments_parent_id is null 
@@ -159,17 +159,22 @@
 							current.comments_author as author,
 							current.comments_date as date,
 							current.comments_parent_id as parent,
-							current.comments_location as path,
-							repeat('  ', previous.level + 1) || current.comments_location as tree,
+							current.comments_location_id as path,
+							current.comments_location_id as tree,
 							previous.level + 1 as level
 						FROM comments current
 						JOIN rec_comments as previous on current.comments_parent_id = previous.id
 					)
 					SELECT id, parent, users.user_login, text, date 
 					FROM rec_comments, users 
-					WHERE path = '".pg_escape_string($uri)."' 
+					WHERE path = '".pg_escape_string($id)."' 
 					AND author = users.user_id ORDER BY id";
 			
+			$query = "SELECT comments.comments_id, comments.comments_parent_id, users.user_login, comments.comments_text, comments.comments_date 
+					  FROM comments, users 
+					  WHERE comments_location_id = '".pg_escape_string($id)."' 
+					  AND comments.comments_author = users.user_id ORDER BY comments.comments_id";
+					
 			$result = pg_query($link, $rec_query) or die('Query error: '. pg_last_error());
 
 			if($result === false) echo 'Ошибка в выборке комментариев';

@@ -37,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = true;
+var _DEBUG = false;
 
 // общая функция-событие на прокрутку
 /*
@@ -287,15 +287,16 @@ function appendScript(src) {
 function makeCommentsTree() {
 	var comm_tables = document.getElementsByClassName('comments-table');
 	
-	for(var i=0; i<comm_tables.length; i++) {
+	for(var i=0, len=comm_tables.length; i<len; i++) {
 		var tr = comm_tables[i].getElementsByTagName('tr')[1];
 		var id = tr.firstChild.innerHTML;
+		console.log("текущий id: " + id);
 		var parent_id = tr.children[1].innerHTML;
 		
 		if(parent_id !== '') {
 			DEBUG('func: makeCommentsTree; output: Parent: '+parent_id);
-			
-			for(var j=0; j<comm_tables.length; j++) {
+			console.log("текущий parent_id: " + parent_id);
+			for(var j=0; j<len; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
 				//DEBUG('func: makeCommentsTree; output: Current id: '+temp_id);
@@ -347,19 +348,37 @@ function setCommentsParentId(e) {
 
 addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 
+function getParamFromLocationSearch(parName) {
+	var location = window.location.search.substring(1);
+	var params = location.split('&');
+	
+	for(var i=0; i<params.length; i++) {
+		var val = params[i].split("=");
+		if(val[0] == parName) {
+			return val[1];
+		}
+	}
+	
+	return null;
+}
+
 // добавляем комментарии без перезагрузки страницы
 function addCommentsAjax(commentsForm) {
 	var text = tinymce.activeEditor.getContent();
 	var login = commentsForm.elements['comments-login'].value;
 	var parentId = commentsForm.elements['comments-parent'].value;
-	var location = window.location;
-	
+	var id = commentsForm.elements['comments-location-id'].value;
+
+	if(!id) {
+		id = getParamFromLocationSearch('id');
+	}
+
 	if(parentId === '') parentId = '';			// ???
 	
 	var data = "comments-text=" + encodeURIComponent(text) + "&" +
 			   "comments-login=" + encodeURIComponent(login) + "&" +
 			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
-			   "location=" + encodeURIComponent(location);
+			   "comments-location-id=" + encodeURIComponent(id);
 	var request = new XMLHttpRequest();
 	
 	request.onreadystatechange = function() {
@@ -433,8 +452,8 @@ function updateCommentsWrapper() {
 	}, 60*1000);
 	
 	setTimeout(function() {
-		var location = window.location.origin + window.location.pathname + window.location.search;
-		request.open('GET', 'admin/comments_list.php?location='+encodeURIComponent(location), true);
+		var id = getParamFromLocationSearch('id');
+		request.open('GET', 'admin/comments_list.php?comments-location-id='+encodeURIComponent(id), true);
 		request.send();
 	}, 1500);
 }

@@ -13,15 +13,12 @@
 				$login = clearStr($_POST['comments-login']);
 				$text = filter_var($text, FILTER_SANITIZE_STRING);
 				$login = filter_var($login, FILTER_SANITIZE_STRING);
-				$location = clearStr($_SERVER['HTTP_REFERER']);
-				if($location === '') {
-					clearStr($_POST['location']);
-				}
+				$id = $_POST['comments-location-id'];
 				$user_id = getUserId($login);
 				$parent_id = $_POST['comments-parent'];
 				$date = date('Y-m-d H:i:sO');
-				$query = "INSERT INTO comments (comments_author, comments_location, comments_text, comments_date, comments_parent_id) " .
-						 "VALUES ('$user_id', '$location', '$text', '$date', NULLIF('$parent_id','')::integer)";
+				$query = "INSERT INTO comments (comments_author, comments_location_id, comments_text, comments_date, comments_parent_id) " .
+						 "VALUES ('$user_id', '$id', '$text', '$date', NULLIF('$parent_id','')::integer)";
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Комментарий не был добавлен';

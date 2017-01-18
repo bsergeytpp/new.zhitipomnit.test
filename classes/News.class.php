@@ -156,12 +156,16 @@
 		
 		private function getNewsCommentsCount($news) {
 			global $link;
-			$begin = strpos($news, 'index.php');
-			$end = strpos($news, '" class="article-news-more"');
-			$fullUrl = 'http://'.$_SERVER['HTTP_HOST'].'/'.substr($news, $begin, $end - $begin);
+			$dom = DOMDocument::loadHTML($news);
+			$xpath  = new DOMXPath($dom);
+			$query = '//div[@class="article-news"]';
+			$entries = $xpath->query($query);
+			foreach($entries as $i) {
+				$id = $i->getAttribute('id');
+			}
 			
 			if($link) {
-				$query = "SELECT * FROM comments WHERE comments_location = '" . $fullUrl . "'";
+				$query = "SELECT * FROM comments WHERE comments_location_id = '" . $id . "'";
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Новость не найдена';

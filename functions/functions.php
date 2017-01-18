@@ -139,7 +139,7 @@
 		if(!$link) {
 			$link = connectToPostgres();
 		}
-		if($link) { // repeat('  ', previous.level + 1) ||  ???
+		if($link) {
 			$rec_query = "WITH RECURSIVE rec_comments as (
 						SELECT
 							comments_id as id, 
@@ -148,7 +148,6 @@
 							comments_date as date,
 							comments_parent_id as parent,
 							comments_location_id as path, 
-							comments_location_id as tree, 
 							0 as level
 						FROM comments
 						WHERE comments_parent_id is null 
@@ -160,7 +159,6 @@
 							current.comments_date as date,
 							current.comments_parent_id as parent,
 							current.comments_location_id as path,
-							current.comments_location_id as tree,
 							previous.level + 1 as level
 						FROM comments current
 						JOIN rec_comments as previous on current.comments_parent_id = previous.id
@@ -175,7 +173,7 @@
 					  WHERE comments_location_id = '".pg_escape_string($id)."' 
 					  AND comments.comments_author = users.user_id ORDER BY comments.comments_id";
 					
-			$result = pg_query($link, $rec_query) or die('Query error: '. pg_last_error());
+			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
@@ -209,7 +207,7 @@
 						$i++;
 					}
 					echo "</tr>";
-					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href=''>Ответить</a></td></tr>";
+					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
 					echo "</table>";
 					echo "</div>";
 				}

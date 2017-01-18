@@ -290,12 +290,10 @@ function makeCommentsTree() {
 	for(var i=0, len=comm_tables.length; i<len; i++) {
 		var tr = comm_tables[i].getElementsByTagName('tr')[1];
 		var id = tr.firstChild.innerHTML;
-		console.log("текущий id: " + id);
 		var parent_id = tr.children[1].innerHTML;
 		
 		if(parent_id !== '') {
 			DEBUG('func: makeCommentsTree; output: Parent: '+parent_id);
-			console.log("текущий parent_id: " + parent_id);
 			for(var j=0; j<len; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
@@ -439,11 +437,15 @@ function updateCommentsWrapper() {
 			wrapper.style.height = '';
 			wrapper.style.opacity = '';
 			
-			makeCommentsTree();
 			addLinksToCommentsId();
 			if(window.admin) {
 				admin.setPrivilege();
 			}
+			else if(window.user) {
+				user.checkForUserComments();
+			}
+			makeCommentsTree();
+			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 		}
 	};
 	

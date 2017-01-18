@@ -36,14 +36,14 @@ function Admin() {
 	
 	checkIfAdmin();
 	
-	this.getIsAdmin = function() {
+	this.getAdmin = function() {
 		return isAdmin;
 	};
 };
 
 Admin.prototype.getIsAdmin = function() {
 	'use strict';
-	return this.getIsAdmin();
+	return this.getAdmin();
 };
 
 // проверяем есть ли на странице редактируемые элементы

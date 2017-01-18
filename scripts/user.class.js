@@ -11,6 +11,7 @@ function User() {
 	this._userComments = null;
 	
 	var userLogin = false;
+	var isAdmin = false;
 	var self = this;
 	
 	// выясняем текущий логин
@@ -21,11 +22,20 @@ function User() {
 			if(self._XMLHttpRequest.readyState == 4) {
 				clearTimeout(timeout);
 				var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
+				isAdmin = self._XMLHttpRequest.getResponseHeader('IsAdmin');
+				
+				if(isAdmin) {
+					return;
+				}
 
 				if(resp !== null) {
 					DEBUG("func: checkIfUser; output: Ваш логин: "+resp);
 					userLogin = resp;
-					self.checkForUserComments();
+					
+					// хак-проверка на админа, чтобы не было лишних TR'ов
+					if(document.getElementsByClassName('comments-edit').length === 0) {
+						self.checkForUserComments();
+					}
 				}
 				else {
 					DEBUG("func: checkIfUser; output: Вы не авторизованы!");
@@ -55,9 +65,9 @@ User.prototype.checkForUserComments = function() {
 	
 	if(document.getElementsByClassName('comments-table').length > 0) {
 		commentsTables = document.getElementsByClassName('comments-table');
-		var location = window.location.origin + window.location.pathname + window.location.search;
+		var location_id = getParamFromLocationSearch('id');
 		
-		this.getUserCommentsFromUrl(location, function() {
+		this.getUserCommentsFromId(location_id, function() {
 			var response = this.responseText;
 			var responseObject = null;
 			DEBUG('func: checkForUserComments; output: ' + response + ' это объект');
@@ -254,7 +264,7 @@ User.prototype.createEditCommentsTr = function(commId) {
 	return tr;
 };
 
-User.prototype.getUserCommentsFromUrl = function(location, callback) {
+User.prototype.getUserCommentsFromId = function(location_id, callback) {
 	'use strict';
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -263,18 +273,18 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			
-				DEBUG('func: getUserCommentsFromUrl; output: wha?');
+				DEBUG('func: getUserCommentsFromId; output: wha?');
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
-				DEBUG('func: getUserCommentsFromUrl; output: Пришло: '+resp);
+				DEBUG('func: getUserCommentsFromId; output: Пришло: '+resp);
 				if(resp !== null) {								// в ответ что-то пришло
-					if(typeof callback == 'function') {			// в ответ приходит json строка, 
-						callback.call(self._XMLHttpRequest);	// которая отдается в виде параметра в функцию callback
+					if(typeof callback == 'function') {			
+						callback.call(self._XMLHttpRequest);	// отдаем это в виде параметра в callback-функцию 
 					}											
 				}
 				else {
-					DEBUG("func: getUserCommentsFromUrl; output: Херово!");
+					DEBUG("func: getUserCommentsFromId; output: Херово!");
 				}	
 			}
 		}
@@ -283,7 +293,7 @@ User.prototype.getUserCommentsFromUrl = function(location, callback) {
 	var timeout = setTimeout(function() {
 		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() + '&location=' + encodeURIComponent(location), true);
+	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() + '&comments-location-id=' + encodeURIComponent(location_id), true);
 	this._XMLHttpRequest.send();
 }
 

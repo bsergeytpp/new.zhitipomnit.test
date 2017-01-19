@@ -29,7 +29,7 @@
 
 			if($userLogin !== null) {
 				getUserData($userLogin);
-			}
+			}		
 		?>
 	</table> 
 </body>

@@ -5,6 +5,11 @@
 	global $link;
 	$link = connectToPostgres();
 	
+	if(!$_SESSION['admin']) {
+		echo "Вы не админ";
+		break;
+	}
+	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$text = ''; $id = -1;
 		if($link) {

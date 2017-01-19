@@ -108,7 +108,7 @@
 			$query = "SELECT * FROM news WHERE news_date = $1";
 			$result = pg_prepare($link, "get_news_by_date", $query);
 			$result = pg_execute($link, "get_news_by_date", array($this->newsDate))
-					  or die('Query error: '. pg_last_error());;
+					  or die('Query error: '. pg_last_error());
 			
 			if($result === false) echo "$this->newsDate не было новостей";
 			else {
@@ -156,17 +156,27 @@
 		
 		private function getNewsCommentsCount($news) {
 			global $link;
+			/*
+				Код ниже выбрасывает предупреждение, но работает: 
+				 * DOMDocument::loadHTML(): htmlParseEntityRef: expecting ';' in Entity
+				Подробнее: http://stackoverflow.com/questions/1685277/warning-domdocumentloadhtml-htmlparseentityref-expecting-in-entity
+			*/
 			$dom = DOMDocument::loadHTML($news);
-			$xpath  = new DOMXPath($dom);
+			$xpath = new DOMXPath($dom);
 			$query = '//div[@class="article-news"]';
 			$entries = $xpath->query($query);
+
+			// новость приходит одна, выбираем ее ID
 			foreach($entries as $i) {
 				$id = $i->getAttribute('id');
 			}
 			
 			if($link) {
-				$query = "SELECT * FROM comments WHERE comments_location_id = '" . $id . "'";
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "SELECT * FROM comments WHERE comments_location_id = $1";
+				pg_query($link, "DEALLOCATE ALL");
+				$result = pg_prepare($link, "get_comments", $query);
+				$result = pg_execute($link, "get_comments", array($id)) 
+						  or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Новость не найдена';
 				else {
@@ -180,8 +190,10 @@
 				
 		private function getSingleDbNews($pageNum, $id) {
 			global $link;
-			$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."' AND news_id = ".$id;
-			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$query = "SELECT * FROM news WHERE news_date = $1 AND news_id = $2";
+			$res = pg_prepare($link, "get_single_news", $query);
+			$res = pg_execute($link, "get_single_news", array($this->newsDate, $id)) 
+				   or die('Query error: '. pg_last_error());
 			$news = pg_fetch_assoc($res);
 			
 			if(!$news) {

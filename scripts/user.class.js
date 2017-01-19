@@ -39,6 +39,7 @@ function User() {
 				}
 				else {
 					DEBUG("func: checkIfUser; output: Вы не авторизованы!");
+					User = null;
 					user = null;
 				}
 			}
@@ -293,7 +294,8 @@ User.prototype.getUserCommentsFromId = function(location_id, callback) {
 	var timeout = setTimeout(function() {
 		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() + '&comments-location-id=' + encodeURIComponent(location_id), true);
+	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() 
+							+ '&comments-location-id=' + encodeURIComponent(location_id), true);
 	this._XMLHttpRequest.send();
 }
 

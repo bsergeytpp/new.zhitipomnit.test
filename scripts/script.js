@@ -37,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = false;
+var _DEBUG = true;
 
 // общая функция-событие на прокрутку
 /*
@@ -366,7 +366,22 @@ function addCommentsAjax(commentsForm) {
 	var login = commentsForm.elements['comments-login'].value;
 	var parentId = commentsForm.elements['comments-parent'].value;
 	var id = commentsForm.elements['comments-location-id'].value;
+	var token = commentsForm.elements['security-token'].value;
 
+	var allCookies = document.cookie.split('; ');
+	
+	for(var i = 0; i<allCookies.length; i++) {
+		if(allCookies[i].indexOf('sec-token') !== -1) {
+			var secToken = decodeURIComponent(allCookies[i].substring(10));
+		}
+	}
+	
+	if (secToken !== token) {
+		console.log("Ошибка безопасности.");
+		return;
+		//request.setRequestHeader("X-CSRF-TOKEN", csrfCookie[1]);
+	}
+	
 	if(!id) {
 		id = getParamFromLocationSearch('id');
 	}
@@ -376,6 +391,7 @@ function addCommentsAjax(commentsForm) {
 	var data = "comments-text=" + encodeURIComponent(text) + "&" +
 			   "comments-login=" + encodeURIComponent(login) + "&" +
 			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
+			   "token=" + encodeURIComponent(token) + "&" +
 			   "comments-location-id=" + encodeURIComponent(id);
 	var request = new XMLHttpRequest();
 	

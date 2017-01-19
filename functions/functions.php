@@ -10,6 +10,23 @@
 	
 	$link = false;
 	$userLogin = null;
+	$secret = null;
+	$token = null;
+	$debug = '';
+	
+	session_start();
+	
+	function checkToken($str) {
+		$temp = explode(':', $str);
+		$salt = $temp[0];
+		$temp = $salt . ':' . md5($salt . ':' . $_SESSION['secret']);
+		
+		if($temp === $_SESSION['token']) {
+			return true;
+		}
+		
+		return false;
+	}
 	
 	function clearStr($str) {
 		return preg_replace('~\R~u', "", trim($str));
@@ -140,34 +157,6 @@
 			$link = connectToPostgres();
 		}
 		if($link) {
-			$rec_query = "WITH RECURSIVE rec_comments as (
-						SELECT
-							comments_id as id, 
-							comments_text as text,
-							comments_author as author,
-							comments_date as date,
-							comments_parent_id as parent,
-							comments_location_id as path, 
-							0 as level
-						FROM comments
-						WHERE comments_parent_id is null 
-						UNION ALL
-						SELECT
-							current.comments_id as id,
-							current.comments_text as text,
-							current.comments_author as author,
-							current.comments_date as date,
-							current.comments_parent_id as parent,
-							current.comments_location_id as path,
-							previous.level + 1 as level
-						FROM comments current
-						JOIN rec_comments as previous on current.comments_parent_id = previous.id
-					)
-					SELECT id, parent, users.user_login, text, date 
-					FROM rec_comments, users 
-					WHERE path = '".pg_escape_string($id)."' 
-					AND author = users.user_id ORDER BY id";
-			
 			$query = "SELECT comments.comments_id, comments.comments_parent_id, users.user_login, comments.comments_text, comments.comments_date 
 					  FROM comments, users 
 					  WHERE comments_location_id = '".pg_escape_string($id)."' 
@@ -183,7 +172,7 @@
 				while($row = pg_fetch_assoc($result)) {
 					echo "<div class='comments-div'>";
 					
-					if($row['parent'] !== null) {
+					if($row['comments_parent_id'] !== null) {
 						echo "<table class='comments-table respond'>"; 
 					}
 					else echo "<table class='comments-table'>"; 

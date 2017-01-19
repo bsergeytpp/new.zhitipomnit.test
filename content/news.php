@@ -18,7 +18,6 @@
 						else {
 							$newsClass = new OtherNewsClass($customNewsDate, $pageNum, 'other');
 						}*/
-						
 						if($type === 'db') {
 							if($link) {
 								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db');

@@ -2,7 +2,7 @@
 	session_start();
 	header("HTTP/1.0 401 Unauthorized");
 	require_once "../admin/admin_security/secure.inc.php";
-	require_once "../classes/Admin.class.php";
+	//require_once "../classes/Admin.class.php";
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
@@ -14,12 +14,18 @@
 		}
 		else {
 			$row = checkUser($user, $pw);
+			$salt = rand(1, 1000);
+			$_SESSION['secret'] = rand(1, 1000);
+			$_SESSION['token'] = $salt . ':' . md5($salt . ':' . $_SESSION['secret']);
+			
+			setcookie("sec-token", $_SESSION['token'], 0, '/', 'new.zhitipomnit.test');
 			
 			if($row['user_group'] == 'admins') {
 				$_SESSION['admin'] = true;
 				$_SESSION['user'] = $row['user_login'];
+				$_SESSION['user_id'] = $row['user_id'];
 				header("Location: ../admin/index.php");
-				$admin = new AdminClass($_SESSION['user']);
+				//$admin = new AdminClass($_SESSION['user']);
 			}
 			else {
 				$_SESSION['admin'] = false;

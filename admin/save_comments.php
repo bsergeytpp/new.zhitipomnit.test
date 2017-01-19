@@ -9,6 +9,11 @@
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($link) {
 			if(isset($_POST['comments-text']) && isset($_POST['comments-login'])) {
+				if(!checkToken($_POST['token'])) {
+					echo "Проверка не пройдена.";
+					exit;
+				}
+				
 				$text = clearStr($_POST['comments-text']);
 				$login = clearStr($_POST['comments-login']);
 				$text = filter_var($text, FILTER_SANITIZE_STRING);

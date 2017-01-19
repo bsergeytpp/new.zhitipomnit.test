@@ -20,9 +20,12 @@ function Admin() {
 				if(resp !== null) {
 					DEBUG("func: checkIfAdmin; output: Вы - Админ. Поздравляю!");
 					isAdmin = true;
+					User = null;
+					user = null;
 				}
 				else {
 					DEBUG("func: checkIfAdmin; output: Вы - не Админ. Херово!");
+					Admin = null;
 					admin = null;
 				}
 			}
@@ -150,7 +153,8 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 			// запрос на сохранение элемента
 			this._sendSaveRequest({
 				'comment-id': id,
-				'comment-text': updatedText
+				'comment-text': updatedText,
+				'comment-author': adminLogin
 			   },
 			   'POST', 
 			   'admin/admin_comments/update_comment.php', 

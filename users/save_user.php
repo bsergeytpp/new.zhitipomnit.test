@@ -13,7 +13,7 @@
 				echo "Email не прошел валидацию. Отмена.";
 				return;
 			}
-			$group = $_POST['user-group'];
+			$group = "users";//$_POST['user-group'];
 			$query = "INSERT INTO users (user_login, user_password, user_email, user_group)
 					  VALUES ('$login', '$password', '$email', '$group')";
 			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());

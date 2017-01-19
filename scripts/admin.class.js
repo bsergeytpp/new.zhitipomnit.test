@@ -52,25 +52,32 @@ Admin.prototype.getIsAdmin = function() {
 // проверяем есть ли на странице редактируемые элементы
 Admin.prototype.checkForEditableContent = function() {
 	'use strict';
-	var elem = null;
+	var elem = [];
 	
 	if(document.getElementsByClassName('article-news').length > 0) {
-		elem = document.getElementsByClassName('article-news');					// если это список новостей
+		elem.push(document.getElementsByClassName('article-news'));					// если это список новостей
 	} 
 	
 	if(document.getElementsByClassName('news-full-container').length > 0) {
-		elem = document.getElementsByClassName('news-full-container');			// если это полная новость
+		elem.push(document.getElementsByClassName('news-full-container'));			// если это полная новость
 	}
 	
 	if(document.getElementsByClassName('article-publs').length > 0) {	
-		elem = document.getElementsByClassName('article-publs');				// если это список статей
+		elem.push(document.getElementsByClassName('article-publs'));				// если это список статей
 	}
 	
 	if(document.getElementsByClassName('publs-full-container').length > 0) {
-		elem = document.getElementsByClassName('publs-full-container');			// если это полная статья
+		elem.push(document.getElementsByClassName('publs-full-container'));			// если это полная статья
 	}
 	
-	if(elem != null) this.addEditBtn(elem);
+	if(elem.length > 0) {
+		for(var i=0, len=elem.length; i<len; i++) {
+			this.addEditBtn(elem[i]);
+		}
+	}
+	else {
+		this.addEditBtn(elem[0]);
+	}
 };
 
 // проверяем есть ли на странице редактируемые комментарии

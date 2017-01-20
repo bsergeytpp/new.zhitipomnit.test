@@ -19,7 +19,7 @@ function addEventListenerWithOptions(target, type, handler, options) {
 	}
 	
 	if(target.length !== undefined) {
-		for(var i=0; i<target.length; i++) {
+		for(var i=0, len=target.length; i<len; i++) {
 			target[i].addEventListener(type, handler, optionsOrCapture);
 		}
 	}
@@ -79,7 +79,7 @@ function addNavigationToList() {
 	
 	if(!ul) return;
 	
-	for(var i=0; i<ul.length; i++) {
+	for(var i=0, len=ul.length; i<len; i++) {
 		ul[i].addEventListener('click', navigateUlList, false);
 	}
 }
@@ -122,10 +122,10 @@ function addLinksToCommentsId() {
 	var commentsTable = document.getElementsByClassName('comments-table');
 	
 	if(commentsTable.length || commentsTable) {
-		for(var j=0; j<commentsTable.length; j++) {
+		for(var j=0, len=commentsTable.length; j<len; j++) {
 			var trs = commentsTable[j].getElementsByTagName('TR');
 			
-			for(var i=0; i<trs.length; i++) {
+			for(var i=0, trsLen=trs.length; i<trsLen; i++) {
 				if(trs[i].classList.contains('comments-respond') ||
 				   trs[i].classList.contains('comments-edit')) continue;
 							
@@ -350,7 +350,7 @@ function getParamFromLocationSearch(parName) {
 	var location = window.location.search.substring(1);
 	var params = location.split('&');
 	
-	for(var i=0; i<params.length; i++) {
+	for(var i=0, len=params.length; i<len; i++) {
 		var val = params[i].split("=");
 		if(val[0] == parName) {
 			return val[1];
@@ -370,7 +370,7 @@ function addCommentsAjax(commentsForm) {
 
 	var allCookies = document.cookie.split('; ');
 	
-	for(var i = 0; i<allCookies.length; i++) {
+	for(var i = 0, len = allCookies.length; i<len; i++) {
 		if(allCookies[i].indexOf('sec-token') !== -1) {
 			var secToken = decodeURIComponent(allCookies[i].substring(10));
 		}

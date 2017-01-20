@@ -2,7 +2,6 @@
 	session_start();
 	header("HTTP/1.0 401 Unauthorized");
 	require_once "../admin/admin_security/secure.inc.php";
-	//require_once "../classes/Admin.class.php";
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
@@ -25,7 +24,6 @@
 				$_SESSION['user'] = $row['user_login'];
 				$_SESSION['user_id'] = $row['user_id'];
 				header("Location: ../admin/index.php");
-				//$admin = new AdminClass($_SESSION['user']);
 			}
 			else {
 				$_SESSION['admin'] = false;

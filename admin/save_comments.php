@@ -29,7 +29,7 @@
 				if($result === false) echo 'Комментарий не был добавлен';
 				else {
 					echo 'Комментарий был добавлен';
-					$log_name = 'comments-add';
+					$log_name = 'comment-add';
 					$log_text = 'user '.$_SESSION['user'].' has added a comment: '.$text;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 					$log_date = date('Y-m-d H:i:sO');;

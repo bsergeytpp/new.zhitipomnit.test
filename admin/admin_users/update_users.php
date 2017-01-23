@@ -18,7 +18,15 @@
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
 				if($result === false) echo 'Логин пользователя не был обновлен';
-				else echo 'Логин пользователя был обновлен';			
+				else {
+					echo 'Логин пользователя был обновлен';
+					$log_name = 'user-update';
+					$log_text = 'user '.$_SESSION['user'].' has updated user: '.$name;
+					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$log_date = date('Y-m-d H:i:sO');;
+					$log_important = $_SESSION['admin'];
+					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+				}
 			}
 			echo "Нет данных для обновления.";
 		}

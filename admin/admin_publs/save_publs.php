@@ -15,7 +15,15 @@
 					  or die('Query error: '. pg_last_error());
 			
 			if($result === false) echo 'Публикация не была добавлена';
-			else echo 'Публикация была добавлена';			
+			else {
+				echo 'Публикация была добавлена';
+				$log_name = 'publ-add';
+				$log_text = 'user '.$_SESSION['user'].' has added a publ: '.$header;
+				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$log_date = date('Y-m-d H:i:sO');;
+				$log_important = $_SESSION['admin'];
+				echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+			}				
 		}
 		else {
 			echo "Тут могла быть ваша Публикация.";

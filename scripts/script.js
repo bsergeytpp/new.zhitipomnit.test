@@ -360,6 +360,18 @@ function getParamFromLocationSearch(parName) {
 	return null;
 }
 
+function checkCookieToken(token) {
+	var allCookies = document.cookie.split('; ');
+	
+	for(var i = 0, len = allCookies.length; i<len; i++) {
+		if(allCookies[i].indexOf('sec-token') !== -1) {
+			var secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
+		}
+	}
+	
+	return (secToken === token) ? true : false;
+}
+
 // добавляем комментарии без перезагрузки страницы
 function addCommentsAjax(commentsForm) {
 	var text = tinymce.activeEditor.getContent();
@@ -368,15 +380,7 @@ function addCommentsAjax(commentsForm) {
 	var id = commentsForm.elements['comments-location-id'].value;
 	var token = commentsForm.elements['security-token'].value;
 
-	var allCookies = document.cookie.split('; ');
-	
-	for(var i = 0, len = allCookies.length; i<len; i++) {
-		if(allCookies[i].indexOf('sec-token') !== -1) {
-			var secToken = decodeURIComponent(allCookies[i].substring(10));
-		}
-	}
-	
-	if (secToken !== token) {
+	if(!checkCookieToken) {
 		console.log("Ошибка безопасности.");
 		return;
 		//request.setRequestHeader("X-CSRF-TOKEN", csrfCookie[1]);

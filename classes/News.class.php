@@ -161,7 +161,9 @@
 				 * DOMDocument::loadHTML(): htmlParseEntityRef: expecting ';' in Entity
 				Подробнее: http://stackoverflow.com/questions/1685277/warning-domdocumentloadhtml-htmlparseentityref-expecting-in-entity
 			*/
+			$internalErrors = libxml_use_internal_errors(true);
 			$dom = DOMDocument::loadHTML($news);
+			libxml_use_internal_errors($internalErrors);
 			$xpath = new DOMXPath($dom);
 			$query = '//div[@class="article-news"]';
 			$entries = $xpath->query($query);

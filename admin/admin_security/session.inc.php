@@ -1,5 +1,5 @@
 <?
-	session_start();
+	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	$isAdmin = (isset($_SESSION['admin'])) ? $_SESSION['admin'] : null;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 	if($isAdmin !== true) {

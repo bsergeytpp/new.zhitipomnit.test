@@ -324,7 +324,6 @@ body::before {
 }
 .article table strong {
     color: white;
-    text-decoration: underline;
 }
 .article table p {
     color: white;
@@ -503,6 +502,10 @@ p.quotes:before {
 .scroll-button:hover {
     opacity: 1;
     transition: opacity .5s linear;
+}
+.article-publs .admin-edit-button {
+	right: 0 !important;
+	left: auto !important;
 }
 .admin-edit-button {
 	position: absolute;

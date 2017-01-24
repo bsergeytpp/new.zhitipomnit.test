@@ -14,15 +14,25 @@
 			$result = pg_execute($link, "save_publs_query", array("$header", "$text")) 
 					  or die('Query error: '. pg_last_error());
 			
-			if($result === false) echo 'Публикация не была добавлена';
+			if($result === false) {
+				echo 'Публикация не была добавлена';
+				$log_type = 3;
+				$log_name = 'failed to add a publ';
+				$log_text = 'user '.$_SESSION['user'].' has failed to add a publ: '.$header;
+				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$log_date = date('Y-m-d H:i:sO');
+				$log_important = true;
+				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+			}
 			else {
 				echo 'Публикация была добавлена';
-				$log_name = 'publ-add';
+				$log_type = 3;
+				$log_name = 'added a publ';
 				$log_text = 'user '.$_SESSION['user'].' has added a publ: '.$header;
 				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');;
+				$log_date = date('Y-m-d H:i:sO');
 				$log_important = $_SESSION['admin'];
-				echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 			}				
 		}
 		else {

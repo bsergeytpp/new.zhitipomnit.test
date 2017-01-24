@@ -10,6 +10,13 @@
 		
 		if(!checkUser($user, $pw)) {
 			echo 'No luck';
+			$log_type = 4;
+			$log_name = 'failed login';
+			$log_text = 'somebody failed to logged in with username: ' . $user;
+			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			$log_date = date('Y-m-d H:i:sO');
+			$log_important = true;
+			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 		}
 		else {
 			$row = checkUser($user, $pw);
@@ -31,12 +38,13 @@
 				header("Location: user_profile.php");
 			}
 			
+			$log_type = 4;
 			$log_name = 'login';
 			$log_text = 'user '.$_SESSION['user'].' has logged in';
 			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-			$log_date = date('Y-m-d H:i:sO');;
+			$log_date = date('Y-m-d H:i:sO');
 			$log_important = $_SESSION['admin'];
-			echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 			
 			exit;
 		}

@@ -28,15 +28,25 @@
 				$result = pg_execute($link, "update_publs_query", array("$text", "$id")) 
 						  or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Публикация не была обновлена';
+				if($result === false) {
+					echo 'Публикация не была обновлена';
+					$log_type = 3;
+					$log_name = 'failed to update a publ';
+					$log_text = 'user '.$_SESSION['user'].' has failed to update a publ: '.$id;
+					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$log_date = date('Y-m-d H:i:sO');
+					$log_important = true;
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				}
 				else {
 					echo 'Публикация была обновлена';
-					$log_name = 'publ-update';
+					$log_type = 3;
+					$log_name = 'updated a publ';
 					$log_text = 'user '.$_SESSION['user'].' has updated a publ: '.$id;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');;
+					$log_date = date('Y-m-d H:i:sO');
 					$log_important = $_SESSION['admin'];
-					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
 			echo "Нет данных для обновления.";

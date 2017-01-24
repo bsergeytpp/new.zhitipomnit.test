@@ -27,15 +27,25 @@
 				$result = pg_execute($link, "update_news_query", array("$text", "$id")) 
 						  or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Новость не была обновлена';
+				if($result === false) {
+					echo 'Новость не была обновлена';
+					$log_type = 2;
+					$log_name = 'failed to update news';
+					$log_text = 'user '.$_SESSION['user'].' has failed to update news: '.$id;
+					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$log_date = date('Y-m-d H:i:sO');
+					$log_important = true;
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				}
 				else {
 					echo 'Новость была обновлена';
-					$log_name = 'login';
+					$log_type = 2;
+					$log_name = 'updated news';
 					$log_text = 'user '.$_SESSION['user'].' has updated news: '.$id;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');;
+					$log_date = date('Y-m-d H:i:sO');
 					$log_important = $_SESSION['admin'];
-					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
 			else {

@@ -49,15 +49,25 @@
 			$result = pg_execute($link, "save_news_query", array("$date", "$header", "$text", "$author"))
 					  or die('Query error: '. pg_last_error());;
 						
-			if($result === false) echo 'Новость не была добавлена';
+			if($result === false) {
+				echo 'Новость не была добавлена';
+				$log_type = 2;
+				$log_name = 'failed to add news';
+				$log_text = 'user '.$_SESSION['user'].' has failed to add news: '.$header;
+				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$log_date = date('Y-m-d H:i:sO');
+				$log_important = true;
+				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+			}
 			else {
 				echo 'Новость была добавлена';
-				$log_name = 'news-add';
+				$log_type = 2;
+				$log_name = 'added news';
 				$log_text = 'user '.$_SESSION['user'].' has added news: '.$header;
 				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');;
+				$log_date = date('Y-m-d H:i:sO');
 				$log_important = $_SESSION['admin'];
-				echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 			}
 		}
 		else {

@@ -19,15 +19,25 @@
 						 "WHERE comments_id = " . $id;
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 
-				if($result === false) echo 'Комментарий не был удален';
+				if($result === false) {
+					echo 'Комментарий не был удален';
+					$log_type = 1;
+					$log_name = 'failed to delete a comment';
+					$log_text = 'user '.$_SESSION['user'].' has failed to delete comment id: '.$id;
+					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$log_date = date('Y-m-d H:i:sO');
+					$log_important = true;
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				}
 				else {
 					echo 'Комментарий был удален';
-					$log_name = 'comment-delete';
+					$log_type = 1;
+					$log_name = 'deleted a comment';
 					$log_text = 'user '.$_SESSION['user'].' has deleted comment id: '.$id;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');;
+					$log_date = date('Y-m-d H:i:sO');
 					$log_important = $_SESSION['admin'];
-					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 			}
 			else echo "Нет данных для удаления.";

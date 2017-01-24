@@ -26,15 +26,25 @@
 						 "VALUES ('$user_id', '$id', '$text', '$date', NULLIF('$parent_id','')::integer)";
 				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 				
-				if($result === false) echo 'Комментарий не был добавлен';
+				if($result === false) {
+					echo 'Комментарий не был добавлен';
+					$log_type = 1;
+					$log_name = 'failed to add a comment';
+					$log_text = 'user '.$_SESSION['user'].' has failed to add a comment with text: '.$text;
+					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$log_date = date('Y-m-d H:i:sO');
+					$log_important = true;
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				}
 				else {
 					echo 'Комментарий был добавлен';
-					$log_name = 'comment-add';
+					$log_type = 1;
+					$log_name = 'added a comment';
 					$log_text = 'user '.$_SESSION['user'].' has added a comment: '.$text;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');;
+					$log_date = date('Y-m-d H:i:sO');
 					$log_important = $_SESSION['admin'];
-					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
 			else echo "Нет данных для обновления.";

@@ -170,3 +170,58 @@ function removeSelection(parent) {
 		selectedElems[i].classList.remove('selected');
 	}
 }
+
+/*
+	Функция посылает AJAX запрос на получение списка категорий логов
+*/
+function getLogsTypes() {
+	var request = new XMLHttpRequest();
+
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			(request.status != 200) 
+			? console.log('func: getLogsTypes; Ошибка: ' + request.responseText)
+			: console.log('func: getLogsTypes; Запрос отправлен. Все - хорошо.');
+			
+			var form = document.getElementsByClassName('comments-form')[0];
+			var select = form.getElementsByTagName('select')[0];
+			var options = select.getElementsByTagName('option');
+			
+			if(select.getAttribute('name') === 'logs-type') {
+				var result = request.responseText;
+				var resultObject = null;
+				
+				if(typeof result === 'string') {
+					try {
+						resultObject = JSON.parse(result);
+					}
+					catch(e) {
+						console.log('func: getLogsTypes; Пришла не JSON строка: ' + e.toString());
+					}
+				}
+				
+				if(resultObject !== null) {
+					for(var i=0; i<options.length; i++) {
+						options[i].innerHTML = resultObject[i]['log_type_category'];
+						options[i].value = resultObject[i]['log_type_id'];
+						console.log("DATA: " + resultObject[i]['log_type_category'] + ':' + resultObject[i]['log_type_id']);
+					}
+				}
+				else {
+					console.log('func: getLogsTypes; output: ' + result);
+				}
+			}
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	setTimeout(function() {
+		request.open('GET', 'get_logs_type.php', true);
+		request.send();
+	}, 1500);
+}

@@ -12,7 +12,7 @@
 		$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
 		if($result === false) {
-			echo "Fail 1";
+			echo "Ошибка запроса";
 		}
 		else {
 			$logsTypes = array();
@@ -25,6 +25,6 @@
 		}
 	}
 	else {
-		echo "Fail 2";
+		echo "Подключение к базе данных не установлено";
 	}
 ?>

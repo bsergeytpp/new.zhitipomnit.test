@@ -28,10 +28,11 @@
 		return false;
 	}
 	
-	function addLogs($name, $text, $location, $date, $important) {
+	function addLogs($type, $name, $text, $location, $date, $important) {
 		global $link;
+		
 		if($name === null || $text === null || $location === null || 
-		   $date === null || $important === null) {
+		   $date === null || $important === null || $type === null) {
 			return false;
 		}
 		
@@ -44,9 +45,9 @@
 		}
 		
 		if($link) {
-			$query = "INSERT INTO logs (log_name, log_text, log_location, log_date, log_important) VALUES ($1, $2, $3, $4, $5)";
+			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) VALUES ($1, $2, $3, $4, $5, $6)";
 			$result = pg_prepare($link, 'add_log', $query);
-			$result = pg_execute($link, 'add_log', array($name, $text, $location, $date, $important)) 
+			$result = pg_execute($link, 'add_log', array($type, $name, $text, $location, $date, $important)) 
 					  or die('Query error: '. pg_last_error());
 			
 			if($result !== false) {

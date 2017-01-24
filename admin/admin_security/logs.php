@@ -2,21 +2,51 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
+	
+	$logImp = false;
+	$logType = NULL;
+	$logParams = [];
+	
+	/*if($_SERVER['REQUEST_METHOD'] == 'POST') {
+		if(isset($_POST['log-important'])) {
+			$logImp = ($_POST['log-important']) ? true : false;
+		}
+		if(isset($_POST['log-type'])) {
+			$logType = $_POST['log-type'];
+		}
+		
+		$logParams['type'] = $logType;
+		$logParams['importance'] = $logImp;
+	}*/
 
-	function getLogsToTable() {
+	function getLogsToTable($pars) {
 		global $link;
 		$link = connectToPostgres();
 		
-		$query = 'SELECT * FROM logs ORDER BY log_id';
+		/*$query = 'SELECT * FROM logs ';
+		
+		if($pars['type'] !== NULL) {
+			$query .= "WHERE log_name = '".$pars['type']."' ";
+		}
+		if($pars['importance']) {
+			$query .= 'AND log_important = TRUE ';
+		}
+		
+		$query .= 'ORDER BY log_id';*/
+		
+		$query = 'SELECT log_id, log_type_category, log_name, log_text, log_date, log_important, log_location 
+				  FROM logs, log_type WHERE log_type = log_type_id ORDER BY log_id';
+		
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
 		$logsArr = [
 			0 => 'log_id',
-			1 => 'log_name',
-			2 => 'log_text',
-			3 => 'log_date',
-			4 => 'log_important',
-			5 => 'log_location'
+			1 => 'log_type_category',
+			2 => 'log_name',
+			3 => 'log_text',
+			4 => 'log_date',
+			5 => 'log_important',
+			6 => 'log_location'
 		];
 		
 		while($row = pg_fetch_assoc($res)) {
@@ -30,6 +60,7 @@
 					case 3: echo '<td name='.$logsArr[$i].'>' . $val . '</td>'; break;
 					case 4: echo '<td name='.$logsArr[$i].'>' . $val . '</td>'; break;
 					case 5: echo '<td name='.$logsArr[$i].'>' . $val . '</td>'; break;
+					case 6: echo '<td name='.$logsArr[$i].'>' . $val . '</td>'; break;
 					default: break;
 				}
 				$i++;
@@ -51,16 +82,70 @@
 	<h1>Логи</h1>
 	<a href="../">Назад</a>
 	<h3>Доступные действия:</h3>
+	<form onsubmit="return false" method="POST" class="comments-form">
+		<p>
+			<span>Тип лога:</span>
+			<select name="logs-type">
+				<option value="1">1
+				<option value="2">2
+				<option value="3">3
+				<option value="4">4
+			</select>
+		</p>
+		<p><span>Только важные:</span> <input name="log-important" type="checkbox"></input></p>
+		<p><input type="submit" class="log-post-button" value="Отправить"></p>
+	</form>
 	<table border='1'>
 		<tr>
 			<th>ID</th>
+			<th>Category</th>
 			<th>Name</th>
 			<th>Text</th>
 			<th>Date</th>
 			<th>Important</th>
 			<th>Location</th>
 		</tr>
-		<? getLogsToTable(); ?>
+		<? getLogsToTable($logParams); ?>
 	</table> 
+	<script>
+		function getLogsTypes() {
+			var request = new XMLHttpRequest();
+	
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function() {
+				if(request.readyState == 4) {
+					clearTimeout(timeout);
+					(request.status != 200) 
+					? console.log('func: getLogsTypes; Ошибка: ' + request.responseText)
+					: console.log('func: getLogsTypes; Запрос отправлен. Все - хорошо.');
+					
+					var form = document.getElementsByClassName('comments-form')[0];
+					var select = form.getElementsByTagName('select')[0];
+					var options = select.getElementsByTagName('option');
+					
+					if(select.getAttribute('name') === 'logs-type') {
+						var result = JSON.parse(request.responseText);
+						console.log('Answer from server: ' + result);
+						
+						for(var i=0; i<options.length; i++) {
+							options[i].innerHTML = result[i]['log_type_category'];
+							options[i].value = result[i]['log_type_id'];
+							console.log("DATA: " + result[i]['log_type_category'] + ':' + result[i]['log_type_id']);
+						}
+					}
+				}
+			};
+			
+			var timeout = setTimeout(function() {
+				request.abort();
+			}, 60*1000);
+			
+			setTimeout(function() {
+				request.open('GET', 'get_logs_type.php', true);
+				request.send();
+			}, 1500);
+		}
+
+	</script>
 </body>
 </html>

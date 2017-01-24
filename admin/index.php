@@ -41,6 +41,7 @@
 			Прочее
 			<ul>
 				<li><a href='admin_settings/settings.php'>Настройки</a></li>
+				<li><a href='admin_security/logs.php'>Логи</a></li>
 				<li><a href='index.php?logout'>Завершить сеанс</a></li>
 			</ul>
 		</li>

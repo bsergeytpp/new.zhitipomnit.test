@@ -189,7 +189,7 @@ function getLogsTypes() {
 			var select = form.getElementsByTagName('select')[0];
 			var options = select.getElementsByTagName('option');
 			
-			if(select.getAttribute('name') === 'logs-type') {
+			if(select.getAttribute('name') === 'log-type') {
 				var result = request.responseText;
 				var resultObject = null;
 				
@@ -203,7 +203,7 @@ function getLogsTypes() {
 				}
 				
 				if(resultObject !== null) {
-					for(var i=0; i<options.length; i++) {
+					for(var i=0; i<options.length-1; i++) {
 						options[i].innerHTML = resultObject[i]['log_type_category'];
 						options[i].value = resultObject[i]['log_type_id'];
 						console.log("DATA: " + resultObject[i]['log_type_category'] + ':' + resultObject[i]['log_type_id']);

@@ -4,12 +4,12 @@
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	
 	$logImp = false;
-	$logType = NULL;
-	$logParams = [];
+	$logType = 0;
+	$logParams = ['type' => 0,'importance' => false];
 	
-	/*if($_SERVER['REQUEST_METHOD'] == 'POST') {
+	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if(isset($_POST['log-important'])) {
-			$logImp = ($_POST['log-important']) ? true : false;
+			$logImp = $_POST['log-important'];
 		}
 		if(isset($_POST['log-type'])) {
 			$logType = $_POST['log-type'];
@@ -17,25 +17,29 @@
 		
 		$logParams['type'] = $logType;
 		$logParams['importance'] = $logImp;
-	}*/
+	}
 
 	function getLogsToTable($pars) {
 		global $link;
-		$link = connectToPostgres();
 		
-		/*$query = 'SELECT * FROM logs ';
+		if(!$link) $link = connectToPostgres();
 		
-		if($pars['type'] !== NULL) {
-			$query .= "WHERE log_name = '".$pars['type']."' ";
+		$query = 'SELECT * FROM logs ';
+		
+		// елси определена категория логов
+		if($pars['type'] > 0) {
+			$query .= "WHERE log_type = '".$pars['type']."' ";
+			
+			if($pars['importance']) {
+				$query .= 'AND log_important = TRUE ';
+			}
 		}
-		if($pars['importance']) {
-			$query .= 'AND log_important = TRUE ';
+		// только важные
+		else if($pars['importance']) {
+			$query .= 'WHERE log_important = TRUE ';
 		}
 		
-		$query .= 'ORDER BY log_id';*/
-		
-		$query = 'SELECT log_id, log_type_category, log_name, log_text, log_date, log_important, log_location 
-				  FROM logs, log_type WHERE log_type = log_type_id ORDER BY log_id';
+		$query .= 'ORDER BY log_id';
 		
 		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
 		
@@ -82,14 +86,15 @@
 	<h1>Логи</h1>
 	<a href="../">Назад</a>
 	<h3>Доступные действия:</h3>
-	<form onsubmit="return false" method="POST" class="comments-form">
+	<form action="logs.php" method="POST" class="comments-form">
 		<p>
-			<span>Тип лога:</span>
-			<select name="logs-type">
+			<span>Категория логов:</span>
+			<select name="log-type">
 				<option value="1">1
 				<option value="2">2
 				<option value="3">3
 				<option value="4">4
+				<option value="0" selected>All
 			</select>
 		</p>
 		<p><span>Только важные:</span> <input name="log-important" type="checkbox"></input></p>

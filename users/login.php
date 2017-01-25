@@ -38,6 +38,8 @@
 				header("Location: user_profile.php");
 			}
 			
+			updateSessionDB();
+			
 			$log_type = 4;
 			$log_name = 'login';
 			$log_text = 'user '.$_SESSION['user'].' has logged in';

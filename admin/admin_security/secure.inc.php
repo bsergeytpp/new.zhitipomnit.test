@@ -2,6 +2,7 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 	
 	function logOut() {
+		deleteSessionDB();
 		session_destroy();
 		
 		if(isset($_SESSION['admin'])) {

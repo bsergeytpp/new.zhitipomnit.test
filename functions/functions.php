@@ -28,6 +28,62 @@
 		return false;
 	}
 	
+	function updateSessionDB() {
+		global $link;
+		
+		if($link) {
+			$sessionId = clearStr(session_id());
+			$user = $_SESSION['user'];
+			$lastSeen = date('Y-m-d');
+			
+			$query = "SELECT session_id FROM sessions WHERE session_hash = '".$sessionId."'";
+			$result = pg_query($link, $query) or die('Error:'. pg_last_error());
+			
+			if($result === false) {
+				echo 'Ошибка запроса';
+			}
+			else {
+				$dbSessionId = pg_fetch_row($result);
+				
+				if($dbSessionId) {
+					//echo "ID: ".$dbSessionId;
+				}
+				else {
+					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES ($1, $2, $3)';
+					$result = pg_prepare($link, 'add_session', $query) or die('Error:'. pg_last_error());;
+					$result = pg_execute($link, 'add_session', array($sessionId, $lastSeen, $user)) 
+							  or die('Error:'. pg_last_error());
+					
+					if($result === false) {
+						echo 'Не удалось добавить сессию';
+					}
+					else {
+						echo 'Сессия успешно добавлена';
+					}
+				}
+			}
+		}
+		else echo "Соединение не установлено";
+	}
+	
+	function deleteSessionDB() {
+		global $link;
+		
+		if(!$link) $link = connectToPostgres();
+		
+		$sessionId = clearStr(session_id());
+		
+		$query = "DELETE FROM sessions WHERE session_hash = '".$sessionId."'";
+		$result = pg_query($link, $query) or die('Error:'. pg_last_error());
+		
+		if($result === false) {
+			echo 'Ошибка запроса';
+		}
+		else {
+			echo 'Сессия удалена';
+		}
+	}
+	
 	function addLogs($type, $name, $text, $location, $date, $important) {
 		global $link;
 		

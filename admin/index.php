@@ -35,6 +35,7 @@
 			Пользователи
 			<ul>
 				<li><a href='admin_users/manage_users.php'>Управление пользователями</a></li>
+				<li><a href='admin_users/users_sessions.php'>Сессии пользователей</a></li>
 			</ul>
 		</li>
 		<li>

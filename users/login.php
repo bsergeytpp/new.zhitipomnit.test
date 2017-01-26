@@ -83,7 +83,7 @@
 </head>
 <body>
 	<h1>Авторизация</h1>
-	<form action="<?= $_SERVER['REQUEST_URI']?>" method="post">
+	<form action="login.php" method="post">
 		<div>
 			<label for="txtUser">Логин</label>
 			<input id="txtUser" type="text" name="user" />

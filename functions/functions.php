@@ -44,9 +44,18 @@
 			}
 			else {
 				$dbSessionId = pg_fetch_row($result);
-				
 				if($dbSessionId) {
-					//echo "ID: ".$dbSessionId;
+					$query = 'UPDATE sessions SET session_last_seen = $1 WHERE session_id = $2';
+					$result = pg_prepare($link, 'update_session', $query) or die('Error:'. pg_last_error());;
+					$result = pg_execute($link, 'update_session', array($lastSeen, $dbSessionId[0])) 
+							  or die('Error:'. pg_last_error());
+					
+					if($result === false) {
+						echo 'Не удалось добавить сессию';
+					}
+					else {
+						echo 'Сессия успешно добавлена';
+					}
 				}
 				else {
 					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES ($1, $2, $3)';

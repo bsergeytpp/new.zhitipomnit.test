@@ -26,7 +26,7 @@
 		
 		$query = 'SELECT * FROM logs ';
 		
-		// елси определена категория логов
+		// если определена категория логов
 		if($pars['type'] > 0) {
 			$query .= "WHERE log_type = '".$pars['type']."' ";
 			

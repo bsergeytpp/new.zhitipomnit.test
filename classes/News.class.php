@@ -75,7 +75,7 @@
 			else {
 				$query = 'SELECT * FROM news';
 			}
-			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$res = executeQuery($query);
 			//echo "<h4>Новости из базы данных</h4>";
 			
 			while($row = pg_fetch_assoc($res)) {
@@ -106,9 +106,7 @@
 			global $link;
 			
 			$query = "SELECT * FROM news WHERE news_date = $1";
-			$result = pg_prepare($link, "get_news_by_date", $query);
-			$result = pg_execute($link, "get_news_by_date", array($this->newsDate))
-					  or die('Query error: '. pg_last_error());
+			$result = executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			
 			if($result === false) echo "$this->newsDate не было новостей";
 			else {
@@ -176,9 +174,7 @@
 			if($link) {
 				$query = "SELECT * FROM comments WHERE comments_location_id = $1";
 				pg_query($link, "DEALLOCATE ALL");
-				$result = pg_prepare($link, "get_comments", $query);
-				$result = pg_execute($link, "get_comments", array($id)) 
-						  or die('Query error: '. pg_last_error());
+				$result = executeQuery($query, array($id), 'get_comments');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {
@@ -193,9 +189,7 @@
 		private function getSingleDbNews($pageNum, $id) {
 			global $link;
 			$query = "SELECT * FROM news WHERE news_date = $1 AND news_id = $2";
-			$res = pg_prepare($link, "get_single_news", $query);
-			$res = pg_execute($link, "get_single_news", array($this->newsDate, $id)) 
-				   or die('Query error: '. pg_last_error());
+			$res = executeQuery($query, array($this->newsDate, $id), 'get_single_news');
 			$news = pg_fetch_assoc($res);
 			
 			if(!$news) {
@@ -277,7 +271,7 @@
 			// переносим DOM-элементы в новый документ и выводим его
 			$dom2 = new DOMDocument;
 			
-			for($i = $this->pageNum*OLDNEWS_MAXCOUNT; $i>($this->pageNum*OLDNEWS_MAXCOUNT-OLDNEWS_MAXCOUNT); $i--) {
+			for($i = $this->pageNum*OLDNEWS_MAXCOUNT, $len=$this->pageNum*OLDNEWS_MAXCOUNT-OLDNEWS_MAXCOUNT; $i>$len; $i--) {
 				if($p_elems->item($i-1) !== null) {
 					$node = $dom2->importNode($p_elems->item($i-1), true);
 					if(!$dom2->hasChildNodes()) {

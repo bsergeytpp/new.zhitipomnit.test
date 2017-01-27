@@ -16,9 +16,7 @@
 			$group = "users";//$_POST['user-group'];
 			$query = "INSERT INTO users (user_login, user_password, user_email, user_group)
 					  VALUES ($1, $2, $3, $4)";
-			$result = pg_prepare($link, 'reg_user', $query);
-			$result = pg_execute($link, 'reg_user', array($login, $password, $email, $group)) 
-					  or die('Query error: '. pg_last_error());
+			$result = executeQuery($query, array($login, $password, $email, $group), 'reg_user');
 			
 			if($result === false) echo 'Пользователь не был добавлен';
 			else {

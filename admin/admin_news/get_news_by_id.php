@@ -11,9 +11,7 @@
 			if(isset($_GET['id'])) {
 				$id = (int)$_GET['id'];
 				$query = "SELECT * FROM news WHERE news_id = $1";
-				$result = pg_prepare($link, "get_news_query", $query);
-				$result = pg_execute($link, "get_news_query", array("$id")) 
-						  or die('Query error: '. pg_last_error());
+				$result = executeQuery($query, array("$id"), 'get_news_query');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {

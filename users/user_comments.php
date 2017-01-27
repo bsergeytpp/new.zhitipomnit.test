@@ -11,13 +11,17 @@
 				$location_id = $_GET['comments-location-id'];
 
 				$query = "SELECT comments_id FROM comments, users " .
-						 "WHERE comments_location_id = '" . $location_id . "' " .
+						 "WHERE comments_location_id = $1 " .
 						 "AND comments_author = user_id " . 
-						 "AND user_id IN (SELECT user_id FROM users WHERE user_login = '" . $login . "')";
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+						 "AND user_id IN (SELECT user_id FROM users WHERE user_login = $2)";
+				$result = executeQuery($query, array($location_id, $login), 'get_comments_id');
 				
-				if($result === false) echo 'Ошибка в запросе';
-				else if(pg_num_rows($result) === 0 ) echo 'Комментарии не найдены для ID '.$location_id;
+				if($result === false) {
+					echo 'Ошибка в запросе';
+				}
+				else if(pg_num_rows($result) === 0 ) {
+					echo 'Комментарии не найдены для ID '.$location_id;
+				}
 				else {
 					//echo 'Найдено комментариев: ' . pg_num_rows($result);
 					$commentsIds = array();

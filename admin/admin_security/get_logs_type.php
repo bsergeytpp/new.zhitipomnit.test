@@ -9,7 +9,7 @@
 	
 	if($link) {
 		$query = "SELECT * FROM log_type";
-		$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+		$result = executeQuery($query);
 		
 		if($result === false) {
 			echo "Ошибка запроса";

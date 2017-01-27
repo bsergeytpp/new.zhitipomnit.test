@@ -12,10 +12,8 @@
 				$text = strip_tags(clearStr($_POST['text']));
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE users " .
-						 "SET " . pg_escape_string($name) . " = '" . pg_escape_string($text) . "' " . 
-						 "WHERE user_id = " . $id;
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "UPDATE users SET " . pg_escape_string($name) . " = $1 WHERE user_id = $2";
+				$result = executeQuery($query, array($text, $id), 'update_user');
 				
 				if($result === false) echo 'Логин пользователя не был обновлен';
 				else {

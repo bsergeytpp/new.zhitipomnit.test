@@ -19,9 +19,7 @@
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
 				$query = "UPDATE comments SET comments_text = $1 WHERE comments_id = $2";
-				$result = pg_prepare($link, "update_comments", $query);
-				$result = pg_execute($link, "update_comments", array($text, $id)) 
-						  or die('Query error: '. pg_last_error());
+				$result = executeQuery($query, array($text, $id), 'update_comments');
 				
 				if($result === false) {
 					echo 'Комментарий не был обновлен';

@@ -15,9 +15,8 @@
 		if($link) {
 			if(isset($_POST['comment-id'])) {
 				$id = (int)$_POST['comment-id'];
-				$query = "DELETE FROM comments " . 
-						 "WHERE comments_id = " . $id;
-				$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+				$query = "DELETE FROM comments WHERE comments_id = $1";
+				$result = executeQuery($query, array($id), 'delete_comment');
 
 				if($result === false) {
 					echo 'Комментарий не был удален';

@@ -23,9 +23,7 @@
 				
 				$id = (int)$_POST['id'];
 				$query = "UPDATE news SET " . pg_escape_string($name) . " = $1 WHERE news_id = $2";
-				$result = pg_prepare($link, "update_news_query", $query);
-				$result = pg_execute($link, "update_news_query", array("$text", "$id")) 
-						  or die('Query error: '. pg_last_error());
+				$result = executeQuery($query, array("$text", "$id"), 'update_news_query');
 				
 				if($result === false) {
 					echo 'Новость не была обновлена';

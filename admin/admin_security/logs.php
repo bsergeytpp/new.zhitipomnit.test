@@ -40,9 +40,7 @@
 		}
 		
 		$query .= 'ORDER BY log_id';
-		
-		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
-		
+		$res = executeQuery($query);
 		$logsArr = [
 			0 => 'log_id',
 			1 => 'log_type_category',

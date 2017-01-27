@@ -36,8 +36,8 @@
 			$user = $_SESSION['user'];
 			$lastSeen = date('Y-m-d');
 			
-			$query = "SELECT session_id FROM sessions WHERE session_hash = '".$sessionId."'";
-			$result = pg_query($link, $query) or die('Error:'. pg_last_error());
+			$query = "SELECT session_id FROM sessions WHERE session_hash = $1";
+			$result = executeQuery($query, array($sessionId), 'get_session_id');
 			
 			if($result === false) {
 				echo 'Ошибка запроса';
@@ -46,9 +46,7 @@
 				$dbSessionId = pg_fetch_row($result);
 				if($dbSessionId) {
 					$query = 'UPDATE sessions SET session_last_seen = $1 WHERE session_id = $2';
-					$result = pg_prepare($link, 'update_session', $query) or die('Error:'. pg_last_error());;
-					$result = pg_execute($link, 'update_session', array($lastSeen, $dbSessionId[0])) 
-							  or die('Error:'. pg_last_error());
+					$result = executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
 					
 					if($result === false) {
 						echo 'Не удалось добавить сессию';
@@ -59,9 +57,7 @@
 				}
 				else {
 					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES ($1, $2, $3)';
-					$result = pg_prepare($link, 'add_session', $query) or die('Error:'. pg_last_error());;
-					$result = pg_execute($link, 'add_session', array($sessionId, $lastSeen, $user)) 
-							  or die('Error:'. pg_last_error());
+					$result = executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
 					
 					if($result === false) {
 						echo 'Не удалось добавить сессию';
@@ -82,8 +78,8 @@
 		
 		$sessionId = clearStr(session_id());
 		
-		$query = "DELETE FROM sessions WHERE session_hash = '".$sessionId."'";
-		$result = pg_query($link, $query) or die('Error:'. pg_last_error());
+		$query = "DELETE FROM sessions WHERE session_hash = $1";
+		$result = executeQuery($query, array($sessionId), 'delete_session');
 		
 		if($result === false) {
 			echo 'Ошибка запроса';
@@ -110,10 +106,9 @@
 		}
 		
 		if($link) {
-			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) VALUES ($1, $2, $3, $4, $5, $6)";
-			$result = pg_prepare($link, 'add_log', $query);
-			$result = pg_execute($link, 'add_log', array($type, $name, $text, $location, $date, $important)) 
-					  or die('Query error: '. pg_last_error());
+			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) 
+					  VALUES ($1, $2, $3, $4, $5, $6)";
+			$result = executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
 			
 			if($result !== false) {
 				echo 'Лог добавлен';
@@ -133,6 +128,7 @@
 	
 	function exceptStr($str) {
 		$len = strlen($str);
+		
 		for($i=0; $i<$len; $i++) {
 			if($str[$i] == '.' && $i > 200) {
 				$str = substr($str, 0, $i+1);
@@ -171,7 +167,7 @@
 	function getSampleOfArray($pNum, $max, $arr) {
 		$tempArr = [];
 		
-		for($i = $pNum * $max; $i>($pNum*$max-$max); $i--) {
+		for($i=$pNum*$max, $len=$pNum*$max-$max; $i>$len; $i--) {
 			if(isset($arr[$i-1])) {
 				array_unshift($tempArr, $arr[$i-1]);
 			}
@@ -232,8 +228,8 @@
 		
 		global $link;
 		$link = connectToPostgres();
-		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE '".$userLogin."'";
-		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE $1";
+		$result = executeQuery($query, array($userLogin), 'get_user_info');
 		
 		while($row = pg_fetch_assoc($res)) {
 			echo '<tr>';
@@ -258,16 +254,17 @@
 		if($link) {
 			$query = "SELECT comments.comments_id, comments.comments_parent_id, users.user_login, comments.comments_text, comments.comments_date 
 					  FROM comments, users 
-					  WHERE comments_location_id = '".pg_escape_string($id)."' 
+					  WHERE comments_location_id = $1 
 					  AND comments.comments_author = users.user_id ORDER BY comments.comments_id";
 					
-			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$result = executeQuery($query, array($id), 'get_all_comments');
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
 				if(pg_num_rows($result) === 0) {
 					echo 'Комментариев пока нет.';
 				}
+				
 				while($row = pg_fetch_assoc($result)) {
 					echo "<div class='comments-div'>";
 					
@@ -285,13 +282,17 @@
 						 </tr>";
 					echo "<tr class='comments-content'>";
 					$i = 0;
+					
 					foreach($row as $val) {
 						//if($val === $row['parent']) continue;
 						
 						//if($val === $row['comments_id']) continue;
-						if($i == 0)	echo "<td class='comment-id'>". $val ."</td>";
-						else if($i == 3)	echo "<td class='comment-text'>". $val ."</td>";
-						else echo "<td>". $val ."</td>";
+						switch($i) {
+							case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
+							case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
+							default: echo "<td>". $val ."</td>"; break;
+
+						}
 						$i++;
 					}
 					echo "</tr>";
@@ -313,10 +314,8 @@
 		global $link;
 		
 		if($link) {
-			$query = "SELECT user_email " .
-					 "FROM users " . 
-					 "WHERE user_login = '". pg_escape_string($userLogin) . "'";
-			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$query = "SELECT user_email FROM users WHERE user_login = $1";
+			$result = executeQuery($query, array($userLogin), 'get_user_mail');
 			
 			if($result === false) echo 'Такого пользователя нет';
 			else return pg_fetch_result($result, 0, 0);
@@ -331,7 +330,7 @@
 	*/
 	function includeContent($path) {
 		$type = gettype($path);
-		//echo "TYPE: $type";
+
 		switch($type) {
 			case 'array': 
 				$len = count($path);
@@ -370,5 +369,22 @@
 		
 		$link = pg_connect($connectStr);
 		return $link;
+	}
+	
+	function executeQuery($query, $params, $prepName) {
+		global $link;
+		$result = null;
+		
+		if(!$link) $link = connectToPostgres();
+		
+		if($params) {
+			$result = pg_prepare($link, $prepName, $query) or die('Error: '. pg_last_error());
+			$result = pg_execute($link, $prepName, $params) or die('Error: '. pg_last_error());
+		}
+		else {
+			$result = pg_execute($link, $query) or die('Error: '. pg_last_error());
+		}
+		
+		return $result;
 	}
 ?>

@@ -10,10 +10,8 @@
 		global $link;
 		
 		if($link) {
-			$query = "SELECT user_id " .
-					 "FROM users " . 
-					 "WHERE user_login = '" . $login ."'";
-			$result = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$query = "SELECT user_id FROM users WHERE user_login = $1";
+			$result = executeQuery($query, array($login), 'select_user_id');
 			
 			if($result === false) echo 'Пользователь не был найдет';
 			else {

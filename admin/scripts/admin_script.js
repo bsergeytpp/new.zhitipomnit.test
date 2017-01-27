@@ -57,8 +57,7 @@ function editBtnOnClick(pattern) {
 					saveEditedText(updatedText, id, name, pattern);
 				}
 				else {
-					var totalEditors = tinymce.editors.length;
-					for(var i=0; i<totalEditors; i++) {
+					for(var i=0, totalEditors=tinymce.editors.length; i<totalEditors; i++) {
 						var elem = tinymce.editors[i].getElement();
 						var elemParent = elem.parentNode;
 						var elemId = elemParent.firstChild.innerHTML;
@@ -122,11 +121,12 @@ function saveSettings() {
 	
 	for(var i=0, len=inputs.length; i<len; i++) {
 		var name = inputs[i].getAttribute('name');
+		var inputData = encodeURIComponent(inputs[i].getAttribute('value'));
 		switch(name) {
-			case 'NEWS': data['NEWS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
-			case 'OLDNEWS': data['OLDNEWS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
-			case 'PUBLS': data['PUBLS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
-			case 'PRESS': data['PRESS'] = encodeURIComponent(inputs[i].getAttribute('value')); break;
+			case 'NEWS': data['NEWS'] = inputData; break;
+			case 'OLDNEWS': data['OLDNEWS'] = inputData; break;
+			case 'PUBLS': data['PUBLS'] = inputData; break;
+			case 'PRESS': data['PRESS'] = inputData; break;
 			default: break;
 		}
 	}
@@ -166,7 +166,7 @@ function sendRequest(data, reqType, reqTarget, contentType) {
 function removeSelection(parent) {
 	var selectedElems = parent.getElementsByClassName('selected');
 	
-	for(var i=0; i<selectedElems.length; i++) {
+	for(var i=0, len=selectedElems.length; i<len; i++) {
 		selectedElems[i].classList.remove('selected');
 	}
 }
@@ -203,7 +203,7 @@ function getLogsTypes() {
 				}
 				
 				if(resultObject !== null) {
-					for(var i=0; i<options.length-1; i++) {
+					for(var i=0, len=options.length; i<len-1; i++) {
 						options[i].innerHTML = resultObject[i]['log_type_category'];
 						options[i].value = resultObject[i]['log_type_id'];
 						console.log("DATA: " + resultObject[i]['log_type_category'] + ':' + resultObject[i]['log_type_id']);

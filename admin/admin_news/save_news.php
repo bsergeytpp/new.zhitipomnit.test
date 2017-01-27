@@ -45,9 +45,7 @@
 			
 			$query = "INSERT INTO news (news_date, news_header, news_text, news_author)
 					  VALUES ($1, $2, $3, $4)";
-			$result = pg_prepare($link, "save_news_query", $query);
-			$result = pg_execute($link, "save_news_query", array("$date", "$header", "$text", "$author"))
-					  or die('Query error: '. pg_last_error());;
+		    $result = executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
 						
 			if($result === false) {
 				echo 'Новость не была добавлена';

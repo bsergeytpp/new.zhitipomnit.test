@@ -24,9 +24,7 @@
 				$id = (int)$_POST['id'];
 				$query = "UPDATE publs SET " . pg_escape_string($name) . " = $1 " . 
 						 "WHERE publs_id = $2";
-				$result = pg_prepare($link, "update_publs_query", $query);
-				$result = pg_execute($link, "update_publs_query", array("$text", "$id")) 
-						  or die('Query error: '. pg_last_error());
+			    $result = executeQuery($query, array("$text", "$id"), 'update_publs_query');
 				
 				if($result === false) {
 					echo 'Публикация не была обновлена';

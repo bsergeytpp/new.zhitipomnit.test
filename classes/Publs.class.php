@@ -31,7 +31,7 @@
 			$link = connectToPostgres();
 			$dbPubls = [];
 			$query = "SELECT publs_id, publs_header FROM publs";
-			$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+			$res = executeQuery($query);
 			
 			while($row = pg_fetch_assoc($res)) {
 				$dbPubls[] = $row;
@@ -54,8 +54,8 @@
 			$link = connectToPostgres();
 			
 			if($link) {
-				$query = 'SELECT* FROM publs WHERE publs_id = '.$date;
-				$res = pg_query($link, $query) or die("Query error: ". pg_last_error());
+				$query = 'SELECT * FROM publs WHERE publs_id = $1';
+				$res = executeQuery($query, array($date), 'get_publs');
 				$row = pg_fetch_assoc($res);
 				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
 				

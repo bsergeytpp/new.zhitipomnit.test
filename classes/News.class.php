@@ -62,9 +62,9 @@
 		protected $id = null;
 		private $db = null;
 		
-		public function __construct($id, $date, $page, $type, $db) {
+		public function __construct($id, $date, $page, $type) {
 			if(isset($id)) $this->id = $id;
-			if(isset($db)) $this->db = $db;
+			$this->db = DBClass::getInstance();
 			parent::__construct($date, $page, $type);
 		}
 		

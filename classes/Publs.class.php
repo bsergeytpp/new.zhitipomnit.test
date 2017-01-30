@@ -28,8 +28,8 @@
 	class DbPublsClass extends PublsClass {
 		private $db = null;
 
-		public function __construct($page, $db) {
-			if(isset($db)) $this->db = $db;
+		public function __construct($page) {
+			$this->db = DBClass::getInstance();
 			parent::__construct($page);
 		}
 		

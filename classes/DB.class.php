@@ -2,28 +2,28 @@
 	class DBClass {
 		public $link = NULL;
 		public $result = NULL;
-		private $connectionString = '';
+		//private $connectionString = '';
 		private static $_instance = null;
 		
-		private function __construct($conStr) {
-			if(isset($conStr)) $this->connectionString = $conStr;
+		private function __construct() {
+			//if(isset($conStr)) $this->connectionString = $conStr;
 		}
 		
 		private function __clone() {}
 		
-		public static function getInstance($conStr) {
+		public static function getInstance() {
 			if(self::$_instance === null) {
-				self::$_instance = new DBClass($conStr);
+				self::$_instance = new DBClass();
 			}
 			return self::$_instance;
 		}
 		
-		public function connectToDB() {		
+		public function connectToDB($connStr) {		
 			if(!function_exists('pg_connect')) {
 				return false;
 			}
 			
-			$this->link = pg_connect($this->connectionString);
+			$this->link = pg_connect($connStr);
 		}
 		
 		public function executeQuery($query, $params, $prepName) {	

@@ -25,8 +25,8 @@
 				  " dbname=".$config['dbname'].
 				  " user=".$config['user'].
 				  " password=".$config['password'];
-	$db = DBClass::getInstance($connectStr);
-	$db->connectToDB();
+	$db = DBClass::getInstance();
+	$db->connectToDB($connectStr);
 	$dbLink = $db->getLink();
 	
 	function checkToken($str) {
@@ -200,7 +200,7 @@
 		return new DbNewsClass($id, $date, $page);
 	}
 	
-	function checkPublsExistence($page, $date, $db) {
+	function checkPublsExistence($page, $date) {	
 		if(substr($date, -4, 4) == 'html') {
 			return new OldPublsClass($page);
 		}
@@ -221,7 +221,7 @@
 			readfile($date);
 			exit;
 		}
-		return new DbPublsClass($page, $db);
+		return new DbPublsClass($page);
 	}
 		
 	function convertDate($date) {

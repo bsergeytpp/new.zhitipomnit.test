@@ -13,7 +13,7 @@
 						if($type === 'db') {
 							global $dbLink; global $db;
 							if($dbLink && $db) {
-								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db', $db);
+								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db');
 								
 								if($newsId !== '') {
 									echo $newsClass->getSingleNews();

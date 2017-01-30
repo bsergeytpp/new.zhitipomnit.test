@@ -7,11 +7,11 @@
 		- возвращает ID
 	*/
 	function getUserId($login) {
-		global $link;
+		global $db;
 		
-		if($link) {
+		if($db->getLink()) {
 			$query = "SELECT user_id FROM users WHERE user_login = $1";
-			$result = executeQuery($query, array($login), 'select_user_id');
+			$result = $db->executeQuery($query, array($login), 'select_user_id');
 			
 			if($result === false) echo 'Пользователь не был найдет';
 			else {

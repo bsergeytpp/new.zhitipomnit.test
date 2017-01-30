@@ -1,11 +1,10 @@
 <?
 	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	require_once "../functions/functions.php";
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'GET') {
-		if($link) {
+		if($db->getLink()) {
 			if(isset($_GET['login']) && isset($_GET['comments-location-id'])) {
 				$login = $_GET['login'];
 				$location_id = $_GET['comments-location-id'];
@@ -14,7 +13,7 @@
 						 "WHERE comments_location_id = $1 " .
 						 "AND comments_author = user_id " . 
 						 "AND user_id IN (SELECT user_id FROM users WHERE user_login = $2)";
-				$result = executeQuery($query, array($location_id, $login), 'get_comments_id');
+				$result = $db->executeQuery($query, array($location_id, $login), 'get_comments_id');
 				
 				if($result === false) {
 					echo 'Ошибка в запросе';

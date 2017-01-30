@@ -2,12 +2,11 @@
 	//require_once "admin_security/session.inc.php";
 	//require_once "admin_security/secure.inc.php";
 	require_once "functions/admin_functions.php";
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		if($link) {
+		if($db->getLink()) {
 			if(isset($_POST['comments-text']) && isset($_POST['comments-login'])) {
 				if(!checkToken($_POST['token'])) {
 					echo "Проверка не пройдена.";
@@ -27,7 +26,7 @@
 				$date = date('Y-m-d H:i:sO');
 				$query = "INSERT INTO comments (comments_author, comments_location_id, comments_text, comments_date, comments_parent_id) " .
 						 "VALUES ($1, $2, $3, $4, $5)";
-				$result = executeQuery($query, array($user_id, $id, $text, $date, $parent_id), 'insert_comment');
+				$result = $db->executeQuery($query, array($user_id, $id, $text, $date, $parent_id), 'insert_comment');
 				
 				if($result === false) {
 					echo 'Комментарий не был добавлен';

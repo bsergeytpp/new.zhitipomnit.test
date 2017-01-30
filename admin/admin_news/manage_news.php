@@ -4,11 +4,10 @@
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 
 	function getNewsToTable() {
-		global $link;
-		$link = connectToPostgres();
+		global $db;
 		
 		$query = 'SELECT * FROM news ORDER BY news_id';
-		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+		$res = $db->executeQuery($query, null, null);
 		
 		$newsArr = [
 			0 => 'news_id',

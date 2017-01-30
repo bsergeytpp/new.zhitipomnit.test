@@ -14,13 +14,11 @@
 	}
 	
 	function checkUser($login, $password) {
-		global $link;
+		global $db;
 		
-		if(!$link) $link = connectToPostgres();
-
 		$query = "SELECT user_id, user_login, user_password, user_group, user_email FROM users WHERE user_login = $1";
-		pg_query($link, "DEALLOCATE ALL");
-		$result = executeQuery($query, array($login), 'check_user');
+		pg_query($db->getLink(), "DEALLOCATE ALL");
+		$result = $db->executeQuery($query, array($login), 'check_user');
 		
 		if($result === false) return false;
 		

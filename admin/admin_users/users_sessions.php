@@ -4,11 +4,10 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 
 	function getSessionsToTable() {
-		global $link;
-		$link = connectToPostgres();
+		global $db;
 		
 		$query = 'SELECT session_id, session_hash, session_last_seen, "session_user" FROM sessions ORDER BY session_id';
-		$res = executeQuery($query);		
+		$res = $db->executeQuery($query, null, null);		
 		$usersArr = [
 			0 => 'session_id',
 			1 => 'session_hash',

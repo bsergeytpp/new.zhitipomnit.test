@@ -7,10 +7,10 @@
 					<?
 						$customPubl = isset($_GET['custom-publ']) ? $_GET['custom-publ']: '';
 						$pageNum = isset($_GET['page']) ? $_GET['page']: '1';
-						global $link;
-						$link = connectToPostgres();
+						global $dbLink; global $db;
+						//$link = connectToPostgres();
 						
-						if($link) $publsClass = new DbPublsClass($pageNum);
+						if($dbLink) $publsClass = new DbPublsClass($pageNum, $db);
 						else $publsClass = new OtherPublsClass($pageNum);
 						
 						if(!$customPubl) {
@@ -23,7 +23,7 @@
 							echo "<h3 class='full-width'><a href='index.php?pages=publ'>Последние публикаци</a></h3>";
 						}
 						else {
-							$publsClass = checkPublsExistence($pageNum, $customPubl);
+							$publsClass = checkPublsExistence($pageNum, $customPubl, $db);	// TODO: разобраться с $db
 							echo $publsClass->getSinglePubl($customPubl);
 							include "admin/comments.php";
 						}

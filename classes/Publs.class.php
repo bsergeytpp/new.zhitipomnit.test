@@ -26,12 +26,17 @@
 	}
 	
 	class DbPublsClass extends PublsClass {
+		private $db = null;
+
+		public function __construct($page, $db) {
+			if(isset($db)) $this->db = $db;
+			parent::__construct($page);
+		}
+		
 		public function getPubls() {
-			global $link;
-			$link = connectToPostgres();
 			$dbPubls = [];
 			$query = "SELECT publs_id, publs_header FROM publs";
-			$res = executeQuery($query);
+			$res = $this->db->executeQuery($query, null, null);
 			
 			while($row = pg_fetch_assoc($res)) {
 				$dbPubls[] = $row;
@@ -50,12 +55,10 @@
 		
 		public function getSinglePubl($date) {
 			echo "<strong><a href='index.php?pages=publ'>Назад</a></strong><br>";
-			global $link;
-			$link = connectToPostgres();
 			
-			if($link) {
+			if($this->db->getLink()) {
 				$query = 'SELECT * FROM publs WHERE publs_id = $1';
-				$res = executeQuery($query, array($date), 'get_publs');
+				$res = $this->db->executeQuery($query, array($date), 'get_publs');
 				$row = pg_fetch_assoc($res);
 				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
 				

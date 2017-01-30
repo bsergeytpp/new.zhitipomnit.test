@@ -60,22 +60,23 @@
 	
 	class DbNewsClass extends NewsClass {
 		protected $id = null;
+		private $db = null;
 		
-		public function __construct($id, $date, $page, $type) {
+		public function __construct($id, $date, $page, $type, $db) {
 			if(isset($id)) $this->id = $id;
+			if(isset($db)) $this->db = $db;
 			parent::__construct($date, $page, $type);
 		}
 		
-		public function getNews() {
-			global $link;
-			
+		public function getNews() {			
 			if($this->newsDate !== '') {
 				$query = "SELECT * FROM news WHERE news_date = '".$this->newsDate."'";
 			}
 			else {
 				$query = 'SELECT * FROM news';
 			}
-			$res = executeQuery($query);
+			$res = $this->db->executeQuery($query, null, null);
+			//$res = executeQuery($query);
 			//echo "<h4>Новости из базы данных</h4>";
 			
 			while($row = pg_fetch_assoc($res)) {
@@ -102,11 +103,10 @@
 			$this->createNewsList();
 		}
 		
-		public function getNewsByDate() {
-			global $link;
-			
+		public function getNewsByDate() {	
 			$query = "SELECT * FROM news WHERE news_date = $1";
-			$result = executeQuery($query, array($this->newsDate), 'get_news_by_date');
+			$result = $this->db->executeQuery($query, array($this->newsDate), 'get_news_by_date');
+			//$result = executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			
 			if($result === false) echo "$this->newsDate не было новостей";
 			else {
@@ -130,10 +130,8 @@
 			}
 		}
 	
-		public function getSingleNews() {
-			global $link;
-			
-			if($link) {
+		public function getSingleNews() {	
+			if($this->db->getLink()) {
 				// Меняем формат даты
 				/*$dateArr = explode('-', $this->newsDate);
 				
@@ -153,7 +151,6 @@
 		}
 		
 		private function getNewsCommentsCount($news) {
-			global $link;
 			/*
 				Код ниже выбрасывает предупреждение, но работает: 
 				 * DOMDocument::loadHTML(): htmlParseEntityRef: expecting ';' in Entity
@@ -171,10 +168,10 @@
 				$id = $i->getAttribute('id');
 			}
 			
-			if($link) {
+			if($this->db->getLink()) {
 				$query = "SELECT * FROM comments WHERE comments_location_id = $1";
-				pg_query($link, "DEALLOCATE ALL");
-				$result = executeQuery($query, array($id), 'get_comments');
+				pg_query($this->db->getLink(), "DEALLOCATE ALL");
+				$result = $this->db->executeQuery($query, array($id), 'get_comments');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {
@@ -187,9 +184,8 @@
 		}
 				
 		private function getSingleDbNews($pageNum, $id) {
-			global $link;
 			$query = "SELECT * FROM news WHERE news_date = $1 AND news_id = $2";
-			$res = executeQuery($query, array($this->newsDate, $id), 'get_single_news');
+			$res = $this->db->executeQuery($query, array($this->newsDate, $id), 'get_single_news');
 			$news = pg_fetch_assoc($res);
 			
 			if(!$news) {

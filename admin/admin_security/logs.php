@@ -20,10 +20,8 @@
 	}
 
 	function getLogsToTable($pars) {
-		global $link;
-		
-		if(!$link) $link = connectToPostgres();
-		
+		global $db;
+				
 		$query = 'SELECT * FROM logs ';
 		
 		// если определена категория логов
@@ -40,7 +38,7 @@
 		}
 		
 		$query .= 'ORDER BY log_id';
-		$res = executeQuery($query);
+		$res = $db->executeQuery($query, null, null);
 		$logsArr = [
 			0 => 'log_id',
 			1 => 'log_type_category',

@@ -2,8 +2,7 @@
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../functions/admin_functions.php");
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if(!$_SESSION['admin']) {
 		echo "Вы не админ.";
@@ -12,11 +11,11 @@
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$text = ''; $id = -1;
-		if($link) {
+		if($db->getLink()) {
 			if(isset($_POST['comment-id'])) {
 				$id = (int)$_POST['comment-id'];
 				$query = "DELETE FROM comments WHERE comments_id = $1";
-				$result = executeQuery($query, array($id), 'delete_comment');
+				$result = $db->executeQuery($query, array($id), 'delete_comment');
 
 				if($result === false) {
 					echo 'Комментарий не был удален';

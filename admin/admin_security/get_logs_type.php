@@ -3,13 +3,11 @@
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	
-	global $link;
-	
-	if(!$link) $link = connectToPostgres();
-	
-	if($link) {
+	global $db;
+		
+	if($db->getLink()) {
 		$query = "SELECT * FROM log_type";
-		$result = executeQuery($query);
+		$result = $db->executeQuery($query, null, null);
 		
 		if($result === false) {
 			echo "Ошибка запроса";

@@ -1,4 +1,6 @@
 <?
+	require (__DIR__."/../classes/DB.class.php"); 
+	
 	define('NEWS_MAXCOUNT', '5');	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
 	define('PUBLS_MAXCOUNT', '5');	// статей на странице
@@ -16,6 +18,17 @@
 	
 	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	
+	// подключаемся к базе данных
+	$config = parse_ini_file(__DIR__.'/../config.ini');
+	$connectStr = "host=".$config['host'].
+				  " port=".$config['port'].
+				  " dbname=".$config['dbname'].
+				  " user=".$config['user'].
+				  " password=".$config['password'];
+	$db = DBClass::getInstance($connectStr);
+	$db->connectToDB();
+	$dbLink = $db->getLink();
+	
 	function checkToken($str) {
 		$temp = explode(':', $str);
 		$salt = $temp[0];
@@ -29,15 +42,15 @@
 	}
 	
 	function updateSessionDB() {
-		global $link;
+		global $db;
 		
-		if($link) {
+		if($db->getLink()) {
 			$sessionId = clearStr(session_id());
 			$user = $_SESSION['user'];
 			$lastSeen = date('Y-m-d');
 			
 			$query = "SELECT session_id FROM sessions WHERE session_hash = $1";
-			$result = executeQuery($query, array($sessionId), 'get_session_id');
+			$result = $db->executeQuery($query, array($sessionId), 'get_session_id');
 			
 			if($result === false) {
 				echo 'Ошибка запроса';
@@ -46,7 +59,7 @@
 				$dbSessionId = pg_fetch_row($result);
 				if($dbSessionId) {
 					$query = 'UPDATE sessions SET session_last_seen = $1 WHERE session_id = $2';
-					$result = executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
+					$result = $db->executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
 					
 					if($result === false) {
 						echo 'Не удалось добавить сессию';
@@ -57,7 +70,7 @@
 				}
 				else {
 					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES ($1, $2, $3)';
-					$result = executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
+					$result = $db->executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
 					
 					if($result === false) {
 						echo 'Не удалось добавить сессию';
@@ -72,14 +85,12 @@
 	}
 	
 	function deleteSessionDB() {
-		global $link;
-		
-		if(!$link) $link = connectToPostgres();
-		
+		global $db;
+				
 		$sessionId = clearStr(session_id());
 		
 		$query = "DELETE FROM sessions WHERE session_hash = $1";
-		$result = executeQuery($query, array($sessionId), 'delete_session');
+		$result = $db->executeQuery($query, array($sessionId), 'delete_session');
 		
 		if($result === false) {
 			echo 'Ошибка запроса';
@@ -90,7 +101,7 @@
 	}
 	
 	function addLogs($type, $name, $text, $location, $date, $important) {
-		global $link;
+		global $db;
 		
 		if($name === null || $text === null || $location === null || 
 		   $date === null || $important === null || $type === null) {
@@ -105,10 +116,10 @@
 			$important = 'false';
 		}
 		
-		if($link) {
+		if($db->getLink()) {
 			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) 
 					  VALUES ($1, $2, $3, $4, $5, $6)";
-			$result = executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
+			$result = $db->executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
 			
 			if($result !== false) {
 				echo 'Лог добавлен';
@@ -189,7 +200,7 @@
 		return new DbNewsClass($id, $date, $page);
 	}
 	
-	function checkPublsExistence($page, $date) {
+	function checkPublsExistence($page, $date, $db) {
 		if(substr($date, -4, 4) == 'html') {
 			return new OldPublsClass($page);
 		}
@@ -210,7 +221,7 @@
 			readfile($date);
 			exit;
 		}
-		return new DbPublsClass($page);
+		return new DbPublsClass($page, $db);
 	}
 		
 	function convertDate($date) {
@@ -226,10 +237,9 @@
 	function getUserData($userLogin) {
 		if(!$userLogin) return;
 		
-		global $link;
-		$link = connectToPostgres();
+		global $db;
 		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE $1";
-		$result = executeQuery($query, array($userLogin), 'get_user_info');
+		$result = $db->executeQuery($query, array($userLogin), 'get_user_info');
 		
 		while($row = pg_fetch_assoc($res)) {
 			echo '<tr>';
@@ -246,18 +256,15 @@
 		- принимает ID материала
 	*/
 	function getComments($id) {
-		global $link;
+		global $db;
 		
-		if(!$link) {
-			$link = connectToPostgres();
-		}
-		if($link) {
+		if($db->getLink()) {
 			$query = "SELECT comments.comments_id, comments.comments_parent_id, users.user_login, comments.comments_text, comments.comments_date 
 					  FROM comments, users 
 					  WHERE comments_location_id = $1 
 					  AND comments.comments_author = users.user_id ORDER BY comments.comments_id";
 					
-			$result = executeQuery($query, array($id), 'get_all_comments');
+			$result = $db->executeQuery($query, array($id), 'get_all_comments');
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
@@ -311,11 +318,11 @@
 		- TODO: пока не используется
 	*/
 	function getUserEmail($userLogin) {
-		global $link;
+		global $db;
 		
-		if($link) {
+		if($db->getLink()) {
 			$query = "SELECT user_email FROM users WHERE user_login = $1";
-			$result = executeQuery($query, array($userLogin), 'get_user_mail');
+			$result = $db->executeQuery($query, array($userLogin), 'get_user_mail');
 			
 			if($result === false) echo 'Такого пользователя нет';
 			else return pg_fetch_result($result, 0, 0);
@@ -382,7 +389,7 @@
 			$result = pg_execute($link, $prepName, $params) or die('Error: '. pg_last_error());
 		}
 		else {
-			$result = pg_execute($link, $query) or die('Error: '. pg_last_error());
+			$result = pg_query($link, $query) or die('Error: '. pg_last_error());
 		}
 		
 		return $result;

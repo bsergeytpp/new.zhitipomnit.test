@@ -2,16 +2,15 @@
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../functions/admin_functions.php");
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		$id = -1;
-		if($link) {
+		if($db->getLink()) {
 			if(isset($_GET['id'])) {
 				$id = (int)$_GET['id'];
 				$query = "SELECT * FROM news WHERE news_id = $1";
-				$result = executeQuery($query, array("$id"), 'get_news_query');
+				$result = $db->executeQuery($query, array("$id"), 'get_news_query');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {

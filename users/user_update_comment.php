@@ -2,17 +2,16 @@
 	//require_once (__DIR__."/../admin_security/session.inc.php");
 	//require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../functions/functions.php");
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$text = ''; $id = -1;
-		if($link) {
+		if($db->getLink()) {
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
 				$query = "UPDATE comments SET comments_text = $1 WHERE comments_id = $2";
-				$result = executeQuery($query, array($text, $id), 'update_user_comment');
+				$result = $db->executeQuery($query, array($text, $id), 'update_user_comment');
 				
 				if($result === false) echo 'Комментарий не был обновлен';
 				else {

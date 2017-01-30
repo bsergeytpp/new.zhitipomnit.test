@@ -1,11 +1,10 @@
 <?
 	session_start();
 	require_once "../functions/functions.php";
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		if($link) {
+		if($db->getLink()) {
 			$login = filter_input(INPUT_POST, 'user-login', FILTER_SANITIZE_STRING);
 			$password = password_hash($_POST['user-password'], PASSWORD_DEFAULT);
 			$email = filter_input(INPUT_POST, 'user-email', FILTER_SANITIZE_EMAIL);
@@ -16,7 +15,7 @@
 			$group = "users";//$_POST['user-group'];
 			$query = "INSERT INTO users (user_login, user_password, user_email, user_group)
 					  VALUES ($1, $2, $3, $4)";
-			$result = executeQuery($query, array($login, $password, $email, $group), 'reg_user');
+			$result = $db->executeQuery($query, array($login, $password, $email, $group), 'reg_user');
 			
 			if($result === false) echo 'Пользователь не был добавлен';
 			else {

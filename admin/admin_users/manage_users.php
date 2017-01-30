@@ -4,11 +4,10 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 
 	function getUsersToTable() {
-		global $link;
-		$link = connectToPostgres();
+		global $db;
 		
 		$query = 'SELECT user_id, user_login, user_email, user_group FROM users ORDER BY user_id';
-		$res = pg_query($link, $query) or die('Query error: '. pg_last_error());
+		$res = $db->executeQuery($query, null, null);
 		
 		$usersArr = [
 			0 => 'user_id',

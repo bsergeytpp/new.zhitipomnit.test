@@ -2,11 +2,10 @@
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../functions/admin_functions.php");
-	global $link;
-	$link = connectToPostgres();
+	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		if($link) {
+		if($db->getLink()) {
 			$tmpNames = [];
 			$img = [];
 			$imgAlign = $_POST['image-align'];
@@ -45,7 +44,7 @@
 			
 			$query = "INSERT INTO news (news_date, news_header, news_text, news_author)
 					  VALUES ($1, $2, $3, $4)";
-		    $result = executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
+		    $result = $db->executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
 						
 			if($result === false) {
 				echo 'Новость не была добавлена';

@@ -9,18 +9,11 @@
 						$newsId = isset($_GET['id']) ? $_GET['id'] : '';
 						$pageNum = isset($_GET['page']) ? $_GET['page'] : '1';
 						$type = isset($_GET['type']) ? $_GET['type'] : 'db';
-						global $link;
-						$link = connectToPostgres();
-					
-						/*if($link) {
-							$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db');
-						}
-						else {
-							$newsClass = new OtherNewsClass($customNewsDate, $pageNum, 'other');
-						}*/
+						
 						if($type === 'db') {
-							if($link) {
-								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db');
+							global $dbLink; global $db;
+							if($dbLink && $db) {
+								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db', $db);
 								
 								if($newsId !== '') {
 									echo $newsClass->getSingleNews();
@@ -29,8 +22,11 @@
 								else {
 									echo $newsClass->getNews();
 									echo "<h3 class='full-width'><a href='index.php?pages=news&type=old'>Старые новости</a></h3>";
-									if($link) pg_close($link);
+									//TODO: if($dbLink) pg_close($dbLink);
 								}
+							}
+							else {
+								echo "Нет подключения к базе данных";
 							}
 						}
 						else if($type === 'old') {

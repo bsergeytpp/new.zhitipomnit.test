@@ -43,7 +43,7 @@
 			$text = pg_escape_string($text);
 			
 			$query = "INSERT INTO news (news_date, news_header, news_text, news_author)
-					  VALUES ($1, $2, $3, $4)";
+					  VALUES (?, ?, ?, ?)";
 		    $result = $db->executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
 						
 			if($result === false) {

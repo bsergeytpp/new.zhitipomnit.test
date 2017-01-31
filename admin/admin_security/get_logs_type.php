@@ -15,7 +15,7 @@
 		else {
 			$logsTypes = array();
 					
-			while($row = pg_fetch_assoc($result)) {
+			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				$logsTypes[] = $row;
 			}
 			

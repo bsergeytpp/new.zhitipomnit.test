@@ -21,7 +21,7 @@
 				}
 				
 				$id = (int)$_POST['id'];
-				$query = "UPDATE news SET " . pg_escape_string($name) . " = $1 WHERE news_id = $2";
+				$query = "UPDATE news SET " . pg_escape_string($name) . " = ? WHERE news_id = ?";
 				$result = $db->executeQuery($query, array("$text", "$id"), 'update_news_query');
 				
 				if($result === false) {

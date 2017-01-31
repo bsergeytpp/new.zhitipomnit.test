@@ -22,7 +22,6 @@
 								else {
 									echo $newsClass->getNews();
 									echo "<h3 class='full-width'><a href='index.php?pages=news&type=old'>Старые новости</a></h3>";
-									//TODO: if($dbLink) pg_close($dbLink);
 								}
 							}
 							else {

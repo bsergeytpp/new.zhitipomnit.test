@@ -14,7 +14,7 @@
 		if($db->getLink()) {
 			if(isset($_POST['comment-id'])) {
 				$id = (int)$_POST['comment-id'];
-				$query = "DELETE FROM comments WHERE comments_id = $1";
+				$query = "DELETE FROM comments WHERE comments_id = ?";
 				$result = $db->executeQuery($query, array($id), 'delete_comment');
 
 				if($result === false) {

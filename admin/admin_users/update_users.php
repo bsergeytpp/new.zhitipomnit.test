@@ -11,7 +11,7 @@
 				$text = strip_tags(clearStr($_POST['text']));
 				$name = clearStr($_POST['name']);
 				$id = (int)$_POST['id'];
-				$query = "UPDATE users SET " . pg_escape_string($name) . " = $1 WHERE user_id = $2";
+				$query = "UPDATE users SET " . pg_escape_string($name) . " = ? WHERE user_id = ?";
 				$result = $db->executeQuery($query, array($text, $id), 'update_user');
 				
 				if($result === false) echo 'Логин пользователя не был обновлен';

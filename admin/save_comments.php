@@ -25,7 +25,7 @@
 				}
 				$date = date('Y-m-d H:i:sO');
 				$query = "INSERT INTO comments (comments_author, comments_location_id, comments_text, comments_date, comments_parent_id) " .
-						 "VALUES ($1, $2, $3, $4, $5)";
+						 "VALUES (?, ?, ?, ?, ?)";
 				$result = $db->executeQuery($query, array($user_id, $id, $text, $date, $parent_id), 'insert_comment');
 				
 				if($result === false) {

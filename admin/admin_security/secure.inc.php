@@ -16,13 +16,13 @@
 	function checkUser($login, $password) {
 		global $db;
 		
-		$query = "SELECT user_id, user_login, user_password, user_group, user_email FROM users WHERE user_login = $1";
-		pg_query($db->getLink(), "DEALLOCATE ALL");
+		$query = "SELECT user_id, user_login, user_password, user_group, user_email FROM users WHERE user_login = ?";
+		//pg_query($db->getLink(), "DEALLOCATE ALL");
 		$result = $db->executeQuery($query, array($login), 'check_user');
 		
 		if($result === false) return false;
 		
-		$row = pg_fetch_array($result);
+		$row = $result->fetch(PDO::FETCH_BOTH);	//TODO: не проверялось
 		
 		if(password_verify($password, $row['user_password'])) {
 			echo "Password is correct";

@@ -79,7 +79,7 @@
 			//$res = executeQuery($query);
 			//echo "<h4>Новости из базы данных</h4>";
 			
-			while($row = pg_fetch_assoc($res)) {
+			while($row = $res->fetch(PDO::FETCH_ASSOC)) {
 				$this->newsArr[] = $row;
 			}
 			
@@ -104,13 +104,13 @@
 		}
 		
 		public function getNewsByDate() {	
-			$query = "SELECT * FROM news WHERE news_date = $1";
+			$query = "SELECT * FROM news WHERE news_date = ?";
 			$result = $this->db->executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			//$result = executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			
 			if($result === false) echo "$this->newsDate не было новостей";
 			else {
-				while($row = pg_fetch_assoc($result)) {
+				while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 					$this->newsArr[] = $row;
 				}
 				
@@ -169,13 +169,13 @@
 			}
 			
 			if($this->db->getLink()) {
-				$query = "SELECT * FROM comments WHERE comments_location_id = $1";
-				pg_query($this->db->getLink(), "DEALLOCATE ALL");
+				$query = "SELECT COUNT(*) FROM comments WHERE comments_location_id = ?";
+				//TODO: pg_query($this->db->getLink(), "DEALLOCATE ALL");
 				$result = $this->db->executeQuery($query, array($id), 'get_comments');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {
-					$num_rows = pg_num_rows($result);
+					$num_rows = $result->fetchColumn();
 					return $num_rows;				
 				}
 			}
@@ -184,9 +184,9 @@
 		}
 				
 		private function getSingleDbNews($pageNum, $id) {
-			$query = "SELECT * FROM news WHERE news_date = $1 AND news_id = $2";
+			$query = "SELECT * FROM news WHERE news_date = ? AND news_id = ?";
 			$res = $this->db->executeQuery($query, array($this->newsDate, $id), 'get_single_news');
-			$news = pg_fetch_assoc($res);
+			$news = $res->fetch(PDO::FETCH_ASSOC);
 			
 			if(!$news) {
 				echo "<h1>Такой новости не существует!</h1>";

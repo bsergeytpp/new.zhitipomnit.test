@@ -10,12 +10,13 @@
 		global $db;
 		
 		if($db->getLink()) {
-			$query = "SELECT user_id FROM users WHERE user_login = $1";
+			$query = "SELECT user_id FROM users WHERE user_login = ? LIMIT 1";
 			$result = $db->executeQuery($query, array($login), 'select_user_id');
 			
 			if($result === false) echo 'Пользователь не был найдет';
 			else {
-				return pg_fetch_result($result, 0, 0);
+				$row = $result->fetch();
+				return $row[0];	// TODO: не проверялось
 			} 	
 		}
 	}

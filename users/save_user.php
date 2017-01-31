@@ -14,7 +14,7 @@
 			}
 			$group = "users";//$_POST['user-group'];
 			$query = "INSERT INTO users (user_login, user_password, user_email, user_group)
-					  VALUES ($1, $2, $3, $4)";
+					  VALUES (?, ?, ?, ?)";
 			$result = $db->executeQuery($query, array($login, $password, $email, $group), 'reg_user');
 			
 			if($result === false) echo 'Пользователь не был добавлен';

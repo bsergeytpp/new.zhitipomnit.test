@@ -9,12 +9,12 @@
 		if($db->getLink()) {
 			if(isset($_GET['id'])) {
 				$id = (int)$_GET['id'];
-				$query = "SELECT * FROM news WHERE news_id = $1";
+				$query = "SELECT * FROM news WHERE news_id = ?";
 				$result = $db->executeQuery($query, array("$id"), 'get_news_query');
 				
 				if($result === false) echo 'Новость не найдена';
 				else {
-					$row = pg_fetch_assoc($result);
+					$row = $result->fetch(PDO::FETCH_ASSOC);
 					echo json_encode($row);	
 				}		
 			}

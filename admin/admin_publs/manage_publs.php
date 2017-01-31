@@ -15,7 +15,7 @@
 			2 => 'publs_text',
 		];
 		
-		while($row = pg_fetch_assoc($res)) {
+		while($row = $res->fetch(PDO::FETCH_ASSOC)) {
 			$i = 0;
 			echo '<tr>';
 			foreach($row as $val) {

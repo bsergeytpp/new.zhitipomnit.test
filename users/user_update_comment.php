@@ -10,7 +10,7 @@
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
-				$query = "UPDATE comments SET comments_text = $1 WHERE comments_id = $2";
+				$query = "UPDATE comments SET comments_text = ? WHERE comments_id = ?";
 				$result = $db->executeQuery($query, array($text, $id), 'update_user_comment');
 				
 				if($result === false) echo 'Комментарий не был обновлен';

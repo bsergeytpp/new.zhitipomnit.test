@@ -26,7 +26,7 @@
 				  " user=".$config['user'].
 				  " password=".$config['password'];
 	$db = DBClass::getInstance();
-	$db->connectToDB($connectStr);
+	$db->connectToDB($config, 'PGSQL');
 	$dbLink = $db->getLink();
 	
 	function checkToken($str) {
@@ -49,16 +49,16 @@
 			$user = $_SESSION['user'];
 			$lastSeen = date('Y-m-d');
 			
-			$query = "SELECT session_id FROM sessions WHERE session_hash = $1";
+			$query = "SELECT session_id FROM sessions WHERE session_hash = ? LIMIT 1";
 			$result = $db->executeQuery($query, array($sessionId), 'get_session_id');
 			
 			if($result === false) {
 				echo 'Ошибка запроса';
 			}
 			else {
-				$dbSessionId = pg_fetch_row($result);
+				$dbSessionId = $result->fetch();
 				if($dbSessionId) {
-					$query = 'UPDATE sessions SET session_last_seen = $1 WHERE session_id = $2';
+					$query = 'UPDATE sessions SET session_last_seen = ? WHERE session_id = ?';
 					$result = $db->executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
 					
 					if($result === false) {
@@ -69,7 +69,7 @@
 					}
 				}
 				else {
-					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES ($1, $2, $3)';
+					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES (?, ?, ?)';
 					$result = $db->executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
 					
 					if($result === false) {
@@ -89,7 +89,7 @@
 				
 		$sessionId = clearStr(session_id());
 		
-		$query = "DELETE FROM sessions WHERE session_hash = $1";
+		$query = "DELETE FROM sessions WHERE session_hash = ?";
 		$result = $db->executeQuery($query, array($sessionId), 'delete_session');
 		
 		if($result === false) {
@@ -118,7 +118,7 @@
 		
 		if($db->getLink()) {
 			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) 
-					  VALUES ($1, $2, $3, $4, $5, $6)";
+					  VALUES (?, ?, ?, ?, ?, ?)";
 			$result = $db->executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
 			
 			if($result !== false) {
@@ -238,10 +238,10 @@
 		if(!$userLogin) return;
 		
 		global $db;
-		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE $1";
+		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE ?";
 		$result = $db->executeQuery($query, array($userLogin), 'get_user_info');
 		
-		while($row = pg_fetch_assoc($res)) {
+		while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 			echo '<tr>';
 			foreach($row as $val) {
 				echo '<td>' . $val . '</td>';
@@ -259,53 +259,72 @@
 		global $db;
 		
 		if($db->getLink()) {
-			$query = "SELECT comments.comments_id, comments.comments_parent_id, users.user_login, comments.comments_text, comments.comments_date 
+			$query = "SELECT COUNT(
+						comments.comments_id, 
+						comments.comments_parent_id, 
+						users.user_login, 
+						comments.comments_text, 
+						comments.comments_date) 
 					  FROM comments, users 
-					  WHERE comments_location_id = $1 
-					  AND comments.comments_author = users.user_id ORDER BY comments.comments_id";
+					  WHERE comments_location_id = ? 
+					  AND comments.comments_author = users.user_id 
+					  ORDER BY comments.comments_id";
 					
 			$result = $db->executeQuery($query, array($id), 'get_all_comments');
 
 			if($result === false) echo 'Ошибка в выборке комментариев';
 			else {
-				if(pg_num_rows($result) === 0) {
+				if($result->fetchColumn() === 0) {
 					echo 'Комментариев пока нет.';
 				}
-				
-				while($row = pg_fetch_assoc($result)) {
-					echo "<div class='comments-div'>";
+				else {
+					$query = "SELECT
+						comments.comments_id, 
+						comments.comments_parent_id, 
+						users.user_login, 
+						comments.comments_text, 
+						comments.comments_date 
+					  FROM comments, users 
+					  WHERE comments_location_id = ? 
+					  AND comments.comments_author = users.user_id 
+					  ORDER BY comments.comments_id";
 					
-					if($row['comments_parent_id'] !== null) {
-						echo "<table class='comments-table respond'>"; 
-					}
-					else echo "<table class='comments-table'>"; 
-					
-					echo "<tr>
-							<th class='row-id'>ID</th>
-							<th class='row-parent'>Родитель</th>
-							<th class='row-login'>Логин</th>
-							<th class='row-text'>Сообщение</th>
-							<th class='row-date'>Дата</th>
-						 </tr>";
-					echo "<tr class='comments-content'>";
-					$i = 0;
-					
-					foreach($row as $val) {
-						//if($val === $row['parent']) continue;
+					$result = $db->executeQuery($query, array($id), 'get_all_comments');
+					while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+						echo "<div class='comments-div'>";
 						
-						//if($val === $row['comments_id']) continue;
-						switch($i) {
-							case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
-							case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
-							default: echo "<td>". $val ."</td>"; break;
-
+						if($row['comments_parent_id'] !== null) {
+							echo "<table class='comments-table respond'>"; 
 						}
-						$i++;
+						else echo "<table class='comments-table'>"; 
+						
+						echo "<tr>
+								<th class='row-id'>ID</th>
+								<th class='row-parent'>Родитель</th>
+								<th class='row-login'>Логин</th>
+								<th class='row-text'>Сообщение</th>
+								<th class='row-date'>Дата</th>
+							 </tr>";
+						echo "<tr class='comments-content'>";
+						$i = 0;
+						
+						foreach($row as $val) {
+							//if($val === $row['parent']) continue;
+							
+							//if($val === $row['comments_id']) continue;
+							switch($i) {
+								case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
+								case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
+								default: echo "<td>". $val ."</td>"; break;
+
+							}
+							$i++;
+						}
+						echo "</tr>";
+						echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+						echo "</table>";
+						echo "</div>";
 					}
-					echo "</tr>";
-					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
-					echo "</table>";
-					echo "</div>";
 				}
 			}
 		}
@@ -321,11 +340,14 @@
 		global $db;
 		
 		if($db->getLink()) {
-			$query = "SELECT user_email FROM users WHERE user_login = $1";
+			$query = "SELECT user_email FROM users WHERE user_login = ?";
 			$result = $db->executeQuery($query, array($userLogin), 'get_user_mail');
 			
 			if($result === false) echo 'Такого пользователя нет';
-			else return pg_fetch_result($result, 0, 0);
+			else {
+				$row = $result->fetch();
+				return $row[0];	// TODO: не проверялось
+			}
 		}
 	}	
 	

@@ -8,7 +8,7 @@
 		if($db->getLink()) {
 			$header = clearStr($_POST['publs-header']);
 			$text = clearStr($_POST['publs-text']);
-		    $query = "INSERT INTO publs (publs_header, publs_text) VALUES ($1, $2)";
+		    $query = "INSERT INTO publs (publs_header, publs_text) VALUES (?, ?)";
 			$result = $db->executeQuery($query, array("$header", "$text"), 'save_publs_query');
 			
 			if($result === false) {

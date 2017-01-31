@@ -9,12 +9,12 @@
 		if($db->getLink()) {
 			if(isset($_GET['id'])) {
 				$id = (int)$_GET['id'];
-				$query = "SELECT * FROM publs WHERE publs_id = $1";
+				$query = "SELECT * FROM publs WHERE publs_id = ?";
 				$result = $db->executeQuery($query, array("$id"), 'get_publs_query');
 				
 				if($result === false) echo 'Публикация не найдена';
 				else {
-					$row = pg_fetch_assoc($result);
+					$row = $result->fetch(PDO::FETCH_ASSOC);
 					echo json_encode($row);	
 				}		
 			}

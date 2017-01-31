@@ -21,8 +21,8 @@
 				}
 				
 				$id = (int)$_POST['id'];
-				$query = "UPDATE publs SET " . pg_escape_string($name) . " = $1 " . 
-						 "WHERE publs_id = $2";
+				$query = "UPDATE publs SET " . pg_escape_string($name) . " = ? " . 
+						 "WHERE publs_id = ?";
 			    $result = $db->executeQuery($query, array("$text", "$id"), 'update_publs_query');
 				
 				if($result === false) {

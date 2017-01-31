@@ -7,11 +7,11 @@
 		if($db->getLink()) {
 			if(isset($_GET['id'])) {
 				$id = $_GET['id'];
-				$query = "SELECT * FROM news WHERE news_id = $1";
+				$query = "SELECT COUNT(*) FROM news WHERE news_id = ?";
 				$result = $db->executeQuery($query, array($id), 'check_news');
 			
 				if($result === false) echo 'Ошибка в запросе';
-				else if(pg_num_rows($result) > 0) {
+				else if($result->fetchColumn() > 0) {
 	?>
 					<div class='comments-wrapper'>
 						<? 

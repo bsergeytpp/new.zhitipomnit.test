@@ -17,7 +17,7 @@
 				
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
-				$query = "UPDATE comments SET comments_text = $1 WHERE comments_id = $2";
+				$query = "UPDATE comments SET comments_text = ? WHERE comments_id = ?";
 				$result = $db->executeQuery($query, array($text, $id), 'update_comments');
 				
 				if($result === false) {

@@ -37,8 +37,8 @@
 			$dbPubls = [];
 			$query = "SELECT publs_id, publs_header FROM publs";
 			$res = $this->db->executeQuery($query, null, null);
-			
-			while($row = pg_fetch_assoc($res)) {
+
+			while($row = $res->fetch(PDO::FETCH_ASSOC)) {
 				$dbPubls[] = $row;
 			}
 			
@@ -57,9 +57,9 @@
 			echo "<strong><a href='index.php?pages=publ'>Назад</a></strong><br>";
 			
 			if($this->db->getLink()) {
-				$query = 'SELECT * FROM publs WHERE publs_id = $1';
+				$query = 'SELECT * FROM publs WHERE publs_id = ?';
 				$res = $this->db->executeQuery($query, array($date), 'get_publs');
-				$row = pg_fetch_assoc($res);
+				$row = $res->fetch(PDO::FETCH_ASSOC);
 				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
 				
 				return $publ;

@@ -7,9 +7,9 @@
 					<?
 						$customPubl = isset($_GET['custom-publ']) ? $_GET['custom-publ']: '';
 						$pageNum = isset($_GET['page']) ? $_GET['page']: '1';
-						global $dbLink; global $db; global $connectStr;
+						global $dbLink; global $db;
 						
-						if($dbLink && $db) $publsClass = new DbPublsClass($pageNum, $connectStr);
+						if($dbLink && $db) $publsClass = new DbPublsClass($pageNum);
 						else $publsClass = new OtherPublsClass($pageNum);
 						
 						if(!$customPubl) {

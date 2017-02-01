@@ -51,6 +51,7 @@
 			// сортируем статьи по ID
 			$dbPubls = array_reverse($dbPubls);
 			$this->createPublsList($dbPubls);
+			
 		}
 		
 		public function getSinglePubl($date) {

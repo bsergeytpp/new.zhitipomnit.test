@@ -75,10 +75,10 @@
 			else {
 				$query = 'SELECT * FROM news';
 			}
-			$res = $this->db->executeQuery($query, null, null);
-			//$res = executeQuery($query);
-			//echo "<h4>Новости из базы данных</h4>";
 			
+			$res = $this->db->executeQuery($query, null, null);
+			//echo "<h4>Новости из базы данных</h4>";
+		
 			while($row = $res->fetch(PDO::FETCH_ASSOC)) {
 				$this->newsArr[] = $row;
 			}
@@ -105,8 +105,8 @@
 		
 		public function getNewsByDate() {	
 			$query = "SELECT * FROM news WHERE news_date = ?";
+			
 			$result = $this->db->executeQuery($query, array($this->newsDate), 'get_news_by_date');
-			//$result = executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			
 			if($result === false) echo "$this->newsDate не было новостей";
 			else {
@@ -170,7 +170,6 @@
 			
 			if($this->db->getLink()) {
 				$query = "SELECT COUNT(*) FROM comments WHERE comments_location_id = ?";
-				//TODO: pg_query($this->db->getLink(), "DEALLOCATE ALL");
 				$result = $this->db->executeQuery($query, array($id), 'get_comments');
 				
 				if($result === false) echo 'Новость не найдена';
@@ -204,6 +203,7 @@
 			];
 			$newsFull = str_replace($pattern, $replacement, $newsFull);
 			echo $newsFull;
+			
 		}
 	
 		protected function createExceptNews($news) {

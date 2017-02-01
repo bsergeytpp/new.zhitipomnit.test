@@ -5,9 +5,7 @@
 		private $provider = 'PGSQL';
 		private static $_instance = null; 
 		
-		private function __construct() {
-			//if(isset($conStr)) $this->connectionString = $conStr;
-		}
+		private function __construct() {}
 		
 		private function __clone() {}
 		
@@ -26,7 +24,8 @@
 		
 		public function connectToDB($connStr, $provider) {
 			$str = '';
-			$this->provider = $provider;
+			
+			if(isset($provider)) $this->provider = $provider;
 			
 			switch($provider) {
 				case "PGSQL": $str = 'pgsql:'; break;
@@ -35,19 +34,17 @@
 			}
 
 			$str .= 'host='.$connStr['host'].';dbname='.$connStr['dbname'];
-			$this->link = new PDO($str, $connStr['user'], $connStr['password']);
-			
-			/*if(function_exists('pg_connect')) {
-				$this->link = pg_connect($connStr);
-				$this->provider = 'PGSQL';
+			try{
+				$this->link = new PDO($str, $connStr['user'], $connStr['password'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 			}
-			else if(function_exists('mysqli_connect')) {
-				$this->link = mysqli_connect($connStr);
-				$this->provider = 'MYSQL';
+			catch(PDOException $e) {
+				echo addLogs(
+					5, 'failed connection', 'Соединение оборвалось: ' . $e->getMessage(), 
+					'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
+					date('Y-m-d H:i:sO'), 
+					true);
+				exit;
 			}
-			else {
-				return false;
-			}*/
 		}
 		
 		public function executeQuery($query, $params, $prepName) {	
@@ -56,23 +53,25 @@
 				return false;
 			}
 			
-			if($params) {
-				$this->result = $this->link->prepare($query);
-				$this->result->execute($params);
+			try {
+				if($params) {
+					$this->result = $this->link->prepare($query);
+					$this->result->execute($params);
+				}
+				else {
+					$this->result = $this->link->query($query);
+				}
+				
+				return $this->result;
 			}
-			else {
-				$this->result = $this->link->query($query);
+			catch(PDOException $e) {
+				echo addLogs(
+					5, 'failed query', $e -> getCode() . ":" . $e -> getMessage(), 
+					'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
+					date('Y-m-d H:i:sO'), 
+					true);
+				exit;
 			}
-		
-			/*if($params && $prepName) {
-				$this->result = pg_prepare($this->link, $prepName, $query) or die('Error: '. pg_last_error());
-				$this->result = pg_execute($this->link, $prepName, $params) or die('Error: '. pg_last_error());
-			}
-			else {
-				$this->result = pg_query($this->link, $query) or die('Error: '. pg_last_error());
-			}*/
-			
-			return $this->result;
 		}
 		
 		public function getLink() {

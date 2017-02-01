@@ -250,82 +250,99 @@
 		}
 	}
 	
+	/*
+		Функция проверки наличия комментариев к материалу
+		- принимает ID материала (поле comment_location_id)
+		- возвращает количество комментариев или false
+	*/
+	function checkComments($locationId) {
+		global $db;
+		
+		if($db->getLink()) {
+			$query = "SELECT COUNT(comments.comments_id)
+					  FROM comments, users 
+					  WHERE comments_location_id = ?";
+					
+			$result = $db->executeQuery($query, array($locationId), 'check_comments');
+			
+			return $result->fetchColumn();
+		}
+		else {
+			echo "Нет подключения к базе данных";
+		}
+		
+		return false;
+	}
 	
 	/*
-		Функция вывода всех комментариев для страницы
+		Функция получения всех комментариев для страницы
 		- принимает ID материала
 	*/
 	function getComments($id) {
 		global $db;
 		
 		if($db->getLink()) {
-			$query = "SELECT COUNT(
-						comments.comments_id, 
-						comments.comments_parent_id, 
-						users.user_login, 
-						comments.comments_text, 
-						comments.comments_date) 
-					  FROM comments, users 
-					  WHERE comments_location_id = ? 
-					  AND comments.comments_author = users.user_id 
-					  ORDER BY comments.comments_id";
-					
-			$result = $db->executeQuery($query, array($id), 'get_all_comments');
+			$commentsNum = checkComments($id);
 
-			if($result === false) echo 'Ошибка в выборке комментариев';
-			else {
-				if($result->fetchColumn() === 0) {
-					echo 'Комментариев пока нет.';
+			if($commentsNum === false) echo 'Ошибка в выборке комментариев';
+			else if($commentsNum > 0) {
+				$query = "SELECT
+					comments.comments_id, 
+					comments.comments_parent_id, 
+					users.user_login, 
+					comments.comments_text, 
+					comments.comments_date 
+				  FROM comments, users 
+				  WHERE comments_location_id = ? 
+				  AND comments.comments_author = users.user_id 
+				  ORDER BY comments.comments_id";
+				
+				$result = $db->executeQuery($query, array($id), 'get_all_comments');
+				printComments($result);
+			}
+		}
+	}
+	
+	/*
+		Функция вывода всех комментариев для страницы
+		- принимает результат запроса к БД
+	*/
+	function printComments($result) {
+		if(!$result) {
+			return false;
+		}
+		else {
+			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+				echo "<div class='comments-div'>";
+				
+				if($row['comments_parent_id'] !== null) {
+					echo "<table class='comments-table respond'>"; 
 				}
-				else {
-					$query = "SELECT
-						comments.comments_id, 
-						comments.comments_parent_id, 
-						users.user_login, 
-						comments.comments_text, 
-						comments.comments_date 
-					  FROM comments, users 
-					  WHERE comments_location_id = ? 
-					  AND comments.comments_author = users.user_id 
-					  ORDER BY comments.comments_id";
-					
-					$result = $db->executeQuery($query, array($id), 'get_all_comments');
-					while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-						echo "<div class='comments-div'>";
-						
-						if($row['comments_parent_id'] !== null) {
-							echo "<table class='comments-table respond'>"; 
-						}
-						else echo "<table class='comments-table'>"; 
-						
-						echo "<tr>
-								<th class='row-id'>ID</th>
-								<th class='row-parent'>Родитель</th>
-								<th class='row-login'>Логин</th>
-								<th class='row-text'>Сообщение</th>
-								<th class='row-date'>Дата</th>
-							 </tr>";
-						echo "<tr class='comments-content'>";
-						$i = 0;
-						
-						foreach($row as $val) {
-							//if($val === $row['parent']) continue;
-							
-							//if($val === $row['comments_id']) continue;
-							switch($i) {
-								case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
-								case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
-								default: echo "<td>". $val ."</td>"; break;
+				else echo "<table class='comments-table'>"; 
+				
+				echo "<tr>
+						<th class='row-id'>ID</th>
+						<th class='row-parent'>Родитель</th>
+						<th class='row-login'>Логин</th>
+						<th class='row-text'>Сообщение</th>
+						<th class='row-date'>Дата</th>
+					 </tr>";
+				echo "<tr class='comments-content'>";
+				$i = 0;
+				
+				foreach($row as $val) {
+					switch($i) {
+						case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
+						case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
+						default: echo "<td>". $val ."</td>"; break;
 
-							}
-							$i++;
-						}
-						echo "</tr>";
-						echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
-						echo "</table>";
-						echo "</div>";
 					}
+					$i++;
 				}
+				echo "</tr>";
+				echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+				echo "</table>";
+				echo "</div>";
 			}
 		}
 	}

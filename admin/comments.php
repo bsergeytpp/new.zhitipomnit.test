@@ -15,7 +15,10 @@
 	?>
 					<div class='comments-wrapper'>
 						<? 
-							include "comments_list.php"; 
+							// есть комментарии
+							if(checkComments($id) > 0) {
+								include "comments_list.php";
+							}							
 							include "comments_form.php";
 						?>
 					</div>

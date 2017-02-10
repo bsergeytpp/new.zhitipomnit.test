@@ -83,8 +83,10 @@ Admin.prototype.checkForEditableContent = function() {
 // проверяем есть ли на странице редактируемые комментарии
 Admin.prototype.checkForComments = function() {
 	'use strict';
-	if(document.getElementsByClassName('comments-table').length > 0) {
-		this._commentsTables = document.getElementsByClassName('comments-table');
+	var commentsTables = document.getElementsByClassName('comments-table');
+	
+	if(commentsTables.length > 0) {
+		this._commentsTables = commentsTables;
 		this.addCommentsEditBtn();
 	}
 };
@@ -129,64 +131,83 @@ Admin.prototype.initCommentsEditBtns = function() {
 Admin.prototype.addHandlerOnCommentsEditBtns = function(e) {
 	'use strict';
 	var target = e.target;
+	var self = this;
 				
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
 		
 		if(target.innerHTML === 'Редактировать') {
-			var totalEditors = 1;
-			if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
-				totalEditors = 2;
-			} 
-			if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-				if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
-					this.disablePrevEditors();								// убираем предыдущие объект tinymce
-					this.initEditorForComment(target);						// делаем из td объект tinymce
-				}
-				else return; 												// решили закончить с предыдущим комментарием
-			} 
-			else {
-				this.initEditorForComment(target);							// делаем из td объект tinymce
-			}
+			editComments.call(self, target);
 		}
 		else if(target.innerHTML === 'Сохранить') {
 			e.stopPropagation();
-			var id = target.getAttribute('data-id');
-			var updatedText = tinymce.activeEditor.getContent();
-			var adminLogin = document.getElementsByClassName('users-info')[0];
-			adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
-			updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
-			DEBUG('func: addHandlerOnCommentsEditBtns; output: ' + id + "|" + updatedText);
-			// запрос на сохранение элемента
-			this._sendSaveRequest({
-				'comment-id': id,
-				'comment-text': updatedText,
-				'comment-author': adminLogin
-			   },
-			   'POST', 
-			   'admin/admin_comments/update_comment.php', 
-			   'application/x-www-form-urlencoded');
-			updateCommentsWrapper();
+			saveComments.call(self, target);
 		}
 	}
 	else if(target.classList.contains('del-comm')) {
 		e.preventDefault();
 		e.stopPropagation();
-		var id = target.getAttribute('data-id');
-		if(confirm('Точно удалить комментарий №'+id+'?')) { 
-			DEBUG('func: addHandlerOnCommentsEditBtns; output: Удаление: '+target.getAttribute('data-id'));			
-			// запрос на удаление элемента
-			this._sendSaveRequest({
-				'comment-id': id
-			   },
-			   'POST', 
-			   'admin/admin_comments/delete_comment.php', 
-			   'application/x-www-form-urlencoded');
-			updateCommentsWrapper();
-		}
-		else return;
+		deleteComments.call(self, target);
  	}
 };
+
+/*
+	Вспомогательные функции редактирования/удаления/сохранения комментариев
+*/
+function editComments(td) {
+	var totalEditors = 1;
+	
+	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
+		totalEditors = 2;
+	} 
+	
+	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
+		if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
+			this.disablePrevEditors();								// убираем предыдущие объект tinymce
+			this.initEditorForComment(td);							// делаем из td объект tinymce
+		}
+		else return; 												// решили закончить с предыдущим комментарием
+	} 
+	else {
+		this.initEditorForComment(td);								// делаем из td объект tinymce
+	}
+}
+
+function deleteComments(td) {
+	var id = td.getAttribute('data-id');
+	
+	if(confirm('Точно удалить комментарий №'+id+'?')) { 
+		DEBUG('func: addHandlerOnCommentsEditBtns; output: Удаление: '+td.getAttribute('data-id'));			
+		// запрос на удаление элемента
+		this._sendSaveRequest({
+			'comment-id': id
+		   },
+		   'POST', 
+		   'admin/admin_comments/delete_comment.php', 
+		   'application/x-www-form-urlencoded');
+		updateCommentsWrapper();
+	}
+	else return;
+}
+
+function saveComments(td) {
+	var id = td.getAttribute('data-id');
+	var updatedText = tinymce.activeEditor.getContent();
+	var adminLogin = document.getElementsByClassName('users-info')[0];
+	adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
+	updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
+	DEBUG('func: addHandlerOnCommentsEditBtns; output: ' + id + "|" + updatedText);
+	// запрос на сохранение элемента
+	this._sendSaveRequest({
+		'comment-id': id,
+		'comment-text': updatedText,
+		'comment-author': adminLogin
+	   },
+	   'POST', 
+	   'admin/admin_comments/update_comment.php', 
+	   'application/x-www-form-urlencoded');
+	updateCommentsWrapper();
+}
 
 // инициализируем объект tinymce
 Admin.prototype.initEditorForComment = function(elem) {

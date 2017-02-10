@@ -380,7 +380,7 @@ function addCommentsAjax(commentsForm) {
 	var id = commentsForm.elements['comments-location-id'].value;
 	var token = commentsForm.elements['security-token'].value;
 
-	if(!checkCookieToken) {
+	if(!checkCookieToken(token)) {
 		console.log("Ошибка безопасности.");
 		return;
 		//request.setRequestHeader("X-CSRF-TOKEN", csrfCookie[1]);
@@ -389,8 +389,6 @@ function addCommentsAjax(commentsForm) {
 	if(!id) {
 		id = getParamFromLocationSearch('id');
 	}
-
-	if(parentId === '') parentId = '';			// ???
 	
 	var data = "comments-text=" + encodeURIComponent(text) + "&" +
 			   "comments-login=" + encodeURIComponent(login) + "&" +

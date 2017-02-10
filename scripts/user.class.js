@@ -167,43 +167,57 @@ User.prototype.initCommentsEditBtns = function() {
 User.prototype.addHandlerOnCommentsEditBtns = function(e) {
 	'use strict';
 	var target = e.target;
-				
+	var self = this;
+	
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
 		
 		if(target.innerHTML === 'Редактировать') {
-			var totalEditors = 1;
-			if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
-				totalEditors = 2;
-			} 
-			if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-				if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
-					this.disablePrevEditors();								// убираем предыдущие объект tinymce
-					this.initEditorForComment(target);						// делаем из td объект tinymce
-				}
-				else return; 												// решили закончить с предыдущим комментарием
-			} 
-			else {
-				this.initEditorForComment(target);							// делаем из td объект tinymce
-			}
+			userEditComments.call(self, target);
 		}
 		else if(target.innerHTML === 'Сохранить') {
 			e.stopPropagation();
-			var id = target.getAttribute('data-id');
-			var updatedText = tinymce.activeEditor.getContent();
-			updatedText += "<em>Отредактировано " + new Date().toLocaleString() + '</em>';
-			DEBUG('func: addHandlerOnCommentsEditBtns; output: '+id + "|" + updatedText);
-			// запрос на сохранение элемента
-			this._sendSaveRequest({
-				'comment-id': id,
-				'comment-text': updatedText
-			   },
-			   'POST', 
-			   'users/user_update_comment.php', 
-			   'application/x-www-form-urlencoded');
+			userSaveComments.call(self, target);
 		}
 	}
 };
+
+/*
+	Вспомогательные функции редактирования/сохранения комментариев
+*/
+function userEditComment(td) {
+	var totalEditors = 1;
+	
+	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
+		totalEditors = 2;
+	} 
+	
+	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
+		if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
+			this.disablePrevEditors();								// убираем предыдущие объект tinymce
+			this.initEditorForComment(td);							// делаем из td объект tinymce
+		}
+		else return; 												// решили закончить с предыдущим комментарием
+	} 
+	else {
+		this.initEditorForComment(td);								// делаем из td объект tinymce
+	}
+}
+
+function userSaveComments(td) {
+	var id = td.getAttribute('data-id');
+	var updatedText = tinymce.activeEditor.getContent();
+	updatedText += "<em>Отредактировано " + new Date().toLocaleString() + '</em>';
+	DEBUG('func: addHandlerOnCommentsEditBtns; output: '+id + "|" + updatedText);
+	// запрос на сохранение элемента
+	this._sendSaveRequest({
+		'comment-id': id,
+		'comment-text': updatedText
+	   },
+	   'POST', 
+	   'users/user_update_comment.php', 
+	   'application/x-www-form-urlencoded');
+}
 
 // инициализируем объект tinymce
 User.prototype.initEditorForComment = function(elem) {

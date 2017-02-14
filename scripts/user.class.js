@@ -29,7 +29,7 @@ function User() {
 				}
 
 				if(resp !== null) {
-					DEBUG("func: checkIfUser; output: Ваш логин: "+resp);
+					DEBUG(checkIfUser.name, "Ваш логин: "+resp);
 					userLogin = resp;
 					
 					// хак-проверка на админа, чтобы не было лишних TR'ов
@@ -38,7 +38,7 @@ function User() {
 					}
 				}
 				else {
-					DEBUG("func: checkIfUser; output: Вы не авторизованы!");
+					DEBUG(checkIfUser.name, "Вы не авторизованы!");
 					User = null;
 					user = null;
 				}
@@ -59,7 +59,7 @@ function User() {
 };
 
 // ищем комментарии пользователя
-User.prototype.checkForUserComments = function() {
+User.prototype.checkForUserComments = function checkForUserComments() {
 	'use strict';
 	var commentsTables = null;
 	var self = this;
@@ -71,30 +71,30 @@ User.prototype.checkForUserComments = function() {
 		this.getUserCommentsFromId(location_id, function() {
 			var response = this.responseText;
 			var responseObject = null;
-			DEBUG('func: checkForUserComments; output: ' + response + ' это объект');
+			DEBUG(checkForUserComments.name, response + ' это объект');
 		
 			if(typeof response === 'string') {
 				try {
 					responseObject = JSON.parse(response);
 				}
 				catch(e) {
-					DEBUG('func: checkForUserComments; Пришла не JSON строка: ' + e.toString());
+					DEBUG(checkForUserComments.name, 'Пришла не JSON строка: ' + e.toString());
 				}
 			}
 			
 			if(responseObject !== null) {
-				DEBUG('func: checkForUserComments; output: ' + response + ' это объект');				
+				DEBUG(checkForUserComments.name, response + ' это объект');				
 				self.addCommentsEditBtn(responseObject);
 			}
 			else {
-				DEBUG('func: checkForUserComments; output: ' + response);
+				DEBUG(checkForUserComments.name, response);
 			}
 		});
 		//this.addCommentsEditBtn();
 	}
 };
 
-User.prototype.addCommentsEditBtn = function(commentsIds) {
+User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	'use strict';
 	var commTables = document.getElementsByClassName('comments-table');
 
@@ -120,7 +120,7 @@ User.prototype.addCommentsEditBtn = function(commentsIds) {
 	this.initCommentsEditBtns();
 };
 
-User.prototype.checkId = function(id, object) {
+User.prototype.checkId = function checkId(id, object) {
 	for(var i=0, len=object.length; i<len; i++) {
 		if(id === object[i]['comments_id']) {
 			return true;
@@ -130,16 +130,16 @@ User.prototype.checkId = function(id, object) {
 	return false;
 };
 	
-User.prototype.getUserComments = function(commTables, commentsIds) {
+User.prototype.getUserComments = function getUserComments(commTables, commentsIds) {
 	var temp = [];
 	
 	for(var i=0, len=commTables.length; i<len; i++) {
 		var contentTr = commTables[i].getElementsByClassName('comments-content')[0];
 		var idTd = contentTr.getElementsByClassName('comment-id')[0];
 		var id = idTd.getElementsByTagName('A')[0].innerHTML;
-		DEBUG('func: getUserComments; output: '+id);
+		DEBUG(getUserComments.name, id);
 		if(this.checkId(id, commentsIds)) {
-			DEBUG('func: getUserComments; output: cut '+i);
+			DEBUG(getUserComments.name, 'cut '+i);
 			temp.push(commTables[i]);
 		}
 	}
@@ -148,7 +148,7 @@ User.prototype.getUserComments = function(commTables, commentsIds) {
 };
 
 // вешаем события на кнопки редактировать/удалить/сохранить
-User.prototype.initCommentsEditBtns = function() {
+User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 	'use strict';
 	var self = this;
 	
@@ -164,7 +164,7 @@ User.prototype.initCommentsEditBtns = function() {
 };
 
 // описываем события для кнопок (редактировать/удалить/сохранить)
-User.prototype.addHandlerOnCommentsEditBtns = function(e) {
+User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditBtns(e) {
 	'use strict';
 	var target = e.target;
 	var self = this;
@@ -208,7 +208,7 @@ function userSaveComments(td) {
 	var id = td.getAttribute('data-id');
 	var updatedText = tinymce.activeEditor.getContent();
 	updatedText += "<em>Отредактировано " + new Date().toLocaleString() + '</em>';
-	DEBUG('func: addHandlerOnCommentsEditBtns; output: '+id + "|" + updatedText);
+	DEBUG(userSaveComments.name, id + "|" + updatedText);
 	// запрос на сохранение элемента
 	this._sendSaveRequest({
 		'comment-id': id,
@@ -220,18 +220,18 @@ function userSaveComments(td) {
 }
 
 // инициализируем объект tinymce
-User.prototype.initEditorForComment = function(elem) {
+User.prototype.initEditorForComment = function initEditorForComment(elem) {
 	'use strict';
 	var elemParent, commentsTextTd, commId;
 	elemParent = findParent(elem, 'comments-table');
-	DEBUG("func: initEditorForComment; elem: " + elem);
+	DEBUG(initEditorForComment.name, "elem: " + elem);
 	
 	if(elemParent === null) return;
 	
 	commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	
-	DEBUG('func: initEditorForComment; output: commentsTextTd: '+commentsTextTd);
-	DEBUG('func: initEditorForComment; output: Редактирование: '+elem.getAttribute('data-id'));
+	DEBUG(initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
+	DEBUG(initEditorForComment.name, 'Редактирование: '+elem.getAttribute('data-id'));
 	
 	commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
@@ -240,7 +240,7 @@ User.prototype.initEditorForComment = function(elem) {
 };
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок
-User.prototype.disablePrevEditors = function() {
+User.prototype.disablePrevEditors = function disablePrevEditors() {
 	'use strict';
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
@@ -261,7 +261,7 @@ User.prototype.disablePrevEditors = function() {
 };
 
 // создаем TR с кнопками редактировать/удалить 
-User.prototype.createEditCommentsTr = function(commId) {
+User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	'use strict';
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
@@ -279,7 +279,7 @@ User.prototype.createEditCommentsTr = function(commId) {
 	return tr;
 };
 
-User.prototype.getUserCommentsFromId = function(location_id, callback) {
+User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_id, callback) {
 	'use strict';
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
@@ -288,18 +288,18 @@ User.prototype.getUserCommentsFromId = function(location_id, callback) {
 			clearTimeout(timeout); 
 			
 			if(self._XMLHttpRequest.status != 200) {			
-				DEBUG('func: getUserCommentsFromId; output: wha?');
+				DEBUG(getUserCommentsFromId.name, 'wha?');
 			}
 			else {
 				var resp = self._XMLHttpRequest.responseText;
-				DEBUG('func: getUserCommentsFromId; output: Пришло: '+resp);
+				DEBUG(getUserCommentsFromId.name, 'Пришло: '+resp);
 				if(resp !== null) {								// в ответ что-то пришло
 					if(typeof callback == 'function') {			
 						callback.call(self._XMLHttpRequest);	// отдаем это в виде параметра в callback-функцию 
 					}											
 				}
 				else {
-					DEBUG("func: getUserCommentsFromId; output: Херово!");
+					DEBUG(getUserCommentsFromId.name, "Херово!");
 				}	
 			}
 		}
@@ -313,7 +313,7 @@ User.prototype.getUserCommentsFromId = function(location_id, callback) {
 	this._XMLHttpRequest.send();
 }
 
-User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentType) {
+User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqTarget, contentType) {
 	'use strict';
 	var data = '', j = 1;
 	var self = this;
@@ -321,18 +321,24 @@ User.prototype._sendSaveRequest = function(argArr, reqType, reqTarget, contentTy
 	for(var key in argArr) {
 		var val = argArr[key];
 		data += key + '=' + val;
-		(Object.keys(argArr).length > j++) ? data += '&' : DEBUG('func: _sendSaveRequest; Параметр всего 1');	// TODO: тут лажа какая-то
+		// Расставляем & перед параметрами
+		if(Object.keys(argArr).length > j++) {
+			data += '&';
+		}
+		else {
+			DEBUG(sendSaveRequest.name, 'Параметр всего 1');
+		}
 	}
-	DEBUG("func: _sendSaveRequest; data: "+data);
+	DEBUG(sendSaveRequest.name, "data: "+data);
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function() {
 		if(self._XMLHttpRequest.readyState == 4) {
 			clearTimeout(timeout);
 			if(self._XMLHttpRequest.status != 200) {
-				DEBUG('func: _sendSaveRequest; output: Ошибка: ' + self._XMLHttpRequest.responseText);
+				DEBUG(sendSaveRequest.name, 'Ошибка: ' + self._XMLHttpRequest.responseText);
 			}
 			else {
-				DEBUG('func: _sendSaveRequest; output: Запрос отправлен. Все - хорошо. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				DEBUG(sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + self._XMLHttpRequest.responseText);
 				updateCommentsWrapper();
 			}
 		}

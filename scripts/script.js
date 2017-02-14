@@ -31,7 +31,7 @@ addEventListenerWithOptions(document, "touchmove", function(e) {}, {passive: tru
 addEventListenerWithOptions(document, "touchend", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "wheel", function(e) {
 	//var respTime = performance.now() - e.timeStamp;
-	//DEBUG("event on wheel; respTime: " + respTime);
+	//DEBUG('', "event on wheel; respTime: " + respTime);
 	
 }, {passive: true} );
 
@@ -133,7 +133,7 @@ function addLinksToCommentsId() {
 				
 				if(!loginTd[2]) continue;	// TD с ником автора
 				
-				DEBUG("func: addLinksToCommentsId; output: loginTd: "+ loginTd[2].innerHTML);
+				DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].innerHTML);
 				var userLogin = loginTd[2].innerHTML;
 				var commId = loginTd[0].innerHTML;
 				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
@@ -193,7 +193,7 @@ function navigateUlList(e) {
 	if(target === this.firstChild || target === this.lastChild) {
 		// идем назад
 		if(target.innerHTML.indexOf("«") !== -1) {
-			DEBUG("func: navigateUlList; output: Назад: " + target.innerHTML);
+			DEBUG(navigateUlList.name, "Назад: " + target.innerHTML);
 
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
@@ -202,7 +202,7 @@ function navigateUlList(e) {
 		}
 		// идем вперед
 		else if(target.innerHTML.indexOf("»") !== -1) {
-			DEBUG("func: navigateUlList; output: Вперед: " + target.innerHTML);
+			DEBUG(navigateUlList.name, "Вперед: " + target.innerHTML);
 
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;
@@ -236,7 +236,7 @@ function replaceNewsLinks() {
 		var link = parents[i].getElementsByTagName('A')[0];
 		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
 		link.setAttribute('href', 'index.php?pages=news&type=old&custom-news-date=' + linkHref);
-		DEBUG('func: replaceNewsLinks; output: ' + link.getAttribute('href'));
+		DEBUG(replaceNewsLinks.name, link.getAttribute('href'));
 	}
 }
 
@@ -247,7 +247,7 @@ function replacePressLinks() {
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
-		DEBUG('func: replacePressLinks; output: ' + press[i].getAttribute('href'));
+		DEBUG(replacePressLinks.name, press[i].getAttribute('href'));
 	}
 }
 
@@ -293,14 +293,14 @@ function makeCommentsTree() {
 		var parent_id = tr.children[1].innerHTML;
 		
 		if(parent_id !== '') {
-			DEBUG('func: makeCommentsTree; output: Parent: '+parent_id);
+			DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
 			for(var j=0; j<len; j++) {
 				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
 				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
-				//DEBUG('func: makeCommentsTree; output: Current id: '+temp_id);
+				//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
 				
 				if(temp_id == parent_id) {
-					DEBUG('func: makeCommentsTree; output: Parent is found: '+comm_tables[j]);
+					DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
 					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
 				}
 			}
@@ -402,8 +402,8 @@ function addCommentsAjax(commentsForm) {
 			clearTimeout(timeout);
 			
 			(request.status != 200) 
-			? DEBUG('func: addCommentsAjax; Ошибка: ' + request.responseText)
-			: DEBUG('func: addCommentsAjax; Запрос отправлен. Все - хорошо. Ответ сервера: '+request.responseText);
+			? DEBUG(addCommentsAjax.name, 'Ошибка: ' + request.responseText)
+			: DEBUG(addCommentsAjax.name, 'Запрос отправлен. Ответ сервера: '+request.responseText);
 		}
 	};
 	
@@ -414,7 +414,7 @@ function addCommentsAjax(commentsForm) {
 	request.open('POST', 'admin/save_comments.php', true);
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.send(data);
-	DEBUG('func: addCommentsAjax; output: Отправили запрос');
+	DEBUG(addCommentsAjax.name, 'Отправили запрос');
 }
 
 addEventListenerWithOptions(document, 'click', function(e) {
@@ -440,8 +440,8 @@ function updateCommentsWrapper() {
 		if(request.readyState == 4) {
 			clearTimeout(timeout);
 			(request.status != 200) 
-			? DEBUG('func: updateCommentsWrapper; Ошибка: ' + request.responseText)
-			: DEBUG('func: updateCommentsWrapper; Запрос отправлен. Все - хорошо.');
+			? DEBUG(updateCommentsWrapper.name, 'Ошибка: ' + request.responseText)
+			: DEBUG(updateCommentsWrapper.name, 'Запрос отправлен.');
 			
 			// выключаем форму комментирования
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
@@ -526,12 +526,15 @@ function updatePageTitle() {
 addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});
 
 // Вывод отладочной информации
-function DEBUG(str) {
+function DEBUG(funcName, output) {
 	if(_DEBUG) {
-		if(typeof str !== 'string') {
-			var str = str.toString();
+		if(typeof output !== 'string') {
+			output = output.toString();
 		}
-		console.log(str);
+		if(funcName === '') {
+			funcName = 'no name';
+		}
+		console.log('func: '+funcName+'; output: '+output);
 	}
 }
 

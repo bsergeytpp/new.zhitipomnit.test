@@ -1,9 +1,3 @@
-/*
-	1) сделать User "подклассом" Admin или наоборот
-	2) сделать из некоторых переменных свойства объекта 
-	   (userLogin -> this._userLogin и т.д.)
-*/
-
 function User() {
 	'use strict';
 	this._XMLHttpRequest = null;

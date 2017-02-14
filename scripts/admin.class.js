@@ -93,7 +93,6 @@ Admin.prototype.checkForComments = function checkForComments() {
 };
 
 // добавляем еще один TR к каждому комментарию
-// TODO: проверить, есть ли кнопки перед добавлением
 Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	'use strict';
 	if(typeof tinymce === 'undefined') {
@@ -102,6 +101,9 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	
 	// если комментарии есть
 	if(this._commentsTables === null) return;
+	
+	// если кнопок пока нет
+	if(document.getElementsByClassName('comments-edit').length >= 1) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
 		var commId = this._commentsTables[i].getElementsByClassName('comment-id')[0];

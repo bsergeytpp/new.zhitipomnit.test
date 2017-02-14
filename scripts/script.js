@@ -537,7 +537,3 @@ function DEBUG(funcName, output) {
 		console.log('func: '+funcName+'; output: '+output);
 	}
 }
-
-/* TODO 
-	* innerHTML -> innerText
-*/

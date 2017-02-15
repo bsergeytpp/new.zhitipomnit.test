@@ -70,14 +70,11 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	if(document.getElementsByClassName('publs-full-container').length > 0) {
 		elem.push(document.getElementsByClassName('publs-full-container'));			// если это полная статья
 	}
-	
+
 	if(elem.length > 0) {
 		for(var i=0, len=elem.length; i<len; i++) {
 			this.addEditBtn(elem[i]);
 		}
-	}
-	else {
-		this.addEditBtn(elem[0]);
 	}
 };
 

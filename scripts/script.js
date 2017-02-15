@@ -234,6 +234,9 @@ function replaceNewsLinks() {
 	
 	for(var i=0, len=parents.length; i<len; i++) {
 		var link = parents[i].getElementsByTagName('A')[0];
+		
+		if(!link || link.getAttribute('href') === '#') continue;
+		
 		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
 		link.setAttribute('href', 'index.php?pages=news&type=old&custom-news-date=' + linkHref);
 		DEBUG(replaceNewsLinks.name, link.getAttribute('href'));

@@ -38,6 +38,10 @@
 			$title = 'Газета'; 
 			$path = 'content/press.php'; 
 			break;
+		case 'search':
+			$title = 'Поиск по Книге Памяти'; 
+			$path = 'content/search.php'; 
+			break;
 		default:
 			$title = 'Главная страница';
 			$path = [

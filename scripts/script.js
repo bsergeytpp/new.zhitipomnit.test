@@ -49,28 +49,32 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var scrollBtn = document.getElementsByClassName('scroll-button')[0];
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
     //var header = document.getElementsByClassName('header')[0];
-	if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
-		if(articleWidth !== '100%') {
-		   article.style.marginLeft = 0;    
-		   scrollBtn.classList.add("scroll-button-active");
+	if(window.innerWidth > 680) {
+		if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
+			if(articleWidth !== '100%') {
+			   article.style.marginLeft = 0;    
+			   scrollBtn.classList.add("scroll-button-active");
+			   console.log('make it wider');
+			}
 		}
-	}
-	else {
-		article.style.marginLeft = "";
-		scrollBtn.classList.remove("scroll-button-active");
-	}
+		else {
+			article.style.marginLeft = "";
+			scrollBtn.classList.remove("scroll-button-active");
+			console.log('make it thiner');
+		}
 	
-	// делаем элементы при прокрутке ненажимаемыми
-	var timer, body = document.body;
-	clearTimeout(timer);
-	
-	if(!body.classList.contains('disable-hover')) {
-		body.classList.add('disable-hover');
+		// делаем элементы при прокрутке ненажимаемыми
+		var timer, body = document.body;
+		clearTimeout(timer);
+		
+		if(!body.classList.contains('disable-hover')) {
+			body.classList.add('disable-hover');
+		}
+		
+		timer = setTimeout(function() {
+			body.classList.remove('disable-hover');
+		}, 500);
 	}
-	
-	timer = setTimeout(function() {
-		body.classList.remove('disable-hover');
-	}, 500);
 }, {passive: true});
 
 // добавляет событие по клику на нумерацию
@@ -249,8 +253,8 @@ function replacePressLinks() {
 	
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
+		DEBUG(replacePressLinks.name, str.getAttribute('href'));
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
-		DEBUG(replacePressLinks.name, press[i].getAttribute('href'));
 	}
 }
 

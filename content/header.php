@@ -8,6 +8,9 @@
 					<li><a href="index.php?pages=news">Новости</a></li>
 					<li><a href="index.php?pages=about">О фонде</a></li>
 					<li><a href="index.php?pages=publ">Публикации</a></li>
+					<li><a href="index.php?pages=press">Газета</a></li>
+					<li><a href="index.php?pages=mail">Почта</a></li>
+					<li><a href="index.php?pages=search">Поиск</a></li>
 					<li><a href="index.php?pages=contacts">Контакты</a></li>
 				</ul>
 			</div>

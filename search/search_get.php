@@ -29,18 +29,18 @@
 					
 					foreach($row as $val) {
 						switch($i) {
-							case 0: 
-							case 1: 
-							case 2: 
-							case 3: 
-							case 4: echo "<td>". $val ."</td>"; break;
+							case 0: echo "<td class='pers-id'>". $val ."</td>"; break;
+							case 1: echo "<td class='pers-letter'>". $val ."</td>"; break;
+							case 2: echo "<td class='pers-lastname'>". $val ."</td>"; break;
+							case 3: echo "<td class='pers-firstname'>". $val ."</td>"; break;
+							case 4: echo "<td class='pers-middlename'>". $val ."</td>"; break;
 							case 5: 
 								echo '</tr><tr><th colspan="3">Текст</th><th colspan="2">Фото</th></tr>';
-								echo '<tr><td colspan="3">'. $val .'</td>'; 
+								echo '<tr><td colspan="3" class="pers-text">'. $val .'</td>'; 
 								break;
 							case 6: 
-								if($val !== null) echo '<td colspan="2"><img src="'. $val .'" alt="" ></td>';
-								else echo '<td colspan="2">Без фотографии</td>';
+								if($val !== null) echo '<td colspan="2" class="pers-photo"><img src="'. $val .'" alt="" ></td>';
+								else echo '<td colspan="2" class="pers-photo">Без фотографии</td>';
 								break;
 							default: break;
 						}

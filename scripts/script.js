@@ -54,13 +54,11 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 			if(articleWidth !== '100%') {
 			   article.style.marginLeft = 0;    
 			   scrollBtn.classList.add("scroll-button-active");
-			   console.log('make it wider');
 			}
 		}
 		else {
 			article.style.marginLeft = "";
 			scrollBtn.classList.remove("scroll-button-active");
-			console.log('make it thiner');
 		}
 	
 		// делаем элементы при прокрутке ненажимаемыми

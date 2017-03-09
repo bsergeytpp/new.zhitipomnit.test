@@ -356,6 +356,20 @@ body::before {
 .article td:hover {
     background: rgb(30,30,30);
 }
+.persons-table {
+	table-layout: fixed;
+}
+.persons-table td, th {
+	overflow: hidden;
+}
+.persons-table img {max-width: 75% !important;}
+.persons-table .pers-id {width: 14%;}
+.persons-table .pers-letter {width: 14%;}
+.persons-table .pers-lastname {width: 34%;}
+.persons-table .pers-firstname {width: 34%;}
+.persons-table .pers-middlename {width: 34%;}
+.persons-table .pers-text {width: 70%; text-align: left;}
+.persons-table .pers-photo {width: 30%; text-align: center;}
 #news-container {
     display: flex;
     flex-wrap: wrap;

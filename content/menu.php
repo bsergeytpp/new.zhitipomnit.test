@@ -8,6 +8,7 @@
                     <li><a href="index.php?pages=mail">Наша почта</a></li>
                     <li><a href="#">Карты Калиниского фронта</a></li>
                     <li><a href="index.php?pages=memory">Книга Памяти</a></li>
+                    <li><a href="index.php?pages=search">Поиск по Книге Памяти</a></li>
                     <li>
 						<form action="index.php" method="get">
 							Открыть новость от

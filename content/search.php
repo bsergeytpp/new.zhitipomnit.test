@@ -5,25 +5,22 @@
 						<input class="search-submit" type='submit'></input>
 					</form>
 				</div>
-				<table></table>
+				<table class="persons-table"></table>
 				<?
 					
 				?>
                 <div class="clear-div"></div>
 				<script>
-					var table = document.getElementsByTagName('table')[0];
-					var divs = document.getElementsByTagName('div');
-
-					// из базы данных в таблицу
-					getTrsFromDB();
+					getPersonsFromDB();
 					
-					function getTrsFromDB(search) {
+					function getPersonsFromDB(search) {
 						var req = new XMLHttpRequest();
 						req.onreadystatechange = function() {
 							if(req.readyState == 4) {
 								if(req.status === 200) {
 									//console.log("SERVER: "+ req.responseText);
 									var trs = req.responseText;
+									var table = document.getElementsByClassName('persons-table')[0];
 									table.innerHTML = trs; 
 								}
 								else {
@@ -46,7 +43,7 @@
 						var target = e.target;
 						console.log('Отправили запрос');
 						var search = form.getElementsByClassName('search-textarea')[0].value;
-						getTrsFromDB(search);
+						getPersonsFromDB(search);
 						return false;
 					};
 					

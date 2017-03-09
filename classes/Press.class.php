@@ -32,18 +32,18 @@
 			$this->pressArr = $this->getPressArray();
 			$totalPress = count($this->pressArr);
 			
-			for($i=0, $j=1; $i<$totalPress; $i++, $j++) {
-				echo "<a class='article-press-links' href='index.php?pages=press&custom-press=".$this->pressName."&page=".$i."'>Страница ".$j."</a>";
+			for($i=1; $i<=$totalPress; $i++) {
+				echo "<a class='article-press-links' href='index.php?pages=press&custom-press=".$this->pressName."&page=".$i."'>Страница ".$i."</a>";
 			}
 			
 			echo "<div class='clear-div'></div>";
 			
 			switch($this->pressPage) {
-				case 1: echo $this->getPressPage($this->pressArr, 0); break;
-				case 2: echo $this->getPressPage($this->pressArr, 1); break;
-				case 3: echo $this->getPressPage($this->pressArr, 2); break;
-				case 4: echo $this->getPressPage($this->pressArr, 3); break;
-				default: echo $this->getPressPage($this->pressArr, 0); break;
+				case 1: echo $this->getPressPage(0); break;
+				case 2: echo $this->getPressPage(1); break;
+				case 3: echo $this->getPressPage(2); break;
+				case 4: echo $this->getPressPage(3); break;
+				default: echo $this->getPressPage(0); break;
 			}
 		}
 		
@@ -80,8 +80,8 @@
 			return $this->pressArr;
 		}
 		
-		private function getPressPage() {
-			return $this->pressArr[$this->pressPage];	// откуда pressPage ?
+		private function getPressPage($page) {
+			return $this->pressArr[$page];
 		}
 		
 		private function createPressList($press) {

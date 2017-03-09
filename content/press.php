@@ -16,7 +16,7 @@
 							}
 							
 							$pressClass->setPressPage($pageNum);
-							$pressClass->getSinglePress($pageNum);
+							$pressClass->getSinglePress();
 						}
 					?>
 				</div>

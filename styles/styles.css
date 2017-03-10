@@ -200,18 +200,24 @@ body::before {
     background: darkred;
     transition: background .2s linear;
 }
-.nav ul li a, .nav ul li form {
+.nav ul li a, .menu-form {
     color: white;
     font-family: "Book Antiqua";
     text-decoration: none;
     font-size: 1.2em;
 	display: block;
 }
-.nav ul li form {
+.menu-form {
     padding: 5px 0;
 }
-.nav ul li form:after {
+.menu-form:after {
     border-top: 30px solid transparent;
+}
+.menu-form .menu-date {
+	width: 90%;
+}
+.menu-form .menu-submit {
+	width: 70%;
 }
 .clear-div {
     clear: both;

@@ -8,18 +8,21 @@
 		$text = ''; $id = -1;
 		if($db->getLink()) {
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
+				$text = clearStr($_POST['comment-text']);
+				$id = (int)$_POST['comment-id'];
+				
+				// проверка пользователя
 				$checkQuery = 'SELECT (SELECT user_login FROM users WHERE user_id = comments_author) 
 							   FROM comments WHERE comments_id = ?';
-				$checkResult = $db->executeQuery($query, array($id));
+				$checkResult = $db->executeQuery($checkQuery, array($id), 'check_user');
 				$commentAuthor = $checkResult->fetchColumn();
 				
 				if($commentAuthor !== $_SESSION['user']) {
-					echo 'Ошибка проверки подлинности';
+					echo "Ошибка проверки подлинности:".$commentAuthor .'!='. $_SESSION["user"];
 					return;
 				}
 				
-				$text = clearStr($_POST['comment-text']);
-				$id = (int)$_POST['comment-id'];
+				// обновление комментария
 				$query = "UPDATE comments SET comments_text = ? WHERE comments_id = ?";
 				$result = $db->executeQuery($query, array($text, $id), 'update_user_comment');
 				

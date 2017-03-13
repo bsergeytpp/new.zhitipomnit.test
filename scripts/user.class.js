@@ -167,7 +167,7 @@ User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditB
 		e.preventDefault();
 		
 		if(target.innerHTML === 'Редактировать') {
-			userEditComments.call(self, target);
+			userEditComment.call(self, target);
 		}
 		else if(target.innerHTML === 'Сохранить') {
 			e.stopPropagation();

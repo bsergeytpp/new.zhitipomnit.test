@@ -12,7 +12,7 @@
 			echo 'No luck';
 			$log_type = 4;
 			$log_name = 'failed login';
-			$log_text = 'somebody failed to logged in with username: ' . $user;
+			$log_text = 'somebody failed to log in with username: ' . $user;
 			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 			$log_date = date('Y-m-d H:i:sO');
 			$log_important = true;

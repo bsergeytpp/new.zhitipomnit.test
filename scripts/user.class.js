@@ -104,7 +104,6 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 
 	this._userComments = this.getUserComments(commTables, commentsIds);
 	
-	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
 		var commId = this._userComments[i].getElementsByClassName('comment-id')[0];
 		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
@@ -116,7 +115,7 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 
 User.prototype.checkId = function checkId(id, object) {
 	for(var i=0, len=object.length; i<len; i++) {
-		if(id === object[i]['comments_id']) {
+		if(parseInt(id) === object[i]['comments_id']) {
 			return true;
 		}
 	}
@@ -127,11 +126,12 @@ User.prototype.checkId = function checkId(id, object) {
 User.prototype.getUserComments = function getUserComments(commTables, commentsIds) {
 	var temp = [];
 	
-	for(var i=0, len=commTables.length; i<len; i++) {
+	for(var i=0, len=commentsIds.length; i<len; i++) {
 		var contentTr = commTables[i].getElementsByClassName('comments-content')[0];
 		var idTd = contentTr.getElementsByClassName('comment-id')[0];
 		var id = idTd.getElementsByTagName('A')[0].innerHTML;
 		DEBUG(getUserComments.name, id);
+		
 		if(this.checkId(id, commentsIds)) {
 			DEBUG(getUserComments.name, 'cut '+i);
 			temp.push(commTables[i]);

@@ -8,6 +8,16 @@
 		$text = ''; $id = -1;
 		if($db->getLink()) {
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
+				$checkQuery = 'SELECT (SELECT user_login FROM users WHERE user_id = comments_author) 
+							   FROM comments WHERE comments_id = ?';
+				$checkResult = $db->executeQuery($query, array($id));
+				$commentAuthor = $checkResult->fetchColumn();
+				
+				if($commentAuthor !== $_SESSION['user']) {
+					echo 'Ошибка проверки подлинности';
+					return;
+				}
+				
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
 				$query = "UPDATE comments SET comments_text = ? WHERE comments_id = ?";

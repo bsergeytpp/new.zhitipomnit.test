@@ -7,6 +7,12 @@
 		if($db->getLink()) {
 			if(isset($_GET['login']) && isset($_GET['comments-location-id'])) {
 				$login = $_GET['login'];
+				
+				if($login !== $_SESSION['user']) {
+					echo "Ошибка проверки подлинности!";
+					return;
+				}
+				
 				$location_id = $_GET['comments-location-id'];
 
 				$query = "SELECT COUNT(comments_id) FROM comments, users " .

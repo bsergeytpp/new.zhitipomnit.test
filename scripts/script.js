@@ -293,18 +293,18 @@ function makeCommentsTree() {
 	var comm_tables = document.getElementsByClassName('comments-table');
 	
 	for(var i=0, len=comm_tables.length; i<len; i++) {
-		var tr = comm_tables[i].getElementsByTagName('tr')[1];
-		var id = tr.firstChild.innerHTML;
+		var tr = comm_tables[i].getElementsByClassName('comments-content')[0];	
+		//var id = tr.getElementsByClassName('comment-id')[0].innerHTML;
 		var parent_id = tr.children[1].innerHTML;
 		
 		if(parent_id !== '') {
 			DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
 			for(var j=0; j<len; j++) {
-				var temp_tr = comm_tables[j].getElementsByTagName('tr')[1];
-				var temp_id = temp_tr.firstChild.firstChild.innerHTML;
+				var temp_tr = comm_tables[j].getElementsByClassName('comments-content')[0];
+				var temp_id = temp_tr.getElementsByClassName('comment-id')[0].textContent;
 				//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
 				
-				if(temp_id == parent_id) {
+				if(temp_id === parent_id) {
 					DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
 					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
 				}

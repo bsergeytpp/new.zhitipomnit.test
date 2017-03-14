@@ -340,7 +340,13 @@
 					$i++;
 				}
 				echo "</tr>";
-				echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+				
+				if(isset($_SESSION['user'])) {
+					if($_SESSION['user']!== null) {
+						echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+					}
+				}
+				
 				echo "</table>";
 				echo "</div>";
 			}

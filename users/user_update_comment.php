@@ -18,7 +18,7 @@
 				$commentAuthor = $checkResult->fetchColumn();
 				
 				if($commentAuthor !== $_SESSION['user']) {
-					echo "Ошибка проверки подлинности:".$commentAuthor .'!='. $_SESSION["user"];
+					echo "Ошибка проверки подлинности!";
 					return;
 				}
 				

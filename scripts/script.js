@@ -455,18 +455,20 @@ function updateCommentsWrapper() {
 			// вставляем обновленный список комментариев + старую форму
 			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
 			// включаем обратно форму комментирования
-			tinymce.EditorManager.execCommand('mceAddEditor', true, 'comments-text');
+			initTinyMCE('.comments-textarea', false, '100%');
 			// обнуляем стили
 			wrapper.style.height = '';
 			wrapper.style.opacity = '';
 			
 			addLinksToCommentsId();
+			
 			if(window.admin) {
 				admin.setPrivilege();
 			}
 			else if(window.user) {
 				user.checkForUserComments();
 			}
+			
 			makeCommentsTree();
 			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 		}

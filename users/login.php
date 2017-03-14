@@ -1,6 +1,6 @@
 <?
 	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-	header("HTTP/1.0 401 Unauthorized");
+	//header("HTTP/1.0 401 Unauthorized");
 	require_once "../admin/admin_security/secure.inc.php";
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -17,6 +17,8 @@
 			$log_date = date('Y-m-d H:i:sO');
 			$log_important = true;
 			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+			header("HTTP/1.0 401 Unauthorized");
+			exit;
 		}
 		else {
 			$row = checkUser($user, $pw);

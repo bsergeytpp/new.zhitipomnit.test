@@ -6,7 +6,7 @@
 	
 	if(!$_SESSION['admin']) {
 		echo "Вы не админ.";
-		break;
+		exit;
 	}
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {

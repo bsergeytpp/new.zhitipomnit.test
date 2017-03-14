@@ -10,9 +10,9 @@
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
 				$dataLogin = (isset($_POST['comment-author'])) ? $_POST['comment-author'] : null;
 				
-				if($dataLogin !== $_SESSION['user'] || !$_SESSION['admin']) {
-					echo 'Ошибка проверки подлинности';
-					break;
+				if($dataLogin !== $_SESSION['user'] || $_SESSION['admin'] === false) {
+					echo 'Ошибка проверки подлинности.';
+					exit;
 				}
 				
 				$text = clearStr($_POST['comment-text']);

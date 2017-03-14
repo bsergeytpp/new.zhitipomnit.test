@@ -8,6 +8,7 @@ function Admin() {
 	
 	var isAdmin = false;
 	var self = this;
+	var login = null;
 	
 	// выясняем являемся ли мы админом
 	(function() {
@@ -16,10 +17,19 @@ function Admin() {
 			if(self._XMLHttpRequest.readyState == 4) {
 				clearTimeout(timeout);
 				var resp = self._XMLHttpRequest.getResponseHeader('IsAdmin');
+				var respLogin = self._XMLHttpRequest.getResponseHeader('UserLogin');
 				DEBUG("checkIfAdmin", "RESP: "+resp);
+				
 				if(resp !== null) {
 					DEBUG("checkIfAdmin", "Вы - Админ. Поздравляю!");
+					
 					isAdmin = true;
+					
+					if(respLogin !== null) {
+						login = respLogin;
+						DEBUG("checkIfAdmin", "Ваш логин: "+login+"!");
+					}
+					
 					self.setPrivilege();
 					User = null;
 					user = null;
@@ -38,16 +48,23 @@ function Admin() {
 		self._XMLHttpRequest.send();
 	})();
 	
-	//checkIfAdmin();
-	
 	this.getAdmin = function() {
 		return isAdmin;
+	};
+	
+	this.getLogin = function() {
+		return login;
 	};
 };
 
 Admin.prototype.getIsAdmin = function() {
 	'use strict';
 	return this.getAdmin();
+};
+
+Admin.prototype.getAdminLogin = function() {
+	'use strict';
+	return this.getLogin();
 };
 
 // проверяем есть ли на странице редактируемые элементы
@@ -132,29 +149,30 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 	'use strict';
 	var target = e.target;
 	var self = this;
-				
+	var targetId = target.getAttribute('data-id');	
+	
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
 		
 		if(target.innerHTML === 'Редактировать') {
-			editComments.call(self, target);
+			editComments.call(self, target, targetId);
 		}
 		else if(target.innerHTML === 'Сохранить') {
 			e.stopPropagation();
-			saveComments.call(self, target);
+			saveComments.call(self, targetId);
 		}
 	}
 	else if(target.classList.contains('del-comm')) {
 		e.preventDefault();
 		e.stopPropagation();
-		deleteComments.call(self, target);
+		deleteComments.call(self, targetId);
  	}
 };
 
 /*
 	Вспомогательные функции редактирования/удаления/сохранения комментариев
 */
-function editComments(td) {
+function editComments(td, tdId) {
 	var totalEditors = 1;
 	
 	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
@@ -162,25 +180,27 @@ function editComments(td) {
 	} 
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-		if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
+		var prevEditor = tinyMCE.activeEditor.bodyElement.parentElement;
+		prevEditId = prevEditor.getElementsByClassName('comment-id')[0].textContent;
+
+		if(confirm('Уже начато редактирование комментария №'+prevEditId+
+				   '. Отменить изменения и редактировать комментарий №'+tdId+' ?')) {
 			this.disablePrevEditors();								// убираем предыдущие объект tinymce
-			this.initEditorForComment(td);							// делаем из td объект tinymce
+			this.initEditorForComment(td);							// делаем новый объект tinymce
 		}
 		else return; 												// решили закончить с предыдущим комментарием
 	} 
 	else {
-		this.initEditorForComment(td);								// делаем из td объект tinymce
+		this.initEditorForComment(td);								// делаем новый объект tinymce
 	}
 }
 
-function deleteComments(td) {
-	var id = td.getAttribute('data-id');
-	
-	if(confirm('Точно удалить комментарий №'+id+'?')) { 
-		DEBUG(deleteComments.name, 'Удаление: '+td.getAttribute('data-id'));			
+function deleteComments(tdId) {
+	if(confirm('Точно удалить комментарий №'+tdId+'?')) { 
+		DEBUG(deleteComments.name, 'Удаление: '+tdId);			
 		// запрос на удаление элемента
 		this._sendSaveRequest({
-			'comment-id': id
+			'comment-id': tdId
 		   },
 		   'POST', 
 		   'admin/admin_comments/delete_comment.php', 
@@ -190,18 +210,29 @@ function deleteComments(td) {
 	else return;
 }
 
-function saveComments(td) {
-	var id = td.getAttribute('data-id');
+// TODO: фигово сделано
+function saveComments(tdId) {
 	var updatedText = tinymce.activeEditor.getContent();
-	var adminLogin = document.getElementsByClassName('users-info')[0];
-	adminLogin = adminLogin.getElementsByTagName('li')[0].innerHTML.trim().substr(7);
-	updatedText += "<em>Редактировано администратором " + adminLogin + " | " + new Date().toLocaleString() + '</em>';
-	DEBUG(saveComments.name, id + "|" + updatedText);
+	var activeEditorId = tinymce.activeEditor.getParam('id');
+	tinymce.remove('#'+activeEditorId);
+	// кем редактировано
+	var editStr = "<em class='edited'>Редактировано " + this.getAdminLogin() + " | " + new Date().toLocaleString() + '</em>';
+	var editPos = updatedText.indexOf('<em class=');
+	
+	if(editPos !== -1) {
+		console.log('updatedText before: '+updatedText);
+		console.log('editPos: '+editPos);
+		updatedText = updatedText.substr(0, editPos);
+		console.log('updatedText after: '+updatedText);
+	}
+	
+	updatedText += editStr;
+	DEBUG(saveComments.name, tdId + "|" + updatedText);
 	// запрос на сохранение элемента
 	this._sendSaveRequest({
-		'comment-id': id,
+		'comment-id': tdId,
 		'comment-text': updatedText,
-		'comment-author': adminLogin
+		'comment-author': this.getAdminLogin()
 	   },
 	   'POST', 
 	   'admin/admin_comments/update_comment.php', 
@@ -210,17 +241,18 @@ function saveComments(td) {
 }
 
 // инициализируем объект tinymce
-Admin.prototype.initEditorForComment = function initEditorForComment(elem) {
+Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	'use strict';
-	var elemParent = findParent(elem, 'comments-table');
+	var tdParent = findParent(td, 'comments-table');
 	
-	if(elemParent === null) return;
-	var commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	if(tdParent === null) return;
+	
+	var commentsTextTd = tdParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	DEBUG(initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
-	DEBUG(initEditorForComment.name, 'Редактирование: '+elem.getAttribute('data-id'));
-	var commId = elem.getAttribute('data-id');
+	DEBUG(initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
+	var commId = td.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
-	elem.innerHTML = 'Сохранить';
+	td.innerHTML = 'Сохранить';
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
 };
 

@@ -37,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = true;
+var _DEBUG = false;
 
 // общая функция-событие на прокрутку
 /*
@@ -83,7 +83,7 @@ function addNavigationToList() {
 	if(!ul) return;
 	
 	for(var i=0, len=ul.length; i<len; i++) {
-		ul[i].addEventListener('click', navigateUlList, false);
+		ul[i].addEventListener('mouseup', navigateUlList, false);
 	}
 }
 
@@ -109,7 +109,7 @@ function userSwitcher() {
 	var usersDiv = document.getElementsByClassName('users-div')[0];
 	var switcher = usersDiv.getElementsByClassName('users-switcher')[0];
 	
-	switcher.addEventListener('click', function(e) {
+	switcher.addEventListener('mouseup', function(e) {
 		var style = window.getComputedStyle(usersDiv);
 		var left = parseInt(style.getPropertyValue('left'));
 		
@@ -354,7 +354,7 @@ function setCommentsParentId(e) {
 	postBtn.focus();
 }
 
-addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
+addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'mouseup', setCommentsParentId, {});
 
 function getParamFromLocationSearch(parName) {
 	var location = window.location.search.substring(1);
@@ -427,7 +427,7 @@ function addCommentsAjax(commentsForm) {
 	DEBUG(addCommentsAjax.name, 'Отправили запрос');
 }
 
-addEventListenerWithOptions(document, 'click', function(e) {
+addEventListenerWithOptions(document, 'mouseup', function(e) {
 	var target = e.target;
 	if(target.className !== 'comments-post-button') return;
 	e.preventDefault();
@@ -475,7 +475,7 @@ function updateCommentsWrapper() {
 			}
 			
 			makeCommentsTree();
-			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
+			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'mouseup', setCommentsParentId, {});
 		}
 	};
 	

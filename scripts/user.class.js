@@ -144,7 +144,7 @@ User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
 			(function() {
-				btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
+				btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
 			})();
 		}
 	}

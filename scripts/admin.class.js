@@ -129,7 +129,7 @@ Admin.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
 			(function() {
-				btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
+				btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
 			})();
 		}
 	}
@@ -169,10 +169,21 @@ function editComments(td, tdId) {
 	
 	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
 		totalEditors = 2;
-	} 
+	}
+	
+	if(tinymce.editors.length > 1) {
+		if(tinymce.editors[1].id === 'edit-textarea') {
+			alert("Закончите текущее редактирование!");
+			return;
+		}
+	}
+	
+	if(tinymce.activeEditor.id === 'comments-text') {				// была выбрана форма комментирования
+		tinymce.activeEditor = tinymce.editors[1];
+	}
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-		var prevEditor = tinyMCE.activeEditor.bodyElement.parentElement;
+		var prevEditor = tinymce.activeEditor.bodyElement.parentElement;
 		prevEditId = prevEditor.getElementsByClassName('comment-id')[0].textContent;
 
 		if(confirm('Уже начато редактирование комментария №'+prevEditId+
@@ -212,10 +223,7 @@ function saveComments(tdId) {
 	var editPos = updatedText.indexOf('<em class=');
 	
 	if(editPos !== -1) {
-		console.log('updatedText before: '+updatedText);
-		console.log('editPos: '+editPos);
 		updatedText = updatedText.substr(0, editPos);
-		console.log('updatedText after: '+updatedText);
 	}
 	
 	updatedText += editStr;
@@ -253,8 +261,14 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	'use strict';
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
+	
 	var activeEditorId = tinymce.activeEditor.getParam('id');
-	tinymce.remove('#'+activeEditorId);
+
+	for(var i=0, len=tinymce.editors.length; i<len; i++) {
+		if(tinymce.editors[i].id !== 'comments-text') {
+			tinymce.remove('#'+tinymce.editors[i].id);
+		}
+	}
 	
 	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
 		prevTinymceElems[i].classList.toggle('edit-this', false)
@@ -310,7 +324,7 @@ Admin.prototype.initAdminEdit = function initAdminEdit() {
 	var self = this;
 	for(var i=0, len=this._editBtns.length; i<len; i++) {
 		(function() {
-			self._editBtns[i].addEventListener('click', self.addHandlerOnEditBtns.bind(self), false);
+			self._editBtns[i].addEventListener('mouseup', self.addHandlerOnEditBtns.bind(self), false);
 		})();
 	}
 };
@@ -345,17 +359,28 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 			// создаем все необходимые элементы
 			self._createEditDiv(className);
 			
+			// удаляем другие объекты tinymce
+			self.disablePrevEditors();
+			
 			// делаем из textarea объект tinymce
 			initTinyMCE('.admin-edit-elem textarea', false);
 			
 			// вешаем на кнопки события
-			self._editDiv.addEventListener('click', function(e) {
+			self._editDiv.addEventListener('mouseup', function(e) {
 				var target = e.target;
 				var targetText = target.textContent;
 				e.preventDefault();
 				
 				if(targetText === 'Отменить') {
 					e.stopPropagation();
+					
+					if(tinymce.activeEditor.id === 'comments-text') {
+						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+							tinymce.editors[1].destroy();
+						}
+					}
+					else tinymce.activeEditor.destroy();
+					
 					document.body.removeChild(this);	// удаляем div редактирования
 				}
 				else if(targetText === 'Сохранить') {
@@ -371,7 +396,15 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 					   'POST', 
 					   'admin/admin_'+reqTarget+'/update_'+reqTarget+'.php', 
 					   'application/x-www-form-urlencoded');
-					document.body.removeChild(this);	// удаляем div редактирования
+					
+					if(tinymce.activeEditor.id === 'comments-text') {
+						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+							tinymce.editors[1].destroy();
+						}
+					}
+					else tinymce.activeEditor.destroy();
+					
+					document.body.destroy(this);	// удаляем div редактирования
 				} 
 				
 			}, false);
@@ -398,6 +431,7 @@ Admin.prototype._createEditDiv = function createEditDiv(className) {
 	form.innerHTML = 'ID: ' + this._responseObject[pattern+'_id'] + ' | ' + 
 					 'Загловок: ' + this._responseObject[pattern+'_header'];
 	textarea.innerHTML = this._responseObject[pattern+'_text'];
+	textarea.setAttribute('id', 'edit-textarea');
 
 	form.appendChild(textarea);
 	form.appendChild(saveBtn);

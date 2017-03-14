@@ -55,11 +55,10 @@ function User() {
 // ищем комментарии пользователя
 User.prototype.checkForUserComments = function checkForUserComments() {
 	'use strict';
-	var commentsTables = null;
+	var commentsTables = document.getElementsByClassName('comments-table');;
 	var self = this;
 	
-	if(document.getElementsByClassName('comments-table').length > 0) {
-		commentsTables = document.getElementsByClassName('comments-table');
+	if(commentsTables.length > 0) {
 		var location_id = getParamFromLocationSearch('id');
 		
 		this.getUserCommentsFromId(location_id, function() {
@@ -84,7 +83,6 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 				DEBUG(checkForUserComments.name, response);
 			}
 		});
-		//this.addCommentsEditBtn();
 	}
 };
 
@@ -97,16 +95,12 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	
 	// если пришли ID
 	if(commentsIds === null) return;
-	
-	/*if(typeof tinymce === 'undefined') {
-		appendScript('scripts/tinymce/tinymce.min.js');							
-	}*/
 
 	this._userComments = this.getUserComments(commTables, commentsIds);
 	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
-		var commId = this._userComments[i].getElementsByClassName('comment-id')[0];
-		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
+		var commId = this._userComments[i].getElementsByClassName('comment-id')[0].textContent;
+		var editTr = this.createEditCommentsTr(commId);
 		this._userComments[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}
 	
@@ -127,12 +121,11 @@ User.prototype.getUserComments = function getUserComments(commTables, commentsId
 	var temp = [];
 	
 	for(var i=0, len=commentsIds.length; i<len; i++) {
-		var contentTr = commTables[i].getElementsByClassName('comments-content')[0];
-		var idTd = contentTr.getElementsByClassName('comment-id')[0];
-		var id = idTd.getElementsByTagName('A')[0].innerHTML;
-		DEBUG(getUserComments.name, id);
+		// commTables -> .comments-content -> .comment-id
+		var commId = commTables[i].getElementsByClassName('comment-id')[0].textContent;	
+		DEBUG(getUserComments.name, commId);
 		
-		if(this.checkId(id, commentsIds)) {
+		if(this.checkId(commId, commentsIds)) {
 			DEBUG(getUserComments.name, 'cut '+i);
 			temp.push(commTables[i]);
 		}
@@ -162,16 +155,18 @@ User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditB
 	'use strict';
 	var target = e.target;
 	var self = this;
+	var targetId = target.getAttribute('data-id');
 	
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
+		var targetText = target.textContent;
 		
-		if(target.innerHTML === 'Редактировать') {
-			userEditComment.call(self, target);
+		if(targetText === 'Редактировать') {
+			userEditComment.call(self, target, targetId);
 		}
-		else if(target.innerHTML === 'Сохранить') {
+		else if(targetText === 'Сохранить') {
 			e.stopPropagation();
-			userSaveComments.call(self, target);
+			userSaveComments.call(self, targetId);
 		}
 	}
 };
@@ -179,7 +174,7 @@ User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditB
 /*
 	Вспомогательные функции редактирования/сохранения комментариев
 */
-function userEditComment(td) {
+function userEditComment(td, tdId) {
 	var totalEditors = 1;
 	
 	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
@@ -187,25 +182,27 @@ function userEditComment(td) {
 	} 
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-		if(confirm('Уже начато редактирование комментария №{}. Отменить изменения и редактировать комментарий №{} ?')) {
+		var prevEditor = tinyMCE.activeEditor.bodyElement.parentElement;
+		prevEditId = prevEditor.getElementsByClassName('comment-id')[0].textContent;
+		
+		if(confirm('Уже начато редактирование комментария №'+prevEditId+'. Отменить изменения и редактировать комментарий №'+tdId+' ?')) {
 			this.disablePrevEditors();								// убираем предыдущие объект tinymce
-			this.initEditorForComment(td);							// делаем из td объект tinymce
+			this.initEditorForComment(td);							// делаем новый объект tinymce
 		}
 		else return; 												// решили закончить с предыдущим комментарием
 	} 
 	else {
-		this.initEditorForComment(td);								// делаем из td объект tinymce
+		this.initEditorForComment(td);								// делаем новый объект tinymce
 	}
 }
 
-function userSaveComments(td) {
-	var id = td.getAttribute('data-id');
+function userSaveComments(tdId) {
 	var updatedText = tinymce.activeEditor.getContent();
 	updatedText += "<em>Отредактировано " + new Date().toLocaleString() + '</em>';
-	DEBUG(userSaveComments.name, id + "|" + updatedText);
+	DEBUG(userSaveComments.name, tdId + "|" + updatedText);
 	// запрос на сохранение элемента
 	this._sendSaveRequest({
-		'comment-id': id,
+		'comment-id': tdId,
 		'comment-text': updatedText
 	   },
 	   'POST', 
@@ -214,22 +211,20 @@ function userSaveComments(td) {
 }
 
 // инициализируем объект tinymce
-User.prototype.initEditorForComment = function initEditorForComment(elem) {
+User.prototype.initEditorForComment = function initEditorForComment(td) {
 	'use strict';
-	var elemParent, commentsTextTd, commId;
-	elemParent = findParent(elem, 'comments-table');
-	DEBUG(initEditorForComment.name, "elem: " + elem);
+	var tdParent = findParent(td, 'comments-table');
+	DEBUG(initEditorForComment.name, "tdElem: " + td);
 	
-	if(elemParent === null) return;
+	if(tdParent === null) return;
 	
-	commentsTextTd = elemParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	var commentsTextTd = tdParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
 	
 	DEBUG(initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
-	DEBUG(initEditorForComment.name, 'Редактирование: '+elem.getAttribute('data-id'));
+	DEBUG(initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
 	
-	commId = elem.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
-	elem.innerHTML = 'Сохранить';
+	td.textContent = 'Сохранить';
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
 };
 
@@ -242,14 +237,12 @@ User.prototype.disablePrevEditors = function disablePrevEditors() {
 	tinymce.remove('#'+activeEditorId);
 	
 	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
-		if(prevTinymceElems[i].classList.contains('edit-this')) {
-			prevTinymceElems[i].classList.remove('edit-this');
-		}
+		prevTinymceElems[i].classList.toggle('edit-this', false)
 	}
 	
 	for(i=0, len=saveLinks.length; i<len; i++) {
-		if(saveLinks[i].innerHTML === 'Сохранить') {
-			saveLinks[i].innerHTML = 'Редактировать';
+		if(saveLinks[i].textContent === 'Сохранить') {
+			saveLinks[i].textContent = 'Редактировать';
 		}
 	}
 };
@@ -260,15 +253,12 @@ User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	var tr = document.createElement('TR');
 	tr.classList.add('comments-edit');
 	var editTd = document.createElement('TD');
-	//var removeTd = document.createElement('TD');
 	var infoTd = document.createElement('TD');
 	infoTd.setAttribute('colspan', 4);
 	infoTd.innerHTML = '<strong>Управление</strong>';
-	editTd.innerHTML = '<a href="#" class="user-edit edit-comm " data-id="'+commId+'">Редактировать</a>';
-	//removeTd.innerHTML = '<a href="#" class="admin-edit del-comm" data-id="'+commId+'">Удалить</a>';
+	editTd.innerHTML = '<a href="#" class="user-edit edit-comm" data-id="'+commId+'">Редактировать</a>';
 	tr.appendChild(infoTd);
 	tr.appendChild(editTd);
-	//tr.appendChild(removeTd);
 	
 	return tr;
 };
@@ -302,7 +292,7 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 	var timeout = setTimeout(function() {
 		self._XMLHttpRequest.abort();
 	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + self.getUserLogin() 
+	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + this.getUserLogin() 
 							+ '&comments-location-id=' + encodeURIComponent(location_id), true);
 	this._XMLHttpRequest.send();
 }

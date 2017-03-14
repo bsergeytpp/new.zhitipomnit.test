@@ -65,9 +65,10 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 		var timer, body = document.body;
 		clearTimeout(timer);
 		
-		if(!body.classList.contains('disable-hover')) {
+		body.classList.contains('disable-hover', true)
+		/*if(!body.classList.contains('disable-hover')) {
 			body.classList.add('disable-hover');
-		}
+		}*/
 		
 		timer = setTimeout(function() {
 			body.classList.remove('disable-hover');
@@ -94,7 +95,9 @@ function findParent(child, parentClass) {
 
 	while(parent && parent.parentNode) {
 		parent = parent.parentNode;
+		
 		if(parent.classList.contains(parentClass)) return parent;
+		
 		if(parent.tagName === 'BODY') return null;
 	}
 	
@@ -109,6 +112,7 @@ function userSwitcher() {
 	switcher.addEventListener('click', function(e) {
 		var style = window.getComputedStyle(usersDiv);
 		var left = parseInt(style.getPropertyValue('left'));
+		
 		if(left < 0) {
 			usersDiv.style.left = 0;
 			usersDiv.style.color = 'white';
@@ -135,9 +139,9 @@ function addLinksToCommentsId() {
 				
 				if(!loginTd[2]) continue;	// TD с ником автора
 				
-				DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].innerHTML);
-				var userLogin = loginTd[2].innerHTML;
-				var commId = loginTd[0].innerHTML;
+				DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
+				var userLogin = loginTd[2].textContent;
+				var commId = loginTd[0].textContent;
 				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
 			}
 		}
@@ -178,7 +182,7 @@ function navigateUlList(e) {
 	
 	// рабиваем часть URL по параметрам
 	var urlArr = decodeURIComponent(location.search.substr(1)).split('&');
-	var pair, urlParams = new Object;
+	var pair, urlParams = {};
 	
 	// запоминаем параметры и их значения
 	for(var i=0, len=urlArr.length; i<len; i++) {
@@ -194,8 +198,8 @@ function navigateUlList(e) {
 	// самый первый/последний элемент списка
 	if(target === this.firstChild || target === this.lastChild) {
 		// идем назад
-		if(target.innerHTML.indexOf("«") !== -1) {
-			DEBUG(navigateUlList.name, "Назад: " + target.innerHTML);
+		if(target.textContent.indexOf("«") !== -1) {
+			DEBUG(navigateUlList.name, "Назад: " + target.textContent);
 
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
@@ -203,8 +207,8 @@ function navigateUlList(e) {
 			}
 		}
 		// идем вперед
-		else if(target.innerHTML.indexOf("»") !== -1) {
-			DEBUG(navigateUlList.name, "Вперед: " + target.innerHTML);
+		else if(target.textContent.indexOf("»") !== -1) {
+			DEBUG(navigateUlList.name, "Вперед: " + target.textContent);
 
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;
@@ -236,12 +240,13 @@ function replaceNewsLinks() {
 	
 	for(var i=0, len=parents.length; i<len; i++) {
 		var link = parents[i].getElementsByTagName('A')[0];
+		var linkHref = link.getAttribute('href');
 		
-		if(!link || link.getAttribute('href') === '#') continue;
+		if(!link || linkHref === '#') continue;
 		
-		var linkHref = link.getAttribute('href').substring(0, link.getAttribute('href').length - 5); // (length - 5) -> .html
+		linkHref = linkHref.substring(0, linkHref.length - 5); // (length - 5) -> .html
 		link.setAttribute('href', 'index.php?pages=news&type=old&custom-news-date=' + linkHref);
-		DEBUG(replaceNewsLinks.name, link.getAttribute('href'));
+		DEBUG(replaceNewsLinks.name, linkHref);
 	}
 }
 
@@ -251,8 +256,9 @@ function replacePressLinks() {
 	
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = press[i].getElementsByTagName('A')[0];
-		DEBUG(replacePressLinks.name, str.getAttribute('href'));
-		str.setAttribute('href', 'index.php?pages=press&custom-press=' + str.getAttribute('href').substring(0, 5));
+		var strHref = str.getAttribute('href');
+		DEBUG(replacePressLinks.name, strHref);
+		str.setAttribute('href', 'index.php?pages=press&custom-press=' + strHref.substring(0, 5));
 	}
 }
 
@@ -294,8 +300,7 @@ function makeCommentsTree() {
 	
 	for(var i=0, len=comm_tables.length; i<len; i++) {
 		var tr = comm_tables[i].getElementsByClassName('comments-content')[0];	
-		//var id = tr.getElementsByClassName('comment-id')[0].innerHTML;
-		var parent_id = tr.children[1].innerHTML;
+		var parent_id = tr.children[1].textContent;
 		
 		if(parent_id !== '') {
 			DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
@@ -335,7 +340,7 @@ function setCommentsParentId(e) {
 	e.preventDefault();
 
 	var parentLink = parent.previousSibling.getElementsByTagName('A')[0];
-	var parentId = parentLink.innerHTML; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
+	var parentId = parentLink.textContent; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
 	var parentAuthor = parentLink.getAttribute('href'); 				// автор комментария, на который отвечаем
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = document.getElementsByClassName('comments-form')[0].elements['comments-parent'];
@@ -525,8 +530,7 @@ function updatePageTitle() {
 	
 	if(!header) return;
 	
-	// http://stackoverflow.com/questions/822452/strip-html-from-text-javascript
-	header = header.innerHTML.replace(/<(?:.|\n)*?>/gm, '');	
+	header = header.textContent;	
 	document.title += ' - ' + header.substr(0, 25) + '...';
 }
 

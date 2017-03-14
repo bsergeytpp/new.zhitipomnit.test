@@ -72,25 +72,16 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	'use strict';
 	var elem = [];
 	
-	if(document.getElementsByClassName('article-news').length > 0) {
-		elem.push(document.getElementsByClassName('article-news'));					// если это список новостей
-	} 
+	elem.push(document.getElementsByClassName('article-news'));			// список новостей
+	elem.push(document.getElementsByClassName('news-full-container'));	// полная новость
+	elem.push(document.getElementsByClassName('article-publs'));		// список статей
+	elem.push(document.getElementsByClassName('publs-full-container'));	// полная статья
 	
-	if(document.getElementsByClassName('news-full-container').length > 0) {
-		elem.push(document.getElementsByClassName('news-full-container'));			// если это полная новость
-	}
-	
-	if(document.getElementsByClassName('article-publs').length > 0) {	
-		elem.push(document.getElementsByClassName('article-publs'));				// если это список статей
-	}
-	
-	if(document.getElementsByClassName('publs-full-container').length > 0) {
-		elem.push(document.getElementsByClassName('publs-full-container'));			// если это полная статья
-	}
-
 	if(elem.length > 0) {
 		for(var i=0, len=elem.length; i<len; i++) {
-			this.addEditBtn(elem[i]);
+			if(elem[i].length > 0) {
+				this.addEditBtn(elem[i]);
+			}
 		}
 	}
 };
@@ -117,11 +108,11 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	if(this._commentsTables === null) return;
 	
 	// если кнопок пока нет
-	if(document.getElementsByClassName('comments-edit').length >= 1) return;
+	if(document.getElementsByClassName('comments-edit').length > 0) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
 		var commId = this._commentsTables[i].getElementsByClassName('comment-id')[0];
-		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].innerHTML);
+		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].textContent);
 		this._commentsTables[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
 	}
 	
@@ -149,15 +140,16 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 	'use strict';
 	var target = e.target;
 	var self = this;
-	var targetId = target.getAttribute('data-id');	
+	var targetId = target.getAttribute('data-id');
+	var targetText = target.textContent;
 	
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
 		
-		if(target.innerHTML === 'Редактировать') {
+		if(targetText === 'Редактировать') {
 			editComments.call(self, target, targetId);
 		}
-		else if(target.innerHTML === 'Сохранить') {
+		else if(targetText === 'Сохранить') {
 			e.stopPropagation();
 			saveComments.call(self, targetId);
 		}
@@ -252,7 +244,7 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	DEBUG(initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
 	var commId = td.getAttribute('data-id');
 	commentsTextTd.classList.add('edit-this');
-	td.innerHTML = 'Сохранить';
+	td.textContent = 'Сохранить';
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
 };
 
@@ -265,14 +257,12 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	tinymce.remove('#'+activeEditorId);
 	
 	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
-		if(prevTinymceElems[i].classList.contains('edit-this')) {
-			prevTinymceElems[i].classList.remove('edit-this');
-		}
+		prevTinymceElems[i].classList.toggle('edit-this', false)
 	}
 	
 	for(i=0, len=saveLinks.length; i<len; i++) {
-		if(saveLinks[i].innerHTML === 'Сохранить') {
-			saveLinks[i].innerHTML = 'Редактировать';
+		if(saveLinks[i].textContent === 'Сохранить') {
+			saveLinks[i].textContent = 'Редактировать';
 		}
 	}
 };
@@ -340,7 +330,7 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 				self._responseObject = JSON.parse(response);
 			}
 			catch(e) {
-				DEBUG(getElemByDBId.name, 'Пришла не JSON строка: ' + e.toString());
+				DEBUG(addHandlerOnEditBtns.name, 'Пришла не JSON строка: ' + e.toString());
 			}
 		}
 		
@@ -361,13 +351,14 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 			// вешаем на кнопки события
 			self._editDiv.addEventListener('click', function(e) {
 				var target = e.target;
+				var targetText = target.textContent;
 				e.preventDefault();
 				
-				if(target.innerHTML === 'Отменить') {
+				if(targetText === 'Отменить') {
 					e.stopPropagation();
 					document.body.removeChild(this);	// удаляем div редактирования
 				}
-				else if(target.innerHTML === 'Сохранить') {
+				else if(targetText === 'Сохранить') {
 					e.stopPropagation();
 					var updatedText = tinymce.activeEditor.getContent();
 					// запрос на сохранение элемента
@@ -397,9 +388,9 @@ Admin.prototype._createEditDiv = function createEditDiv(className) {
 	var textarea = document.createElement('textarea');
 	var saveBtn = document.createElement('a');
 	var closeBtn = document.createElement('a');
-	saveBtn.innerHTML = 'Сохранить';
+	saveBtn.textContent = 'Сохранить';
 	saveBtn.setAttribute('href', '#');
-	closeBtn.innerHTML = 'Отменить';
+	closeBtn.textContent = 'Отменить';
 	closeBtn.setAttribute('href', '#');
 	div.className = 'admin-edit-elem'; 
 	
@@ -502,9 +493,7 @@ Admin.prototype._getElemByDBId = function getElemByDBId(className, id, callback)
 admin = null;
 function createAdminClass() {
 	'use strict';
-	admin = new Admin();
-	//admin.checkIfAdmin();
-	//admin.setPrivilege();						
+	admin = new Admin();					
 }
 
 // для админа ставим кнопки редактирования

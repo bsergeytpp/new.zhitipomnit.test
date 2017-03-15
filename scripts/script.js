@@ -382,6 +382,15 @@ function checkCookieToken(token) {
 	return (secToken === token) ? true : false;
 }
 
+function removeActiveTinymceEditors() {
+	var len = tinymce.editors.length;
+	if(len > 1) {
+		for(var i=1; i<len; i++) {
+			tinymce.editors[i].destroy();
+		}
+	}
+}
+
 // добавляем комментарии без перезагрузки страницы
 function addCommentsAjax(commentsForm) {
 	var text = tinymce.activeEditor.getContent();
@@ -431,6 +440,7 @@ addEventListenerWithOptions(document, 'mouseup', function(e) {
 	var target = e.target;
 	if(target.className !== 'comments-post-button') return;
 	e.preventDefault();
+	removeActiveTinymceEditors();
 	addCommentsAjax(document.getElementsByClassName('comments-form')[0]);
 	updateCommentsWrapper();
 }, {});

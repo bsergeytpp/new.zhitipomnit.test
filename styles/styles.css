@@ -655,6 +655,10 @@ p.quotes:before {
 .disable-hover, .disable-hover * {
 	pointer-events: none !important;
 }
+.edited {
+	font-size: 0.85em;
+	text-align: right;
+}
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {
     #wrapper {

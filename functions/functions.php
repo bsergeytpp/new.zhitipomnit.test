@@ -122,7 +122,7 @@
 			$result = $db->executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
 			
 			if($result !== false) {
-				echo 'Лог добавлен';
+				echo 'Лог добавлен. Данные: '.$type.'|'.$name.'|'.$text.'|'.$location.'|'.$date.'|'.$important;
 			}
 			else {
 				echo 'Лог не добавлен';
@@ -291,7 +291,9 @@
 					comments.comments_parent_id, 
 					users.user_login, 
 					comments.comments_text, 
-					comments.comments_date 
+					comments.comments_date,
+					(SELECT user_login FROM users WHERE user_id = comments_edited_by) as com_edited_by,
+					comments.comments_edited_date
 				  FROM comments, users 
 				  WHERE comments_location_id = ? 
 				  AND comments.comments_author = users.user_id 
@@ -312,6 +314,7 @@
 			return false;
 		}
 		else {
+			$j = 1;
 			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				echo "<div class='comments-div'>";
 				
@@ -333,11 +336,20 @@
 				foreach($row as $val) {
 					switch($i) {
 						case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
-						case 3: echo "<td class='comment-text'>". $val ."</td>"; break;
+						case 3: 
+							echo "<td class='comment-text' id='text-id-$j'>". $val;
+							
+							if($row['com_edited_by'] !== null) {
+								echo "<br><em class='edited'>Отредактировано: ".$row['com_edited_by'];
+								echo " | ".$row['comments_edited_date']."</em>";
+							}
+							
+							echo "</td>"; 
+							break;
+						case 5: case 6: break;
 						default: echo "<td>". $val ."</td>"; break;
-
 					}
-					$i++;
+					$i++; $j++;
 				}
 				echo "</tr>";
 				

@@ -9,6 +9,7 @@
 		if($db->getLink()) {
 			if(isset($_POST['comment-text']) && isset($_POST['comment-id'])) {
 				$dataLogin = (isset($_POST['comment-author'])) ? $_POST['comment-author'] : null;
+				$editedDate = date('Y-m-d H:i:sO');
 				
 				if($dataLogin !== $_SESSION['user'] || $_SESSION['admin'] === false) {
 					echo 'Ошибка проверки подлинности.';
@@ -17,8 +18,8 @@
 				
 				$text = clearStr($_POST['comment-text']);
 				$id = (int)$_POST['comment-id'];
-				$query = "UPDATE comments SET comments_text = ? WHERE comments_id = ?";
-				$result = $db->executeQuery($query, array($text, $id), 'update_comments');
+				$query = "UPDATE comments SET comments_text = ?, comments_edited_by = ?, comments_edited_date = ? WHERE comments_id = ?";
+				$result = $db->executeQuery($query, array($text, $author_id, $editedDate, $id), 'update_comments');
 				
 				if($result === false) {
 					echo 'Комментарий не был обновлен';

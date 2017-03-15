@@ -5,6 +5,7 @@ function Admin() {
 	this._responseObject;
 	this._editDiv = null;
 	this._commentsTables = null;
+	this._tempText = '';
 	
 	var isAdmin = false;
 	var self = this;
@@ -76,7 +77,7 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	elem.push(document.getElementsByClassName('news-full-container'));	// полная новость
 	elem.push(document.getElementsByClassName('article-publs'));		// список статей
 	elem.push(document.getElementsByClassName('publs-full-container'));	// полная статья
-	
+		
 	if(elem.length > 0) {
 		for(var i=0, len=elem.length; i<len; i++) {
 			if(elem[i].length > 0) {
@@ -176,10 +177,10 @@ function editComments(td, tdId) {
 			alert("Закончите текущее редактирование!");
 			return;
 		}
-	}
-	
-	if(tinymce.activeEditor.id === 'comments-text') {				// была выбрана форма комментирования
-		tinymce.activeEditor = tinymce.editors[1];
+		
+		if(tinymce.activeEditor.id === 'comments-text') {			// была выбрана форма комментирования
+			tinymce.editors[1].focus();
+		}
 	}
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
@@ -194,6 +195,10 @@ function editComments(td, tdId) {
 		else return; 												// решили закончить с предыдущим комментарием
 	} 
 	else {
+		if(this._tempText !== '') {
+			this._tempText = '';
+		}
+		
 		this.initEditorForComment(td);								// делаем новый объект tinymce
 	}
 }
@@ -202,6 +207,8 @@ function deleteComments(tdId) {
 	if(confirm('Точно удалить комментарий №'+tdId+'?')) { 
 		DEBUG(deleteComments.name, 'Удаление: '+tdId);			
 		// запрос на удаление элемента
+		removeActiveTinymceEditors();
+		this._tempText = '';
 		this._sendSaveRequest({
 			'comment-id': tdId
 		   },
@@ -215,18 +222,23 @@ function deleteComments(tdId) {
 
 // TODO: фигово сделано
 function saveComments(tdId) {
+	// была выбрана форма комментирования
+	if(tinymce.editors.length > 1) {
+		if(tinymce.activeEditor.id === 'comments-text') {			
+			tinymce.editors[1].focus();
+		}
+	}
+	
 	var updatedText = tinymce.activeEditor.getContent();
 	var activeEditorId = tinymce.activeEditor.getParam('id');
-	tinymce.remove('#'+activeEditorId);
-	// кем редактировано
-	var editStr = "<em class='edited'>Редактировано " + this.getAdminLogin() + " | " + new Date().toLocaleString() + '</em>';
-	var editPos = updatedText.indexOf('<em class=');
+	var editPos = updatedText.indexOf('<br><em class=');
+	removeActiveTinymceEditors();
+	this._tempText = '';
 	
 	if(editPos !== -1) {
 		updatedText = updatedText.substr(0, editPos);
 	}
 	
-	updatedText += editStr;
 	DEBUG(saveComments.name, tdId + "|" + updatedText);
 	// запрос на сохранение элемента
 	this._sendSaveRequest({
@@ -248,6 +260,14 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	if(tdParent === null) return;
 	
 	var commentsTextTd = tdParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	var commentsText = commentsTextTd.innerHTML;
+	var editPos = commentsText.indexOf('<br><em class=');
+	
+	if(editPos !== -1) {
+		this._tempText = commentsText;
+		commentsTextTd.innerHTML = commentsText.substr(0, editPos);
+	}
+	
 	DEBUG(initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
 	DEBUG(initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
 	var commId = td.getAttribute('data-id');
@@ -261,7 +281,6 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	'use strict';
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
-	
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
@@ -271,7 +290,14 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	}
 	
 	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
-		prevTinymceElems[i].classList.toggle('edit-this', false)
+		if(this._tempText !== '') {
+			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
+			DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
+			prevTinymceElems[i].innerHTML = this._tempText;
+			this._tempText = '';
+		}
+		
+		prevTinymceElems[i].classList.toggle('edit-this', false);
 	}
 	
 	for(i=0, len=saveLinks.length; i<len; i++) {
@@ -314,7 +340,7 @@ Admin.prototype.addEditBtn = function addEditBtn(elem) {
 		firstChild = elem[i].children[0];
 		elem[i].insertBefore(this._editBtns[i], firstChild);
 	}
-
+	
 	this.initAdminEdit();
 };
 
@@ -376,7 +402,7 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 					
 					if(tinymce.activeEditor.id === 'comments-text') {
 						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
-							tinymce.editors[1].destroy();
+							removeActiveTinymceEditors();
 						}
 					}
 					else tinymce.activeEditor.destroy();
@@ -399,7 +425,7 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 					
 					if(tinymce.activeEditor.id === 'comments-text') {
 						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
-							tinymce.editors[1].destroy();
+							removeActiveTinymceEditors();
 						}
 					}
 					else tinymce.activeEditor.destroy();

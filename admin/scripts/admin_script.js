@@ -8,7 +8,7 @@ function initTinyMCE(className, isInline) {
 	tinymce.init({
 		inline: isInline,
 		selector: className,
-		language: 'ru_RU',
+		language: 'ru',
 		plugins: 'code',
 		paste_data_images: true
 	});

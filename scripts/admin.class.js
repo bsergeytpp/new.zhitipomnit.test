@@ -39,6 +39,7 @@ function Admin() {
 					DEBUG("checkIfAdmin", "Вы - не Админ. Херово!");
 					Admin = null;
 					admin = null;
+					createUserClass();
 				}
 			}
 		};
@@ -278,7 +279,7 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 Admin.prototype.disablePrevEditors = function disablePrevEditors() {
-	'use strict';
+	'use strict';	
 	var prevTinymceElems = document.getElementsByClassName('edit-this');
 	var saveLinks = document.getElementsByClassName('edit-comm');
 	var activeEditorId = tinymce.activeEditor.getParam('id');
@@ -386,7 +387,9 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 			self._createEditDiv(className);
 			
 			// удаляем другие объекты tinymce
-			self.disablePrevEditors();
+			if(tinymce.editors.length > 0) {
+				self.disablePrevEditors();
+			}
 			
 			// делаем из textarea объект tinymce
 			initTinyMCE('.admin-edit-elem textarea', false);
@@ -430,7 +433,7 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 					}
 					else tinymce.activeEditor.destroy();
 					
-					document.body.destroy(this);	// удаляем div редактирования
+					document.body.removeChild(this);	// удаляем div редактирования
 				} 
 				
 			}, false);

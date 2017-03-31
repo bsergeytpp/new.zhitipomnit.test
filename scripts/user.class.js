@@ -372,4 +372,4 @@ function createUserClass() {
 	user = new User();
 }
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', createUserClass, {passive: true});
+//addEventListenerWithOptions(document, 'DOMContentLoaded', createUserClass, {passive: true});

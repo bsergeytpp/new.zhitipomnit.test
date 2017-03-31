@@ -13,7 +13,7 @@
 			selector: '#publ-textarea',
 			height: 300,
 			width: 1000,
-			language: 'ru_RU',
+			language: 'ru',
 			plugins: 'code',
 			paste_data_images: true
 		  });

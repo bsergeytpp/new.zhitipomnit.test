@@ -163,7 +163,7 @@ function initTinyMCE(className, isInline, width, height) {
 	tinymce.init({
 		inline: isInline,
 		selector: className,
-		language: 'ru_RU',
+		language: 'ru',
 		plugins: 'code',
 		paste_data_images: true,
 		width: width,
@@ -326,6 +326,7 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {pas
 // при клике на кнопку "Ответить" записываем в скрытое поле формы комментирования ID комментария
 // ссылаемся на ID в тексте кнопки "Ответ"
 function setCommentsParentId(e) {
+	console.log('TEST');
 	var target = e.target;
 	
 	if(target.className !== 'respond-button') return;
@@ -354,7 +355,7 @@ function setCommentsParentId(e) {
 	postBtn.focus();
 }
 
-addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'mouseup', setCommentsParentId, {});
+addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 
 function getParamFromLocationSearch(parName) {
 	var location = window.location.search.substring(1);
@@ -485,7 +486,7 @@ function updateCommentsWrapper() {
 			}
 			
 			makeCommentsTree();
-			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'mouseup', setCommentsParentId, {});
+			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
 		}
 	};
 	

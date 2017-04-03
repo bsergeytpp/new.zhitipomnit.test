@@ -21,26 +21,24 @@ function Admin() {
 				var respLogin = self._XMLHttpRequest.getResponseHeader('UserLogin');
 				DEBUG("checkIfAdmin", "RESP: "+resp);
 				
-				if(resp !== null) {
-					DEBUG("checkIfAdmin", "Вы - Админ. Поздравляю!");
-					
-					isAdmin = true;
-					
-					if(respLogin !== null) {
-						login = respLogin;
-						DEBUG("checkIfAdmin", "Ваш логин: "+login+"!");
+				if(respLogin !== null) {
+					if(resp !== null) {
+						DEBUG("checkIfAdmin", "Вы - Админ. Поздравляю!");
+						isAdmin = true;
+						self.setPrivilege();
+						User = user = null;
 					}
-					
-					self.setPrivilege();
-					User = null;
-					user = null;
+					else {
+						DEBUG("checkIfAdmin", "Вы - не Админ.");
+						Admin = admin = null;
+						createUserClass();
+					}
 				}
 				else {
-					DEBUG("checkIfAdmin", "Вы - не Админ. Херово!");
-					Admin = null;
-					admin = null;
-					createUserClass();
-				}
+					DEBUG("checkIfAdmin", "Вы - не авторизованы.");
+					Admin = admin = null;
+					User = user = null;
+				} 
 			}
 		};
 		var timeout = setTimeout(function() {

@@ -266,8 +266,9 @@
 			
 			// переносим DOM-элементы в новый документ и выводим его
 			$dom2 = new DOMDocument;
+			$newsCount = pageNum*OLDNEWS_MAXCOUNT;
 			
-			for($i = $this->pageNum*OLDNEWS_MAXCOUNT, $len=$this->pageNum*OLDNEWS_MAXCOUNT-OLDNEWS_MAXCOUNT; $i>$len; $i--) {
+			for($i = $this->$newsCount, $len=$this->$newsCount-OLDNEWS_MAXCOUNT; $i>$len; $i--) {
 				if($p_elems->item($i-1) !== null) {
 					$node = $dom2->importNode($p_elems->item($i-1), true);
 					if(!$dom2->hasChildNodes()) {

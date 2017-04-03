@@ -17,6 +17,7 @@
 							
 							$pressClass->setPressPage($pageNum);
 							$pressClass->getSinglePress();
+							echo "<script>document.addEventListener('DOMContentLoaded', function() { replacePressPagesLinks(); }, false);</script>";
 						}
 					?>
 				</div>

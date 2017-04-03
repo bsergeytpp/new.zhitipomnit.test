@@ -6,7 +6,6 @@ function User() {
 	this._tempText = '';
 	
 	var userLogin = false;
-	var isAdmin = false;
 	var self = this;
 	
 	// выясняем текущий логин
@@ -17,7 +16,7 @@ function User() {
 			if(self._XMLHttpRequest.readyState == 4) {
 				clearTimeout(timeout);
 				var resp = self._XMLHttpRequest.getResponseHeader('UserLogin');
-				isAdmin = self._XMLHttpRequest.getResponseHeader('IsAdmin');
+				var isAdmin = self._XMLHttpRequest.getResponseHeader('IsAdmin');
 				
 				if(isAdmin) {
 					return;
@@ -33,7 +32,7 @@ function User() {
 					}
 				}
 				else {
-					DEBUG(checkIfUser.name, "Вы не авторизованы!");
+					DEBUG(checkIfUser.name, "Вы - не авторизованы!");
 					User = null;
 					user = null;
 				}

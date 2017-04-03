@@ -250,7 +250,7 @@ function replaceNewsLinks() {
 	}
 }
 
-// функция для исправления ссылок в общем списке старых статей
+// функция для исправления ссылок в общем списке старых газетах
 function replacePressLinks() {
 	var press = document.body.getElementsByClassName('article-press');
 	
@@ -259,6 +259,30 @@ function replacePressLinks() {
 		var strHref = str.getAttribute('href');
 		DEBUG(replacePressLinks.name, strHref);
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + strHref.substring(0, 5));
+	}
+}
+
+// функция для исправления ссылок в полной газете
+function replacePressPagesLinks() {
+	var pressContainer = document.getElementById('press-container');
+	var pagesLinks = pressContainer.getElementsByTagName('A');
+	
+	for(var i=0, len=pagesLinks.length; i<len; i++) {
+		if(pagesLinks[i].className === 'article-press-links') continue;
+		
+		var strHref = pagesLinks[i].getAttribute('href');
+		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
+		var newHref = document.getElementsByClassName('article-press-links')[1].getAttribute('href');
+		// убираем номер страницы
+		var newHref = newHref.substring(0, newHref.length - 1);
+		
+		switch(strHref) {
+			case '1.html': pagesLinks[i].setAttribute('href', newHref + 1); break;
+			case '2.html': pagesLinks[i].setAttribute('href', newHref + 2); break;
+			case '3.html': pagesLinks[i].setAttribute('href', newHref + 3); break;
+			case '4.html': pagesLinks[i].setAttribute('href', newHref + 4); break;
+			default: break;
+		}
 	}
 }
 

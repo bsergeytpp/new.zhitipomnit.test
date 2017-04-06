@@ -1,4 +1,4 @@
-	<div class="article-news" id="newsId">
+	<div class="article-news editable" id="newsId">
 		<div class="article-news-header">
 			<strong>Дата: newsDate</strong>
 			<!-- if (is_file('content/news/materials/newsDate/logo.jpg')): -->

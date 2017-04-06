@@ -61,7 +61,7 @@
 				$query = 'SELECT * FROM publs WHERE publs_id = ?';
 				$res = $this->db->executeQuery($query, array($date), 'get_publs');
 				$row = $res->fetch(PDO::FETCH_ASSOC);
-				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
+				$publ = '<div id="'.$row['publs_id'].'" class="publs-full-container editable"><h3>'.$row['publs_header'].'</h3>'.$row['publs_text'].'</div>';
 				
 				return $publ;
 			}

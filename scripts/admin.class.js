@@ -70,19 +70,11 @@ Admin.prototype.getAdminLogin = function() {
 // проверяем есть ли на странице редактируемые элементы
 Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	'use strict';
-	var elem = [];
+	var elems = document.getElementsByClassName('editable');
 	
-	elem.push(document.getElementsByClassName('article-news'));			// список новостей
-	elem.push(document.getElementsByClassName('news-full-container'));	// полная новость
-	elem.push(document.getElementsByClassName('article-publs'));		// список статей
-	elem.push(document.getElementsByClassName('publs-full-container'));	// полная статья
-		
-	if(elem.length > 0) {
-		for(var i=0, len=elem.length; i<len; i++) {
-			if(elem[i].length > 0) {
-				this.addEditBtn(elem[i]);
-			}
-		}
+	// есть хотя бы один элемент
+	if(elems.length > 0) {
+		this.addEditBtn(elems);
 	}
 };
 
@@ -326,18 +318,18 @@ Admin.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 };
 
 // функция для добавления кнопки редактирования (новости/статьи)
-Admin.prototype.addEditBtn = function addEditBtn(elem) {
+Admin.prototype.addEditBtn = function addEditBtn(elems) {
 	'use strict';
 	if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');
 	}
 	
 	// создаем для каждого редактируемого элемента кнопку
-	for(var i=0, len=elem.length, firstChild; i<len; i++) {
+	for(var i=0, len=elems.length, firstChild; i<len; i++) {
 		this._editBtns[i] = document.createElement('div');
 		this._editBtns[i].className = 'admin-edit-button';
-		firstChild = elem[i].children[0];
-		elem[i].insertBefore(this._editBtns[i], firstChild);
+		firstChild = elems[i].children[0];
+		elems[i].insertBefore(this._editBtns[i], firstChild);
 	}
 	
 	this.initAdminEdit();

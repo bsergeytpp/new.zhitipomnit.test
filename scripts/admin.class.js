@@ -564,7 +564,7 @@ Admin.prototype.setPrivilege = function setPrivilege() {
 		else {
 			DEBUG(setPrivilege.name, 'Вы не админ. Хватит хулиганить!');
 		}
-	}, 1500);										// даем время на выполнение запроса в checkIfAdmin
+	}, 700);										// даем время на выполнение запроса в checkIfAdmin
 };
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});

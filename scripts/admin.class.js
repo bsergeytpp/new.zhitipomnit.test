@@ -301,11 +301,12 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 // создаем TR с кнопками редактировать/удалить 
 Admin.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	'use strict';
-	var tr = document.createElement('TR');
+	var doc = document;
+	var tr = doc.createElement('TR');
 	tr.classList.add('comments-edit');
-	var editTd = document.createElement('TD');
-	var removeTd = document.createElement('TD');
-	var infoTd = document.createElement('TD');
+	var editTd = doc.createElement('TD');
+	var removeTd = doc.createElement('TD');
+	var infoTd = doc.createElement('TD');
 	infoTd.setAttribute('colspan', 3);
 	infoTd.innerHTML = '<strong>Управление</strong>';
 	editTd.innerHTML = '<a href="#" class="admin-edit edit-comm " data-id="'+commId+'">Редактировать</a>';
@@ -325,8 +326,8 @@ Admin.prototype.addEditBtn = function addEditBtn(elems) {
 	}
 	
 	// создаем для каждого редактируемого элемента кнопку
-	for(var i=0, len=elems.length, firstChild; i<len; i++) {
-		this._editBtns[i] = document.createElement('div');
+	for(var i=0, len=elems.length, firstChild, doc=document; i<len; i++) {
+		this._editBtns[i] = doc.createElement('div');
 		this._editBtns[i].className = 'admin-edit-button';
 		firstChild = elems[i].children[0];
 		elems[i].insertBefore(this._editBtns[i], firstChild);
@@ -435,11 +436,12 @@ Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
 // функция создает DIV элемент, в котором можно редактировать элементы новости или статьи
 Admin.prototype._createEditDiv = function createEditDiv(className) {
 	'use strict';
-	var div = document.createElement('div');
-	var form = document.createElement('form');
-	var textarea = document.createElement('textarea');
-	var saveBtn = document.createElement('a');
-	var closeBtn = document.createElement('a');
+	var doc = document;
+	var div = doc.createElement('div');
+	var form = doc.createElement('form');
+	var textarea = doc.createElement('textarea');
+	var saveBtn = doc.createElement('a');
+	var closeBtn = doc.createElement('a');
 	saveBtn.textContent = 'Сохранить';
 	saveBtn.setAttribute('href', '#');
 	closeBtn.textContent = 'Отменить';
@@ -456,7 +458,7 @@ Admin.prototype._createEditDiv = function createEditDiv(className) {
 	form.appendChild(saveBtn);
 	form.appendChild(closeBtn);
 	div.appendChild(form);
-	document.body.appendChild(div);
+	doc.body.appendChild(div);
 	
 	this._editDiv = div;
 };

@@ -45,12 +45,13 @@ var _DEBUG = false;
 	- показывает/скрывает кнопку прокрутки
 */
 addEventListenerWithOptions(document, 'scroll', function(e) {
-    var article = document.getElementsByClassName('article')[0];
-    var scrollBtn = document.getElementsByClassName('scroll-button')[0];
+	var doc = document;
+    var article = doc.getElementsByClassName('article')[0];
+    var scrollBtn = doc.getElementsByClassName('scroll-button')[0];
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
     //var header = document.getElementsByClassName('header')[0];
 	if(window.innerWidth > 680) {
-		if((window.pageYOffset || document.documentElement.scrollTop) > 550) {
+		if((window.pageYOffset || doc.documentElement.scrollTop) > 550) {
 			if(articleWidth !== '100%') {
 			   article.style.marginLeft = 0;    
 			   scrollBtn.classList.add("scroll-button-active");
@@ -62,7 +63,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 		}
 	
 		// делаем элементы при прокрутке ненажимаемыми
-		var timer, body = document.body;
+		var timer, body = doc.body;
 		clearTimeout(timer);
 		
 		body.classList.contains('disable-hover', true)
@@ -264,7 +265,8 @@ function replacePressLinks() {
 
 // функция для исправления ссылок в полной газете
 function replacePressPagesLinks() {
-	var pressContainer = document.getElementById('press-container');
+	var doc = document;
+	var pressContainer = doc.getElementById('press-container');
 	var pagesLinks = pressContainer.getElementsByTagName('A');
 	
 	for(var i=0, len=pagesLinks.length; i<len; i++) {
@@ -272,7 +274,7 @@ function replacePressPagesLinks() {
 		
 		var strHref = pagesLinks[i].getAttribute('href');
 		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
-		var newHref = document.getElementsByClassName('article-press-links')[1].getAttribute('href');
+		var newHref = doc.getElementsByClassName('article-press-links')[1].getAttribute('href');
 		// убираем номер страницы
 		var newHref = newHref.substring(0, newHref.length - 1);
 		
@@ -527,19 +529,20 @@ function updateCommentsWrapper() {
 
 // добавляем к заголовку название новости/статьи
 function updatePageTitle() {
-	var title = document.title;
+	var doc = document;
+	var title = doc.title;
 	var params = window.location.search;
 	var container, header;
 	
 	// пропускаем старые новости/статьи
 	if(params.indexOf('all-old') !== -1) {
-		document.title = 'Старые ' + document.title;
+		doc.title = 'Старые ' + doc.title;
 		return; 						
 	}
 	
 	// новость
 	if(title === 'Новости' && params.indexOf('custom-news-date') !== -1) {
-		container = document.getElementsByClassName('news-full-container')[0];
+		container = doc.getElementsByClassName('news-full-container')[0];
 		
 		// в старых новостях может не быть заголовков
 		if(container === undefined) return;
@@ -548,7 +551,7 @@ function updatePageTitle() {
 	}
 	// статья
 	else if(title === 'Статьи' && params.indexOf('custom-publ') !== -1) {
-		container = document.getElementsByClassName('publs-full-container')[0];
+		container = doc.getElementsByClassName('publs-full-container')[0];
 		
 		if(container === undefined) return;
 		
@@ -556,7 +559,7 @@ function updatePageTitle() {
 	}
 	// газета
 	else if(title === 'Газета' && params.indexOf('custom-press') !== -1) {
-		container = document.getElementById('press-container');
+		container = doc.getElementById('press-container');
 		
 		if(container === undefined) return;
 		
@@ -566,7 +569,7 @@ function updatePageTitle() {
 	if(!header) return;
 	
 	header = header.textContent;	
-	document.title += ' - ' + header.substr(0, 25) + '...';
+	doc.title += ' - ' + header.substr(0, 25) + '...';
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});

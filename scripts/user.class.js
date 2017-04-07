@@ -279,10 +279,11 @@ User.prototype.disablePrevEditors = function disablePrevEditors() {
 // создаем TR с кнопками редактировать/удалить 
 User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	'use strict';
-	var tr = document.createElement('TR');
+	var doc = document;
+	var tr = doc.createElement('TR');
 	tr.classList.add('comments-edit');
-	var editTd = document.createElement('TD');
-	var infoTd = document.createElement('TD');
+	var editTd = doc.createElement('TD');
+	var infoTd = doc.createElement('TD');
 	infoTd.setAttribute('colspan', 4);
 	infoTd.innerHTML = '<strong>Управление</strong>';
 	editTd.innerHTML = '<a href="#" class="user-edit edit-comm" data-id="'+commId+'">Редактировать</a>';

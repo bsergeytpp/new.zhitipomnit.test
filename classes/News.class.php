@@ -160,7 +160,7 @@
 			$dom = DOMDocument::loadHTML($news);
 			libxml_use_internal_errors($internalErrors);
 			$xpath = new DOMXPath($dom);
-			$query = '//div[@class="article-news"]';
+			$query = '//div[@class="article-news editable"]';
 			$entries = $xpath->query($query);
 
 			// новость приходит одна, выбираем ее ID

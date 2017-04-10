@@ -62,7 +62,7 @@ body::before {
     border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
     -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
-	transition: margin .3s linear;
+	transition: margin .1s linear;
 	transform: translate3d(0,0,0);
 }
 .full-width {
@@ -646,6 +646,7 @@ p.quotes:before {
     right: 0;
     position: absolute;
     top: 5px;
+	cursor: pointer;
 }
 .comments-num img {}
 .comments-num strong {

@@ -325,10 +325,12 @@ Admin.prototype.addEditBtn = function addEditBtn(elems) {
 		appendScript('scripts/tinymce/tinymce.min.js');
 	}
 	
+	var divElem = document.createElement('div');
+	divElem.className = 'admin-edit-button';
+	
 	// создаем для каждого редактируемого элемента кнопку
-	for(var i=0, len=elems.length, firstChild, doc=document; i<len; i++) {
-		this._editBtns[i] = doc.createElement('div');
-		this._editBtns[i].className = 'admin-edit-button';
+	for(var i=0, len=elems.length, firstChild; i<len; i++) {
+		this._editBtns[i] = divElem.cloneNode();
 		firstChild = elems[i].children[0];
 		elems[i].insertBefore(this._editBtns[i], firstChild);
 	}

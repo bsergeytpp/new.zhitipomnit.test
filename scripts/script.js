@@ -535,8 +535,17 @@ function updatePageTitle() {
 	var container, header;
 	
 	// пропускаем старые новости/статьи
-	if(params.indexOf('all-old') !== -1) {
-		doc.title = 'Старые ' + doc.title;
+	if(params.indexOf('old') !== -1) {
+		var test = window.location.search.split('&');
+		
+		for(var i=0, len=test.length; i<len; i++) {
+			if(test[i].indexOf('custom-news-date') !== -1) {
+				doc.title = 'Старая новость от ' + test[i].substr(-8);
+				return;
+			}
+		}
+		
+		doc.title = 'Старые новости';
 		return; 						
 	}
 	

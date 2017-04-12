@@ -15,10 +15,10 @@ function Admin() {
 	(function() {
 		self._XMLHttpRequest = new XMLHttpRequest();
 		self._XMLHttpRequest.onreadystatechange = function () {
-			if(self._XMLHttpRequest.readyState == 4) {
+			if(this.readyState == 4) {
 				clearTimeout(timeout);
-				var resp = self._XMLHttpRequest.getResponseHeader('IsAdmin');
-				var respLogin = self._XMLHttpRequest.getResponseHeader('UserLogin');
+				var resp = this.getResponseHeader('IsAdmin');
+				var respLogin = this.getResponseHeader('UserLogin');
 				DEBUG("checkIfAdmin", "RESP: "+resp);
 				
 				if(respLogin !== null) {
@@ -75,6 +75,7 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	// есть хотя бы один элемент
 	if(elems.length > 0) {
 		this.addEditBtn(elems);
+		this.initAdminEdit();
 	}
 };
 
@@ -334,136 +335,182 @@ Admin.prototype.addEditBtn = function addEditBtn(elems) {
 		firstChild = elems[i].children[0];
 		elems[i].insertBefore(this._editBtns[i], firstChild);
 	}
-	
-	this.initAdminEdit();
 };
 
 // вешаем на каждую кнопку событие на нажатие
 Admin.prototype.initAdminEdit = function initAdminEdit() {
 	'use strict';
 	var self = this;
+	
 	for(var i=0, len=this._editBtns.length; i<len; i++) {
-		(function() {
-			self._editBtns[i].addEventListener('mouseup', self.addHandlerOnEditBtns.bind(self), false);
-		})();
+		this._editBtns[i].addEventListener('mouseup', function(e) {
+			var id = e.target.parentNode.getAttribute('id');
+			var className = e.target.parentNode.className;
+			var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';
+			
+			// ищем элементы для редактирования по их ID
+			self._getElemByDBId(pattern, id, function() {
+				var response = this.responseText;
+				
+				// вернулась строка
+				if(typeof response === 'string') {
+					try{
+						self._responseObject = JSON.parse(response);
+					}
+					catch(e) {
+						DEBUG(addHandlerOnEditBtns.name, 'Пришла не JSON строка: ' + e.toString());
+					}
+				}
+				
+				// строка оказалась формата JSON
+				if(typeof self._responseObject === 'object') {
+					var editElem = document.getElementsByClassName('admin-edit-elem')[0];
+					
+					if(editElem !== undefined) {
+						self._editDiv = null;
+						document.body.removeChild(editElem);
+					}
+
+					// создаем все необходимые элементы
+					self._createEditDiv(pattern, createEditDivCallback.bind(self, pattern, id));
+				}
+				else DEBUG(addHandlerOnEditBtns.name, response);
+			});
+		}, false);
 	}
 };
 
-// функция добавляет обработчики на кнопки DIVa, в котором редактируются данные новости/статьи
-Admin.prototype.addHandlerOnEditBtns = function addHandlerOnEditBtns(e) {
+// функция делает AJAX запрос на выборку новости/статьи по ID
+Admin.prototype._getElemByDBId = function getElemByDBId(pattern, id, callback) {
 	'use strict';
-	var id = e.target.parentNode.getAttribute('id');
-	var className = e.target.parentNode.className;
 	var self = this;
 	
-	this._getElemByDBId(className, id, function() {		// ищем элементы для редактирования по их ID
-		var response = this.responseText;
-		
-		if(typeof response === 'string') {
-			try{
-				self._responseObject = JSON.parse(response);
-			}
-			catch(e) {
-				DEBUG(addHandlerOnEditBtns.name, 'Пришла не JSON строка: ' + e.toString());
-			}
-		}
-		
-		if(typeof self._responseObject === 'object') {
-			var editElem = document.getElementsByClassName('admin-edit-elem')[0];
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(this.readyState == 4) {
+			clearTimeout(timeout); 
 			
-			if(editElem !== undefined) {
-				self._editDiv = null;
-				document.body.removeChild(editElem);
+			if(this.status != 200) {							// сервер сказал "НЕТ"
+				DEBUG(getElemByDBId.name, 'wha?');
 			}
-	
-			// создаем все необходимые элементы
-			self._createEditDiv(className);
-			
-			// удаляем другие объекты tinymce
-			if(tinymce.editors.length > 0) {
-				self.disablePrevEditors();
-			}
-			
-			// делаем из textarea объект tinymce
-			initTinyMCE('.admin-edit-elem textarea', false);
-			
-			// вешаем на кнопки события
-			self._editDiv.addEventListener('mouseup', function(e) {
-				var target = e.target;
-				var targetText = target.textContent;
-				e.preventDefault();
-				
-				if(targetText === 'Отменить') {
-					e.stopPropagation();
-					
-					if(tinymce.activeEditor.id === 'comments-text') {
-						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
-							removeActiveTinymceEditors();
-						}
+			else {
+				var resp = this.responseText;
+				if(resp != null) {								// в ответ что-то пришло
+					if(typeof callback  == 'function') {
+						callback.call(this);		// отдаем это в виде параметра в callback-функцию 
 					}
-					else tinymce.activeEditor.destroy();
-					
-					document.body.removeChild(this);	// удаляем div редактирования
 				}
-				else if(targetText === 'Сохранить') {
-					e.stopPropagation();
-					var updatedText = tinymce.activeEditor.getContent();
-					// запрос на сохранение элемента
-					var reqTarget = (className.indexOf('news') > -1) ? 'news' : 'publs';
-					self._sendSaveRequest({
-						'id': id,
-						'text': updatedText,
-						'name': reqTarget+'_text'
-					   },
-					   'POST', 
-					   'admin/admin_'+reqTarget+'/update_'+reqTarget+'.php', 
-					   'application/x-www-form-urlencoded');
-					
-					if(tinymce.activeEditor.id === 'comments-text') {
-						if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
-							removeActiveTinymceEditors();
-						}
-					}
-					else tinymce.activeEditor.destroy();
-					
-					document.body.removeChild(this);	// удаляем div редактирования
-				} 
-				
-			}, false);
+				else {
+					DEBUG(getElemByDBId.name, "Херово!");
+				}	
+			}
 		}
-		else DEBUG(addHandlerOnEditBtns.name, response);
-	});
+	};
+	
+	var timeout = setTimeout(function() {
+		self._XMLHttpRequest.abort();
+	}, 60*1000);
+	this._XMLHttpRequest.open('GET', 'admin/admin_'+pattern+'/get_'+pattern+'_by_id.php?id=' + id, true);
+	this._XMLHttpRequest.send();
 };
 
-// функция создает DIV элемент, в котором можно редактировать элементы новости или статьи
-Admin.prototype._createEditDiv = function createEditDiv(className) {
+// функция создает DIV элемент для редактирования новости или статьи
+Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 	'use strict';
+	var self = this;
 	var doc = document;
 	var div = doc.createElement('div');
-	var form = doc.createElement('form');
-	var textarea = doc.createElement('textarea');
-	var saveBtn = doc.createElement('a');
-	var closeBtn = doc.createElement('a');
-	saveBtn.textContent = 'Сохранить';
-	saveBtn.setAttribute('href', '#');
-	closeBtn.textContent = 'Отменить';
-	closeBtn.setAttribute('href', '#');
 	div.className = 'admin-edit-elem'; 
 	
-	var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';
-	form.innerHTML = 'ID: ' + this._responseObject[pattern+'_id'] + ' | ' + 
-					 'Загловок: ' + this._responseObject[pattern+'_header'];
-	textarea.innerHTML = this._responseObject[pattern+'_text'];
-	textarea.setAttribute('id', 'edit-textarea');
-
-	form.appendChild(textarea);
-	form.appendChild(saveBtn);
-	form.appendChild(closeBtn);
-	div.appendChild(form);
-	doc.body.appendChild(div);
+	this._XMLHttpRequest = new XMLHttpRequest();
+	this._XMLHttpRequest.onreadystatechange = function () {
+		if(this.readyState == 4) {
+			clearTimeout(timeout); 
+			
+			if(this.status != 200) {			// сервер сказал "НЕТ"
+				DEBUG(getElemByDBId.name, 'wha?');
+			}
+			else {
+				var resp = this.responseText;
+				if(resp != null) {								// в ответ что-то пришло
+					resp = resp.replace('$id$', self._responseObject[pattern+'_id']);
+					resp = resp.replace('$header$', self._responseObject[pattern+'_header']);
+					resp = resp.replace('$inner$', self._responseObject[pattern+'_text']);
+					div.innerHTML = resp;
+					doc.body.appendChild(div);
+					self._editDiv = div;
+					
+					if(typeof callback === 'function') {
+						callback.call(self);
+					}
+				}
+				else {
+					
+				}	
+			}
+		}
+	};
 	
-	this._editDiv = div;
+	var timeout = setTimeout(function() {
+		self._XMLHttpRequest.abort();
+	}, 60*1000);
+	this._XMLHttpRequest.open('GET', 'content/templates/editform_template.php', true);
+	this._XMLHttpRequest.send();
 };
+
+function createEditDivCallback(pattern, id) {
+	var self = this;
+	// удаляем другие объекты tinymce
+	if(tinymce.editors.length > 0) {
+		this.disablePrevEditors();
+	}
+	
+	// делаем из textarea объект tinymce
+	initTinyMCE('.admin-edit-elem textarea', false);
+	
+	// вешаем на кнопки события
+	this._editDiv.addEventListener('mouseup', function(e) {
+		var target = e.target;
+		var targetText = target.textContent;
+		e.preventDefault();
+		
+		if(targetText === 'Отменить') {
+			e.stopPropagation();
+			
+			if(tinymce.activeEditor.id === 'comments-text') {
+				if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+					removeActiveTinymceEditors();
+				}
+			}
+			else tinymce.activeEditor.destroy();
+			
+			document.body.removeChild(this);	// удаляем div редактирования
+		}
+		else if(targetText === 'Сохранить') {
+			e.stopPropagation();
+			var updatedText = tinymce.activeEditor.getContent();
+			// запрос на сохранение элемента
+			self._sendSaveRequest({
+				'id': id,
+				'text': updatedText,
+				'name': pattern+'_text'
+			   },
+			   'POST', 
+			   'admin/admin_'+pattern+'/update_'+pattern+'.php', 
+			   'application/x-www-form-urlencoded');
+			
+			if(tinymce.activeEditor.id === 'comments-text') {
+				if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+					removeActiveTinymceEditors();
+				}
+			}
+			else tinymce.activeEditor.destroy();
+			
+			document.body.removeChild(this);	// удаляем div редактирования
+		} 
+		
+	}, false);
+}
 
 // функция применяет изменения новости или статьи
 /*
@@ -491,13 +538,13 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 	DEBUG(sendSaveRequest.name, "data: " + data);
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function() {
-		if(self._XMLHttpRequest.readyState == 4) {
+		if(this.readyState == 4) {
 			clearTimeout(timeout);
-			if(self._XMLHttpRequest.status != 200) {
-				DEBUG(sendSaveRequest.name, 'Ошибка: ' + self._XMLHttpRequest.responseText);
+			if(this.status != 200) {
+				DEBUG(sendSaveRequest.name, 'Ошибка: ' + this.responseText);
 			}
 			else {
-				DEBUG(sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				DEBUG(sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + this.responseText);
 				//updateCommentsWrapper();
 			}
 		}
@@ -508,42 +555,6 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 	this._XMLHttpRequest.open(reqType, reqTarget, true);
 	this._XMLHttpRequest.setRequestHeader("Content-Type", contentType);
 	this._XMLHttpRequest.send(data);
-};
-
-// функция делает AJAX запрос на выборку новости/статьи по ID
-Admin.prototype._getElemByDBId = function getElemByDBId(className, id, callback) {
-	'use strict';
-	// новость или статья
-	var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';
-	var self = this;
-	
-	this._XMLHttpRequest = new XMLHttpRequest();
-	this._XMLHttpRequest.onreadystatechange = function () {
-		if(self._XMLHttpRequest.readyState == 4) {
-			clearTimeout(timeout); 
-			
-			if(self._XMLHttpRequest.status != 200) {			// сервер сказал "НЕТ"
-				DEBUG(getElemByDBId.name, 'wha?');
-			}
-			else {
-				var resp = self._XMLHttpRequest.responseText;
-				if(resp != null) {								// в ответ что-то пришло
-					if(typeof callback  == 'function') {
-						callback.call(self._XMLHttpRequest);	// отдаем это в виде параметра в callback-функцию 
-					}
-				}
-				else {
-					DEBUG(getElemByDBId.name, "Херово!");
-				}	
-			}
-		}
-	};
-	
-	var timeout = setTimeout(function() {
-		self._XMLHttpRequest.abort();
-	}, 60*1000);
-	this._XMLHttpRequest.open('GET', 'admin/admin_'+pattern+'/get_'+pattern+'_by_id.php?id=' + id, true);
-	this._XMLHttpRequest.send();
 };
 
 // создаем объект класса Admin

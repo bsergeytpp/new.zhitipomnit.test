@@ -142,9 +142,7 @@ User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 		var btns = this._userComments[i].getElementsByClassName('user-edit');
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-			(function() {
-				btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
-			})();
+			btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
 		}
 	}
 };
@@ -298,18 +296,18 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function () {
-		if(self._XMLHttpRequest.readyState == 4) {
+		if(this.readyState == 4) {
 			clearTimeout(timeout); 
 			
-			if(self._XMLHttpRequest.status != 200) {			
+			if(this.status != 200) {			
 				DEBUG(getUserCommentsFromId.name, 'wha?');
 			}
 			else {
-				var resp = self._XMLHttpRequest.responseText;
+				var resp = this.responseText;
 				DEBUG(getUserCommentsFromId.name, 'Пришло: '+resp);
 				if(resp !== null) {								// в ответ что-то пришло
 					if(typeof callback == 'function') {			
-						callback.call(self._XMLHttpRequest);	// отдаем это в виде параметра в callback-функцию 
+						callback.call(this);	// отдаем это в виде параметра в callback-функцию 
 					}											
 				}
 				else {
@@ -346,13 +344,13 @@ User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqT
 	DEBUG(sendSaveRequest.name, "data: "+data);
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function() {
-		if(self._XMLHttpRequest.readyState == 4) {
+		if(this.readyState == 4) {
 			clearTimeout(timeout);
-			if(self._XMLHttpRequest.status != 200) {
-				DEBUG(sendSaveRequest.name, 'Ошибка: ' + self._XMLHttpRequest.responseText);
+			if(this.status != 200) {
+				DEBUG(sendSaveRequest.name, 'Ошибка: ' + this.responseText);
 			}
 			else {
-				DEBUG(sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + self._XMLHttpRequest.responseText);
+				DEBUG(sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + this.responseText);
 				updateCommentsWrapper();
 			}
 		}

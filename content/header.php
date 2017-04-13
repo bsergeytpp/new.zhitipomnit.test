@@ -1,6 +1,10 @@
 	<div class="header">
 		<div class="header-main">
-		<img src="images/header-logo.png" alt="">
+		<picture>
+			<source srcset="images/header-logo.png">
+			<img src="images/header-logo.png" alt="">
+		</picture>
+		<!--<img src="images/header-logo.png" alt="">-->
 		<!--<h2>Фонд "Жить и Помнить"</h2>-->
 			<div class="header-links">
 				<ul>

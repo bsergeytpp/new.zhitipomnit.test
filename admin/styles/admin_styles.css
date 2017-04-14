@@ -8,3 +8,27 @@ table td {
 table td:hover {
 	background: lightgray;
 }
+.error-message, .warning-message, .success-message {
+	width: 100%;
+	margin: 5px;
+	padding: 5px;
+	border-radius: 10px;
+	border: 1px solid white;
+	border-left: 6px solid orange;
+	font-weight: bold;
+	text-align: center;
+	box-shadow: -1px 1px .5em black;
+}
+.error-message {
+	background-color: red;
+	color: white;
+	font-size: 1.5em;
+}
+.warning-message {
+	background-color: yellow;
+	color: black;
+}
+.success-message {
+	background-color: lightgreen;
+	color: white;
+}

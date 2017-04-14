@@ -25,7 +25,7 @@
 								}
 							}
 							else {
-								echo "Нет подключения к базе данных";
+								echo "<div class='error-message'>Нет подключения к базе данных</div>";
 							}
 						}
 						else if($type === 'old') {

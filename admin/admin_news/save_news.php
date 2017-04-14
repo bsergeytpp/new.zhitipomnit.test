@@ -47,7 +47,7 @@
 		    $result = $db->executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
 						
 			if($result === false) {
-				echo 'Новость не была добавлена';
+				echo "<div class='error-message'>Новость не была добавлена</div>";
 				$log_type = 2;
 				$log_name = 'failed to add news';
 				$log_text = 'user '.$_SESSION['user'].' has failed to add news: '.$header;
@@ -57,7 +57,7 @@
 				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 			}
 			else {
-				echo 'Новость была добавлена';
+				echo "<div class='success-message'>Новость была добавлена</div>";
 				$log_type = 2;
 				$log_name = 'added news';
 				$log_text = 'user '.$_SESSION['user'].' has added news: '.$header;
@@ -75,8 +75,8 @@
 
 			//echo "Серилизованная новость: $newsStr";
 			file_put_contents('../content/news/'.$newsArr[0].'.txt', $newsStr);*/
-			echo "Тут могла быть ваша новость.";
+			echo "<div class='warning-message'>Тут могла быть ваша новость.</div>";
 		}
 	}
-	else echo "Ничего не было передано...";
+	else echo "<div class='error-message'>Ничего не было передано...</div>";
 ?>

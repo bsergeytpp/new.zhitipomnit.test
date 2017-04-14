@@ -9,7 +9,7 @@
 		if($db->getLink()) {
 			if(isset($_POST['comments-text']) && isset($_POST['comments-login'])) {
 				if(!checkToken($_POST['token'])) {
-					echo "Проверка не пройдена.";
+					echo "<div class='error-message'>Проверка не пройдена.</div>";
 					exit;
 				}
 				
@@ -29,7 +29,7 @@
 				$result = $db->executeQuery($query, array($user_id, $id, $text, $date, $parent_id), 'insert_comment');
 				
 				if($result === false) {
-					echo 'Комментарий не был добавлен';
+					echo "<div class='error-message'>Комментарий не был добавлен</div>";
 					$log_type = 1;
 					$log_name = 'failed to add a comment';
 					$log_text = 'user '.$_SESSION['user'].' has failed to add a comment with text: '.$text;
@@ -39,7 +39,7 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 				else {
-					echo 'Комментарий был добавлен';
+					echo "<div class='success-message'>Комментарий был добавлен</div>";
 					$log_type = 1;
 					$log_name = 'added a comment';
 					$log_text = 'user '.$_SESSION['user'].' has added a comment: '.$text;
@@ -49,10 +49,10 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
-			else echo "Нет данных для обновления.";
+			else echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
 ?>

@@ -5,7 +5,7 @@
 	global $db;
 	
 	if(!$_SESSION['admin']) {
-		echo "Вы не админ.";
+		echo "<div class='error-message'>Вы не админ.</div>";
 		exit;
 	}
 	
@@ -18,7 +18,7 @@
 				$result = $db->executeQuery($query, array($id), 'delete_comment');
 
 				if($result === false) {
-					echo 'Комментарий не был удален';
+					echo "<div class='error-message'>Комментарий не был удален</div>";
 					$log_type = 1;
 					$log_name = 'failed to delete a comment';
 					$log_text = 'user '.$_SESSION['user'].' has failed to delete comment id: '.$id;
@@ -28,7 +28,7 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 				else {
-					echo 'Комментарий был удален';
+					echo "<div class='success-message'>Комментарий был удален</div>";
 					$log_type = 1;
 					$log_name = 'deleted a comment';
 					$log_text = 'user '.$_SESSION['user'].' has deleted comment id: '.$id;
@@ -38,11 +38,11 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 			}
-			else echo "Нет данных для удаления.";
+			else echo "<div class='error-message'>Нет данных для удаления.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было удалено...";
+	else echo "<div class='error-message'>Ничего не было удалено...</div>";
 ?>

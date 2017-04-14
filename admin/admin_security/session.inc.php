@@ -5,7 +5,7 @@
 	if($isAdmin !== true) {
 		if(strpos($_SERVER['REQUEST_URI'], 'admin') !== false) {
 			if($userLogin !== null) {
-				echo "Доступ запрещен!<br>";
+				echo "<div class='error-message'>Доступ запрещен!</div>";
 				echo "<a href='../../users/user_profile.php'>Назад к профилю</a>";
 			}
 			else {

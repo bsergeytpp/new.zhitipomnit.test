@@ -12,6 +12,7 @@
 <head>
 	<title>Админка</title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<link type="text/css" rel="StyleSheet" href="styles/admin_styles.css" />
 </head>
 <body>
 	<h1>Администрирование сайта</h1>

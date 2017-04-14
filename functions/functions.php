@@ -53,7 +53,7 @@
 			$result = $db->executeQuery($query, array($sessionId), 'get_session_id');
 			
 			if($result === false) {
-				echo 'Ошибка запроса';
+				echo "<div class='error-message'>Ошибка запроса</div>";
 			}
 			else {
 				$dbSessionId = $result->fetch();
@@ -62,10 +62,10 @@
 					$result = $db->executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
 					
 					if($result === false) {
-						echo 'Не удалось добавить сессию';
+						echo "<div class='error-message'>Не удалось добавить сессию</div>";
 					}
 					else {
-						echo 'Сессия успешно добавлена';
+						echo "<div class='success-message'>Сессия успешно добавлена</div>";
 					}
 				}
 				else {
@@ -73,15 +73,15 @@
 					$result = $db->executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
 					
 					if($result === false) {
-						echo 'Не удалось добавить сессию';
+						echo "<div class='error-message'>Не удалось добавить сессию</div>";
 					}
 					else {
-						echo 'Сессия успешно добавлена';
+						echo "<div class='success-message'>Сессия успешно добавлена</div>";
 					}
 				}
 			}
 		}
-		else echo "Соединение не установлено";
+		else echo "<div class='error-message'>Соединение не установлено</div>";
 	}
 	
 	function deleteSessionDB() {
@@ -93,10 +93,10 @@
 		$result = $db->executeQuery($query, array($sessionId), 'delete_session');
 		
 		if($result === false) {
-			echo 'Ошибка запроса';
+			echo "<div class='error-message'>Ошибка запроса</div>";
 		}
 		else {
-			echo 'Сессия удалена';
+			echo "<div class='success-message'>Сессия удалена</div>";
 		}
 	}
 	
@@ -122,14 +122,14 @@
 			$result = $db->executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
 			
 			if($result !== false) {
-				echo 'Лог добавлен. Данные: '.$type.'|'.$name.'|'.$text.'|'.$location.'|'.$date.'|'.$important;
+				echo "<div class='success-message'>Лог добавлен. Данные: ".$type.'|'.$name.'|'.$text.'|'.$location.'|'.$date.'|'.$important."</div>";
 			}
 			else {
-				echo 'Лог не добавлен';
+				echo "<div class='error-message'>Лог не добавлен</div>";
 			}
 		}
 		else {
-			echo 'Соединение с базой данных не установлено';
+			echo "<div class='error-message'>Соединение с базой данных не установлено</div>";
 		}
 	}
 	
@@ -268,7 +268,7 @@
 			return $result->fetchColumn();
 		}
 		else {
-			echo "Нет подключения к базе данных";
+			echo "<div class='error-message'>Нет подключения к базе данных</div>";
 		}
 		
 		return false;
@@ -284,7 +284,7 @@
 		if($db->getLink()) {
 			$commentsNum = checkComments($id);
 
-			if($commentsNum === false) echo 'Ошибка в выборке комментариев';
+			if($commentsNum === false) echo "<div class='error-message'>Ошибка в выборке комментариев</div>";
 			else if($commentsNum > 0) {
 				$query = "SELECT
 					comments.comments_id, 
@@ -378,7 +378,7 @@
 			$query = "SELECT user_email FROM users WHERE user_login = ?";
 			$result = $db->executeQuery($query, array($userLogin), 'get_user_mail');
 			
-			if($result === false) echo 'Такого пользователя нет';
+			if($result === false) echo "<div class='error-message'>Такого пользователя нет</div>";
 			else {
 				$row = $result->fetch();
 				return $row[0];	// TODO: не проверялось

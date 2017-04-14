@@ -10,7 +10,7 @@
 				$query = "SELECT COUNT(*) FROM news WHERE news_id = ?";
 				$result = $db->executeQuery($query, array($id), 'check_news');
 			
-				if($result === false) echo 'Ошибка в запросе';
+				if($result === false) echo "<div class='error-message'>Ошибка в запросе</div>";
 				else if($result->fetchColumn() > 0) {
 	?>
 					<div class='comments-wrapper'>
@@ -26,7 +26,7 @@
 			}
 		}
 		else {
-			echo "Соединение с базой данных не установлено.";
+			echo "<div class='error-message'>Соединение с базой данных не установлено.</div>";
 			exit;
 		}
 	?>

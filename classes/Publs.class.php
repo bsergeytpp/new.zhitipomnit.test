@@ -66,7 +66,7 @@
 				return $publ;
 			}
 			else {
-				echo "<h1>Такой статьи не существует!</h1>";
+				echo "<div class'error-message'>Такой статьи не существует!</div>";
 				echo "<a href='index.php?pages=publ&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}
@@ -153,7 +153,7 @@
 				return $publ;
 			}
 			else {
-				echo "<h1>Такой статьи не существует!</h1>";
+				echo "<div class'error-message'>Такой статьи не существует!</div>";
 				echo "<a href='index.php?pages=publ&custom-publ=all-old&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}
@@ -204,7 +204,7 @@
 				return $publ;
 			}
 			else {
-				echo "<h1>Такой статьи не существует!</h1>";
+				echo "<div class'error-message'>Такой статьи не существует!</div>";
 				echo "<a href='index.php?pages=publ&page=".$this->pageNum."'>К статьям</a>";
 				return;
 			}	

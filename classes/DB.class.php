@@ -49,7 +49,7 @@
 		
 		public function executeQuery($query, $params, $prepName) {	
 			if($this->link === NULL) {
-				echo 'Соединение с базой данных не установлено';
+				echo "<div class='error-message'>Соединение с базой данных не установлено</div>";
 				return false;
 			}
 			

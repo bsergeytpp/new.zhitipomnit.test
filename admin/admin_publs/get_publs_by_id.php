@@ -12,17 +12,17 @@
 				$query = "SELECT * FROM publs WHERE publs_id = ?";
 				$result = $db->executeQuery($query, array("$id"), 'get_publs_query');
 				
-				if($result === false) echo 'Публикация не найдена';
+				if($result === false) echo "<div class='error-message'>Публикация не найдена</div>";
 				else {
 					$row = $result->fetch(PDO::FETCH_ASSOC);
 					echo json_encode($row);	
 				}		
 			}
-			else echo "Нет данных для поиска публикации.";
+			else echo "<div class='error-message'>Нет данных для поиска публикации.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было найдено...";
+	else echo "<div class='error-message'>Ничего не было найдено...</div>";
 ?>

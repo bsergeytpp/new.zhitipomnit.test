@@ -12,17 +12,17 @@
 				$query = "SELECT * FROM news WHERE news_id = ?";
 				$result = $db->executeQuery($query, array("$id"), 'get_news_query');
 				
-				if($result === false) echo 'Новость не найдена';
+				if($result === false) echo "<div class='error-message'>Новость не найдена</div>";
 				else {
 					$row = $result->fetch(PDO::FETCH_ASSOC);
 					echo json_encode($row);	
 				}		
 			}
-			else echo "Нет данных для поиска новости.";
+			else echo "<div class='error-message'>Нет данных для поиска новости.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было найдено...";
+	else echo "<div class='error-message'>Ничего не было найдено...</div>";
 ?>

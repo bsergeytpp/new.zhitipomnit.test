@@ -25,7 +25,7 @@
 		$row = $result->fetch(PDO::FETCH_BOTH);	//TODO: не проверялось
 		
 		if(password_verify($password, $row['user_password'])) {
-			echo "Password is correct";
+			echo "<div class='success-message'>Верный пароль</div>";
 			return $row;
 		}
 		

@@ -5,7 +5,7 @@
 	global $db;
 	
 	if(!$_SESSION['admin']) {
-		echo "Вы не админ";
+		echo "<div class='error-message'>Вы не админ</div>";
 		break;
 	}
 	
@@ -25,7 +25,7 @@
 				$result = $db->executeQuery($query, array("$text", "$id"), 'update_news_query');
 				
 				if($result === false) {
-					echo 'Новость не была обновлена';
+					echo "<div class='error-message'>Новость не была обновлена</div>";
 					$log_type = 2;
 					$log_name = 'failed to update news';
 					$log_text = 'user '.$_SESSION['user'].' has failed to update news: '.$id;
@@ -35,7 +35,7 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 				else {
-					echo 'Новость была обновлена';
+					echo "<div class='success-message'>Новость была обновлена</div>";
 					$log_type = 2;
 					$log_name = 'updated news';
 					$log_text = 'user '.$_SESSION['user'].' has updated news: '.$id;
@@ -46,12 +46,12 @@
 				}					
 			}
 			else {
-				echo "Нет данных для обновления.";
+				echo "<div class='error-message'>Нет данных для обновления.</div>";
 			}
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было обновлено...";
+	else echo "<div class='error-message'>Ничего не было обновлено...";
 ?>

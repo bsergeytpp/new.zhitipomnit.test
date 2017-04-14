@@ -5,7 +5,7 @@
 	global $db;
 	
 	if(!$_SESSION['admin']) {
-		echo "Вы не админ";
+		echo "<div class='error-message'>Вы не админ</div>";
 		break;
 	}
 	
@@ -26,7 +26,7 @@
 			    $result = $db->executeQuery($query, array("$text", "$id"), 'update_publs_query');
 				
 				if($result === false) {
-					echo 'Публикация не была обновлена';
+					echo "<div class='error-message'>Публикация не была обновлена</div>";
 					$log_type = 3;
 					$log_name = 'failed to update a publ';
 					$log_text = 'user '.$_SESSION['user'].' has failed to update a publ: '.$id;
@@ -36,7 +36,7 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 				else {
-					echo 'Публикация была обновлена';
+					echo "<div class='success-message'>Публикация была обновлена</div>";
 					$log_type = 3;
 					$log_name = 'updated a publ';
 					$log_text = 'user '.$_SESSION['user'].' has updated a publ: '.$id;
@@ -46,11 +46,11 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
-			echo "Нет данных для обновления.";
+			echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было обновлено...";
+	else echo "<div class='error-message'>Ничего не было обновлено...</div>";
 ?>

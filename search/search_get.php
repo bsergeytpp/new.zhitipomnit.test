@@ -50,14 +50,14 @@
 				}
 			}
 			else {
-				echo "Ошибка добавления\n";
+				echo "<div class='error-message'>Ошибка добавления</div>";
 			}
 		}
 		else {
-			echo "Соединение не установлено.";
+			echo "<div class='error-message'>Соединение не установлено.</div>";
 		}
 	}
 	else {
-		echo "Запрос не удался.";
+		echo "<div class='error-message'>Запрос не удался.</div>";
 	}
 ?>

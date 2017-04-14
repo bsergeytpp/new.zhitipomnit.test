@@ -12,7 +12,7 @@
 			$result = $db->executeQuery($query, array("$header", "$text"), 'save_publs_query');
 			
 			if($result === false) {
-				echo 'Публикация не была добавлена';
+				echo "<div class='error-message'>Публикация не была добавлена</div>";
 				$log_type = 3;
 				$log_name = 'failed to add a publ';
 				$log_text = 'user '.$_SESSION['user'].' has failed to add a publ: '.$header;
@@ -22,7 +22,7 @@
 				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 			}
 			else {
-				echo 'Публикация была добавлена';
+				echo "<div class='success-message'>Публикация была добавлена</div>";
 				$log_type = 3;
 				$log_name = 'added a publ';
 				$log_text = 'user '.$_SESSION['user'].' has added a publ: '.$header;
@@ -33,8 +33,8 @@
 			}				
 		}
 		else {
-			echo "Тут могла быть ваша Публикация.";
+			echo "<div class='error-message'>Тут могла быть ваша Публикация.</div>";
 		}
 	}
-	else echo "Ничего не было передано...";
+	else echo "<div class='error-message'>Ничего не было передано...</div>";
 ?>

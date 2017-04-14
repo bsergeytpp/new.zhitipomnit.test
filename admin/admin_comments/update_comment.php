@@ -12,7 +12,7 @@
 				$editedDate = date('Y-m-d H:i:sO');
 				
 				if($dataLogin !== $_SESSION['user'] || $_SESSION['admin'] === false) {
-					echo 'Ошибка проверки подлинности.';
+					echo "<div class='error-message'>Ошибка проверки подлинности.</div>";
 					exit;
 				}
 				
@@ -22,7 +22,7 @@
 				$result = $db->executeQuery($query, array($text, $author_id, $editedDate, $id), 'update_comments');
 				
 				if($result === false) {
-					echo 'Комментарий не был обновлен';
+					echo "<div class='error-message'>Комментарий не был обновлен</div>";
 					$log_type = 1;
 					$log_name = 'failed to update a comment';
 					$log_text = 'user '.$_SESSION['user'].' has failed to update comment id: '.$id.' with new text: '.$text;
@@ -32,7 +32,7 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 				else {
-					echo 'Комментарий был обновлен';
+					echo "<div class='success-message'>Комментарий был обновлен</div>";
 					$log_type = 1;
 					$log_name = 'updated a comment';
 					$log_text = 'user '.$_SESSION['user'].' has updated comment id: '.$id.' with new text: '.$text;
@@ -42,11 +42,11 @@
 					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}					
 			}
-			else echo "Нет данных для обновления.";
+			else echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}
 		else {
-			echo "Нет соединения с БД.";
+			echo "<div class='error-message'>Нет соединения с БД.</div>";
 		}
 	}
-	else echo "Ничего не было обновлено...";
+	else echo "<div class='error-message'>Ничего не было обновлено...</div>";
 ?>

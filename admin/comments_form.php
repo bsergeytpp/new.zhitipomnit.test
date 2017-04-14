@@ -7,7 +7,7 @@
 					$userLogin = $_SESSION['user'];
 				}
 				if($userLogin === null) {
-					echo 'Гостям не разрешено осталять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.';
+					echo '<div class="warning-message">Гостям не разрешено осталять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.</div>';
 				} 
 				else {
 			?>

@@ -85,7 +85,7 @@
 			
 			$this->totalNews = count($this->newsArr);
 			if($this->totalNews < 1) {
-				echo "Новости не найдены";
+				echo "<div class='error-message'>Новости не найдены</div>";
 				return;
 			} 
 			
@@ -108,7 +108,7 @@
 			
 			$result = $this->db->executeQuery($query, array($this->newsDate), 'get_news_by_date');
 			
-			if($result === false) echo "$this->newsDate не было новостей";
+			if($result === false) echo "<div class='warning-message'>$this->newsDate не было новостей</div>";
 			else {
 				while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 					$this->newsArr[] = $row;
@@ -144,7 +144,7 @@
 				return $this->getSingleDbNews($this->pageNum, $this->id);
 			}
 			else {
-				echo "<h1>Такой новости не существует!</h1>";
+				echo "<div class='error-message'>Такой новости не существует!</div>";
 				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
@@ -172,7 +172,7 @@
 				$query = "SELECT COUNT(*) FROM comments WHERE comments_location_id = ?";
 				$result = $this->db->executeQuery($query, array($id), 'get_comments');
 				
-				if($result === false) echo 'Новость не найдена';
+				if($result === false) echo '<div class="error-message">Новость не найдена</div>';
 				else {
 					$num_rows = $result->fetchColumn();
 					return $num_rows;				
@@ -188,7 +188,7 @@
 			$news = $res->fetch(PDO::FETCH_ASSOC);
 			
 			if(!$news) {
-				echo "<h1>Такой новости не существует!</h1>";
+				echo "<div class='error-message'>Такой новости не существует!</div>";
 				echo "<a href='index.php?pages=news&page=".$pageNum."'>К новостям</a>";
 				return;
 			}
@@ -242,7 +242,7 @@
 				return $this->getSingleOldNews();
 			}
 			else {
-				echo "<h1>Такой новости не существует!</h1>";
+				echo "<div class='error-message'>Такой новости не существует!</div>";
 				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}
@@ -347,7 +347,7 @@
 				return $this->getSingleModernNews();
 			}
 			else {
-				echo "<h1>Такой новости не существует!</h1>";
+				echo "<div class='error-message'>Такой новости не существует!</div>";
 				echo "<a href='index.php?pages=news&page=".$this->pageNum."'>К новостям</a>";
 				return;
 			}

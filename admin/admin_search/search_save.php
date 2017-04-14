@@ -6,7 +6,7 @@
 	if($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if($_POST['json']) {
 			$json = json_decode($_POST['json'], true);
-			echo "Пришла JSON строка\n";
+			echo "<div class='success-message'>Пришла JSON строка</div>";
 			
 			$config = parse_ini_file(__DIR__.'/../config.ini');
 			$connectStr = "host=".$config['host'].
@@ -35,13 +35,13 @@
 				or die("ERROR: ".pg_last_error());
 			
 			if($result) {
-				echo "Данные добавлены\n";
+				echo "<div class='success-message'>Данные добавлены</div>";
 			}
 			else {
-				echo "Ошибка добавления\n";
+				echo "<div class='error-message'>Ошибка добавления</div>";
 			}
 		}
-		else echo "нет переменной json";
+		else echo "<div class='error-message'>Ошибка данных</div>";
 	}
-	else echo "запрос не POST";
+	else echo "<div class='error-message'>Ошибка запроса</div>";
 ?>

@@ -10,7 +10,7 @@
 		$result = $db->executeQuery($query, null, null);
 		
 		if($result === false) {
-			echo "Ошибка запроса";
+			echo "<div class='error-message'>Ошибка запроса</div>";
 		}
 		else {
 			$logsTypes = array();
@@ -23,6 +23,6 @@
 		}
 	}
 	else {
-		echo "Подключение к базе данных не установлено";
+		echo "<div class='error-message'>Подключение к базе данных не установлено</div>";
 	}
 ?>

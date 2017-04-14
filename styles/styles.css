@@ -454,7 +454,7 @@ body::before {
 .article-news-more {
     text-decoration: none;
     background: black;
-	background-image: url(/images/g_lenta.png);
+	background-image: url(/images/g_lenta_small.png);
 	background-size: 60%;
 	background-repeat: no-repeat;
     color: white !important;
@@ -665,11 +665,11 @@ p.quotes:before {
     #wrapper {
         max-width: 460px;
         min-width: 310px;
-        width: 100%;
+        width: 99%;
     }
     .header, .footer {
         max-width: 460px;
-        min-width: 370px;
+        min-width: 310px;
         /*background: red;*/
     }
     .header-links {
@@ -744,9 +744,17 @@ p.quotes:before {
     .scroll-button {
         display: none;
     }
-    .footer-copyright {
-        font-size: .7em;
+    .footer-copyright,
+	.comments-table{
+        font-size: .7em !important;
     }
+	.comments-table .row-id,
+	.comments-table .row-parent {
+		width: 0;
+	}
+	.comments-table .row-text {width: 65%;}
+	.comments-table .row-date {width: 20%;}
+	.comments-table .row-login {width: 15%;}
 	body {
 		background-image: url(../images/background.jpg);
 		background-position: center;
@@ -756,7 +764,7 @@ p.quotes:before {
 @media only screen and (min-width:480px) and (max-width:679px) {
     #wrapper {
         max-width: 660px;
-        width: 100%;
+        width: 99%;
     }
     .header, .footer {
         max-width: 660px;
@@ -790,9 +798,17 @@ p.quotes:before {
 	.article h2:after {
 		display: none;
 	}
-    .footer-copyright {
-        font-size: .9em;
+    .footer-copyright,
+	.comments-table	{
+        font-size: .9em !important;
     }
+	.comments-table .row-id,
+	.comments-table .row-parent {
+		width: 0;
+	}
+	.comments-table .row-text {width: 55%;}
+	.comments-table .row-date {width: 25%;}
+	.comments-table .row-login {width: 20%;}
 	body {
 		background-image: url(../images/background.jpg);
 		background-position: center;

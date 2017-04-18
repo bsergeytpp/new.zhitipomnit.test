@@ -25,8 +25,9 @@ function Admin() {
 					if(resp !== null) {
 						DEBUG("checkIfAdmin", "Вы - Админ. Поздравляю!");
 						isAdmin = true;
-						self.setPrivilege();
+						login = respLogin;
 						User = user = null;
+						self.setPrivilege();
 					}
 					else {
 						DEBUG("checkIfAdmin", "Вы - не Админ.");
@@ -557,6 +558,22 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 	this._XMLHttpRequest.send(data);
 };
 
+// создаем панель администратора
+Admin.prototype.addAdminBar = function addAdminBar() {
+	'use strict';
+	var header = document.getElementsByClassName('header')[0];
+	var adminBar = document.createElement('DIV');
+	adminBar.className = 'admin-bar';
+	var adminPanelLink = document.createElement('A');
+	var adminLoginSpan = document.createElement('SPAN');
+	adminPanelLink.href = 'admin/index.php';
+	adminPanelLink.innerHTML = 'Переход в Панель Администратора';
+	adminLoginSpan.innerHTML = 'Ваш логин: '+this.getAdminLogin();
+	adminBar.appendChild(adminPanelLink);
+	adminBar.appendChild(adminLoginSpan);
+	document.body.insertBefore(adminBar, header);
+};
+
 // создаем объект класса Admin
 admin = null;
 function createAdminClass() {
@@ -567,19 +584,16 @@ function createAdminClass() {
 // для админа ставим кнопки редактирования
 Admin.prototype.setPrivilege = function setPrivilege() {
 	'use strict';
-	var self = this;
-	setTimeout(function() { 
-		DEBUG(setPrivilege.name, 'admin: ' + self.getIsAdmin());
-		
-		if(self.getIsAdmin()) {
-			//appendScript('scripts/tinymce/tinymce.min.js');
-			self.checkForEditableContent();			// расставляем кнопки редактирования
-			self.checkForComments();
-		}
-		else {
-			DEBUG(setPrivilege.name, 'Вы не админ. Хватит хулиганить!');
-		}
-	}, 700);										// даем время на выполнение запроса в checkIfAdmin
+	DEBUG(setPrivilege.name, 'admin: ' + this.getIsAdmin());
+	
+	if(this.getIsAdmin()) {
+		this.checkForEditableContent();			// расставляем кнопки редактирования
+		this.checkForComments();
+		this.addAdminBar();						// добавляем панель администратора
+	}
+	else {
+		DEBUG(setPrivilege.name, 'Вы не админ. Хватит хулиганить!');
+	}
 };
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', createAdminClass, {passive: true});

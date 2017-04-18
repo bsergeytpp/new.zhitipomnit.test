@@ -207,7 +207,7 @@
 		}
 	
 		protected function createExceptNews($news) {
-			$news['news_header'] = exceptStr(strip_tags($news['news_header']));
+			$news['news_header'] = strip_tags($news['news_header']);//exceptStr(strip_tags($news['news_header']));
 			$newsTemplate = file_get_contents('content/templates/news_template.php');
 			$pattern = ['newsId', 'newsDate', 'newsText', 'newsUrl'];
 			$replacement = [$news['news_id'], $news['news_date'], $news['news_header'], $news['news_date']."&id=".$news['news_id']];

@@ -29,11 +29,15 @@
 			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->
 			<p>Добавить картинку:</p> 
 			<p class="image-file">[$IMAGE1]<input type="file" name="news-image[]">
+				<br>Расположение картинки: 
 				<select size="1" name="image-align[]">
 					<option value="left">Слева</option>
 					<option selected value="center">По центру</option>
 					<option value="right">Справа</option>
 				</select>
+				<br>Размер картинки:<br>
+				ширина: <input type="number" min="20" max="500" name="image-width[]"> px<br>
+				высота: <input type="number" min="20" max="500" name="image-height[]"> px
 			</p>
 			<p><a class="add-image-btn" href="#more-images">+</a></p>
 			<p><input type="submit" value="Добавить"></p>

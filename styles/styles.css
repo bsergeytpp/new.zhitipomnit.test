@@ -246,6 +246,9 @@ body::before {
 	border-left: 1px solid red;
 	border-radius: 15px 0 0 15px;
 }
+.comments-wrapper {
+	width: 100%;
+}
 .comments-list-div h2, .comments-form-div h2 {
 	width: 70%;
 	background: none;
@@ -449,7 +452,10 @@ body::before {
 }
 .article-news-text {
     padding: 5px !important;
+	padding-right: 20px !important;
     color: rgba(255, 255, 255, .804) !important;
+	max-height: 250px;
+	overflow-y: overlay;
 }
 .article-news-more {
     text-decoration: none;
@@ -684,6 +690,15 @@ p.quotes:before {
 	background-color: lightgreen;
 	color: white;
 }
+.admin-bar {
+	background: darkgray;
+	color: white;
+	height: 30px;
+}
+.admin-bar a {
+	margin-right: 50px;
+	color: white;
+}
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {
     #wrapper {
@@ -748,9 +763,6 @@ p.quotes:before {
     }
     .article-news {
         margin: 0 0 10px;
-    }
-    .article-news-header {
-        padding: 0;
     }
     .article-news-image {
         width: 100%;

@@ -1,4 +1,17 @@
-﻿.selected {
+﻿a {
+	color: black;
+}
+
+a:hover {
+    font-weight: bold;
+}
+a:active {
+    color: darkred;
+}
+body {
+	background: lightgray;
+}
+.selected {
 	background: gray;
 	font-weight: bold;
 }

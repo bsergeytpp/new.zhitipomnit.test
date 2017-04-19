@@ -80,7 +80,7 @@
 </head>
 <body>
 	<h1>Логи</h1>
-	<a href="../">Назад</a>
+	<a href="/admin">Назад к админке</a>
 	<h3>Доступные действия:</h3>
 	<form action="logs.php" method="POST" class="comments-form">
 		<p>

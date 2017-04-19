@@ -38,3 +38,14 @@
 	}
 	else echo "<div class='error-message'>Ничего не было передано...</div>";
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Админка - сохранение статьи</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<link type="text/css" rel="StyleSheet" href="../styles/admin_styles.css" />
+</head>
+<body>
+	<a href="/admin/">Назад в админку</a><br>
+	<a href="/admin/admin_publs/add_publs.php">Добавить еще статью</a>
+</body>

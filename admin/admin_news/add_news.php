@@ -8,6 +8,7 @@
         <meta charset="utf-8">
         <title>Форма добавления новости</title>
 		<script src="/scripts/tinymce/tinymce.min.js"></script>
+		<link type="text/css" rel="StyleSheet" href="../styles/admin_styles.css" />
 		<script type="text/javascript">
 		  tinymce.init({
 			selector: '#news-textarea',
@@ -20,7 +21,7 @@
 		</script>
     </head>
     <body>
-        <div id="background-div"></div>
+        <a href="/admin">Назад к админке</a><br>
 		<h2>Форма добавления новости:</h2>
         <form action="save_news.php" method="post" enctype="multipart/form-data">
 			<p>Дата: <input type="date" name="news-date" size="10" required></p>

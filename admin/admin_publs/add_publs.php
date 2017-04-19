@@ -7,6 +7,7 @@
     <head>
         <meta charset="utf-8">
         <title>Форма добавления публикаций</title>
+		<link type="text/css" rel="StyleSheet" href="../styles/admin_styles.css" />
 		<script src="../../scripts/tinymce/tinymce.min.js"></script>
 		<script type="text/javascript">
 		  tinymce.init({
@@ -20,7 +21,7 @@
 		</script>
     </head>
     <body>
-        <div id="background-div"></div>
+        <a href="/admin">Назад к админке</a><br>
 		<h2>Форма добавления публикаций:</h2>
         <form action="save_publs.php" method="post">
 			<p>Заголовок: <input type="text" name="publs-header" size="20" required></p>

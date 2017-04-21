@@ -40,6 +40,12 @@
 			</ul>
 		</li>
 		<li>
+			Книга Памяти
+			<ul>
+				<li><a href='admin_search/manage_persons.php'>Управление именами</a></li>
+			</ul>
+		</li>
+		<li>
 			Прочее
 			<ul>
 				<li><a href='admin_settings/settings.php'>Настройки</a></li>

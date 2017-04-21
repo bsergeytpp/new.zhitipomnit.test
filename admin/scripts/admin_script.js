@@ -225,3 +225,58 @@ function getLogsTypes() {
 		request.send();
 	}, 1500);
 }
+
+/*
+	Функция посылает AJAX запрос на получение списка букв в Книги Памяти
+*/
+function getPersonsLetters() {
+	var request = new XMLHttpRequest();
+
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			(request.status != 200) 
+			? console.log('func: getPersonsLetters; Ошибка: ' + request.responseText)
+			: console.log('func: getPersonsLetters; Запрос отправлен. Все - хорошо.');
+			
+			var form = document.getElementsByClassName('letters-form')[0];
+			var select = form.getElementsByTagName('select')[0];
+			var options = select.getElementsByTagName('option');
+			
+			if(select.getAttribute('name') === 'select-letter') {
+				var result = request.responseText;
+				var resultObject = null;
+				
+				if(typeof result === 'string') {
+					try {
+						resultObject = JSON.parse(result);
+					}
+					catch(e) {
+						console.log('func: getPersonsLetters; Пришла не JSON строка: ' + e.toString());
+					}
+				}
+				
+				if(resultObject !== null) {
+					for(var i=0, len=options.length; i<len-1; i++) {
+						options[i].innerHTML = resultObject[i]['letter_sign'];
+						options[i].value = resultObject[i]['letter_id'];
+						console.log("DATA: " + resultObject[i]['letter_sign'] + ':' + resultObject[i]['letter_id']);
+					}
+				}
+				else {
+					console.log('func: getPersonsLetters; output: ' + result);
+				}
+			}
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	setTimeout(function() {
+		request.open('GET', 'get_persons_letters.php', true);
+		request.send();
+	}, 1500);
+}

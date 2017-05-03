@@ -121,10 +121,23 @@ Admin.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
 		var btns = this._commentsTables[i].getElementsByClassName('admin-edit');
 		
-		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-			(function() {
-				btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
-			})();
+		// ES6 realization
+		if(Array.from) {
+			Array.from(btns).forEach(function(elem, index, array) {
+				elem.addEventListener('click', this.addHandlerOnCommentsEditBtns.bind(this), false);
+			}, self);
+		}
+		// ES6 realization 2
+		/*for(var btn of btns) {
+			btn.addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
+		}*/
+		// Old realization ES5
+		else {
+			for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
+				(function() {
+					btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
+				})();
+			}
 		}
 	}
 };
@@ -139,12 +152,12 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 	
 	if(target.classList.contains('edit-comm')) {
 		e.preventDefault();
+		e.stopPropagation();
 		
 		if(targetText === 'Редактировать') {
 			editComments.call(self, target, targetId);
 		}
 		else if(targetText === 'Сохранить') {
-			e.stopPropagation();
 			saveComments.call(self, targetId);
 		}
 	}
@@ -158,12 +171,9 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 /*
 	Вспомогательные функции редактирования/удаления/сохранения комментариев
 */
-function editComments(td, tdId) {
-	var totalEditors = 1;
-	
-	if(tinymce.activeEditor.getElement.id === 'comments-text') {	// если есть форма комментирования, то пропускаем ее
-		totalEditors = 2;
-	}
+function editComments(td, tdId) {	
+	// если есть форма комментирования, то пропускаем ее
+	var totalEditors = (tinymce.activeEditor.getElement.id === 'comments-text') ? 1 : 2;
 	
 	if(tinymce.editors.length > 1) {
 		if(tinymce.editors[1].id === 'edit-textarea') {
@@ -216,10 +226,8 @@ function deleteComments(tdId) {
 // TODO: фигово сделано
 function saveComments(tdId) {
 	// была выбрана форма комментирования
-	if(tinymce.editors.length > 1) {
-		if(tinymce.activeEditor.id === 'comments-text') {			
-			tinymce.editors[1].focus();
-		}
+	if(tinymce.editors.length > 1 && tinymce.activeEditor.id === 'comments-text') {
+		tinymce.editors[1].focus();
 	}
 	
 	var updatedText = tinymce.activeEditor.getContent();
@@ -263,7 +271,7 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	
 	DEBUG(initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
 	DEBUG(initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
-	var commId = td.getAttribute('data-id');
+
 	commentsTextTd.classList.add('edit-this');
 	td.textContent = 'Сохранить';
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
@@ -303,16 +311,12 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 // создаем TR с кнопками редактировать/удалить 
 Admin.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	'use strict';
-	var doc = document;
-	var tr = doc.createElement('TR');
-	tr.classList.add('comments-edit');
-	var editTd = doc.createElement('TD');
-	var removeTd = doc.createElement('TD');
-	var infoTd = doc.createElement('TD');
-	infoTd.setAttribute('colspan', 3);
-	infoTd.innerHTML = '<strong>Управление</strong>';
-	editTd.innerHTML = '<a href="#" class="admin-edit edit-comm " data-id="'+commId+'">Редактировать</a>';
-	removeTd.innerHTML = '<a href="#" class="admin-edit del-comm" data-id="'+commId+'">Удалить</a>';
+	var tr = createDOMElem({tagName: 'TR', className: 'comments-edit'});
+	var editTd = createDOMElem({tagName: 'TD', 
+							    innerHTML: '<a href="#" class="admin-edit edit-comm " data-id="'+commId+'">Редактировать</a>'});
+	var removeTd = createDOMElem({tagName: 'TD', 
+								  innerHTML: '<a href="#" class="admin-edit del-comm" data-id="'+commId+'">Удалить</a>'});
+	var infoTd = createDOMElem({tagName: 'TD', args: [{name: 'colspan', value: 3}], innerHTML: '<strong>Управление</strong>'});
 	tr.appendChild(infoTd);
 	tr.appendChild(editTd);
 	tr.appendChild(removeTd);
@@ -327,8 +331,7 @@ Admin.prototype.addEditBtn = function addEditBtn(elems) {
 		appendScript('scripts/tinymce/tinymce.min.js');
 	}
 	
-	var divElem = document.createElement('div');
-	divElem.className = 'admin-edit-button';
+	var divElem = createDOMElem({tagName: 'DIV', className: 'admin-edit-button'});
 	
 	// создаем для каждого редактируемого элемента кнопку
 	for(var i=0, len=elems.length, firstChild; i<len; i++) {
@@ -395,10 +398,9 @@ Admin.prototype._getElemByDBId = function getElemByDBId(pattern, id, callback) {
 				DEBUG(getElemByDBId.name, 'wha?');
 			}
 			else {
-				var resp = this.responseText;
-				if(resp != null) {								// в ответ что-то пришло
+				if(this.responseText != null) {					// в ответ что-то пришло
 					if(typeof callback  == 'function') {
-						callback.call(this);		// отдаем это в виде параметра в callback-функцию 
+						callback.call(this);					// отдаем это в виде параметра в callback-функцию 
 					}
 				}
 				else {
@@ -419,9 +421,6 @@ Admin.prototype._getElemByDBId = function getElemByDBId(pattern, id, callback) {
 Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 	'use strict';
 	var self = this;
-	var doc = document;
-	var div = doc.createElement('div');
-	div.className = 'admin-edit-elem'; 
 	
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function () {
@@ -437,8 +436,8 @@ Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 					resp = resp.replace('$id$', self._responseObject[pattern+'_id']);
 					resp = resp.replace('$header$', self._responseObject[pattern+'_header']);
 					resp = resp.replace('$inner$', self._responseObject[pattern+'_text']);
-					div.innerHTML = resp;
-					doc.body.appendChild(div);
+					var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem', innerHTML: resp});
+					document.body.appendChild(div);
 					self._editDiv = div;
 					
 					if(typeof callback === 'function') {
@@ -562,13 +561,12 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 Admin.prototype.addAdminBar = function addAdminBar() {
 	'use strict';
 	var header = document.getElementsByClassName('header')[0];
-	var adminBar = document.createElement('DIV');
-	adminBar.className = 'admin-bar';
-	var adminPanelLink = document.createElement('A');
-	var adminLoginSpan = document.createElement('SPAN');
-	adminPanelLink.href = 'admin/index.php';
-	adminPanelLink.innerHTML = 'Переход в Панель Администратора';
-	adminLoginSpan.innerHTML = 'Ваш логин: '+this.getAdminLogin();
+	var adminBar = createDOMElem({tagName: 'DIV', className: 'admin-bar'});
+	var adminPanelLink = createDOMElem({tagName: 'A', 
+									    args: [{name: 'href', value: 'admin/index.php'}], 
+										innerHTML: 'Переход в Панель Администратора'
+									   });
+	var adminLoginSpan = createDOMElem({tagName: 'SPAN', innerHTML: 'Ваш логин: '+this.getAdminLogin()});
 	adminBar.appendChild(adminPanelLink);
 	adminBar.appendChild(adminLoginSpan);
 	document.body.insertBefore(adminBar, header);

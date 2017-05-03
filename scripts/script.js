@@ -315,8 +315,7 @@ function isFileExists(url) {
 
 // подключаем скрипт
 function appendScript(src) {
-	var script = document.createElement('script');
-	script.src = src;
+	var script = createDOMElem({tagName: 'script', args: [{name: 'src', value: src}]});
 	document.body.appendChild(script);
 }
 
@@ -582,6 +581,38 @@ function updatePageTitle() {
 }
 
 addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});
+
+// Функция создает DOM-элемент и возвращает его
+/*
+	elemParams {
+		tagName: '',
+		className: '',
+		id: '',
+		args: [{name: '', value: ''...}],
+		innerHTML: ''
+	}
+*/
+function createDOMElem(elemParams) {
+	if(!elemParams.tagName) return;
+	
+	var elem = document.createElement(elemParams.tagName);
+	
+	if(elemParams.className) elem.className = elemParams.className;
+	
+	if(elemParams.id) elem.id = elemParams.id;
+	
+	if(elemParams.args) {
+		for(var arg in elemParams.args) {
+			elem.setAttribute(arg.name, arg.value);
+		}
+	}
+	
+	if(elemParams.innerHTML) {
+		elem.innerHTML = elemParams.innerHTML;
+	}
+	
+	return elem;
+}
 
 // Вывод отладочной информации
 function DEBUG(funcName, output) {

@@ -548,12 +548,18 @@ p.quotes:before {
 }
 .admin-edit-elem {
 	background: gray; 
-	width: 400px; 
-	height: 400px; 
-	position: absolute; 
-	left: 25%; 
-	top: 25%;
+	max-width: 700px; 
+	height: auto; 
+	position: fixed; 
+	left: 10%; 
+	top: 15%;
 	content: 'test';
+	z-index: 999;
+}
+.admin-edit-elem p {
+	color: white;
+	overflow-y: auto;
+	max-height: 150px;
 }
 .admin-edit-elem form {
 	width: auto;
@@ -698,6 +704,13 @@ p.quotes:before {
 .admin-bar a {
 	margin-right: 50px;
 	color: white;
+}
+/*TinyMCE fixes*/
+.mce-tooltip {
+	position: fixed !important;
+}
+.mce-panel.mce-floatpanel.mce-menu {
+	position: fixed !important;
 }
 /*mobile, baby!*/
 @media only screen and (max-width:479px) {

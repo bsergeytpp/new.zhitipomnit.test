@@ -157,9 +157,9 @@ function initTinyMCE(className, isInline, width, height) {
 	
 	if(!isInline) isInline = false;
 	
-	if(!width) width = 400;
+	if(!width) width = 700;
 	
-	if(!height) height = 170;
+	if(!height) height = 300;
 
 	tinymce.init({
 		inline: isInline,
@@ -602,8 +602,8 @@ function createDOMElem(elemParams) {
 	if(elemParams.id) elem.id = elemParams.id;
 	
 	if(elemParams.args) {
-		for(var arg in elemParams.args) {
-			elem.setAttribute(arg.name, arg.value);
+		for(var i=0, len=elemParams.args.length; i<len; i++) {
+			elem.setAttribute(elemParams.args[i].name, elemParams.args[i].value);
 		}
 	}
 	

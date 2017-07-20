@@ -27,7 +27,7 @@ function User() {
 					userLogin = resp;
 					
 					// хак-проверка на админа, чтобы не было лишних TR'ов
-					if(document.getElementsByClassName('comments-edit').length === 0) {
+					if(getElems(['comments-edit']).length === 0) {
 						self.checkForUserComments();
 					}
 				}
@@ -55,7 +55,7 @@ function User() {
 // ищем комментарии пользователя
 User.prototype.checkForUserComments = function checkForUserComments() {
 	'use strict';
-	var commentsTables = document.getElementsByClassName('comments-table');;
+	var commentsTables = getElems(['comments-table']);
 	var self = this;
 	
 	if(commentsTables.length > 0) {
@@ -88,7 +88,7 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 
 User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	'use strict';
-	var commTables = document.getElementsByClassName('comments-table');
+	var commTables = getElems(['comments-table']);
 
 	// если есть комментарии
 	if(!commTables) return;
@@ -99,9 +99,9 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	this._userComments = this.getUserComments(commTables, commentsIds);
 	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
-		var commId = this._userComments[i].getElementsByClassName('comment-id')[0].textContent;
+		var commId = getElems(['comment-id', 0], this._userComments[i]).textContent;
 		var editTr = this.createEditCommentsTr(commId);
-		this._userComments[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
+		getElems(['', 0, 'TBODY'], this._userComments[i]).appendChild(editTr);
 	}
 	
 	this.initCommentsEditBtns();
@@ -122,7 +122,7 @@ User.prototype.getUserComments = function getUserComments(commTables, commentsId
 	
 	for(var i=0, len=commTables.length; i<len; i++) {
 		// commTables -> .comments-content -> .comment-id
-		var commId = commTables[i].getElementsByClassName('comment-id')[0].textContent;	
+		var commId = getElems(['comment-id', 0], commTables[i]).textContent;	
 		DEBUG(getUserComments.name, commId);
 		if(this.checkId(commId, commentsIds)) {
 			DEBUG(getUserComments.name, 'cut '+i);
@@ -139,7 +139,7 @@ User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 	var self = this;
 	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
-		var btns = this._userComments[i].getElementsByClassName('user-edit');
+		var btns = getElems(['user-edit'], this._userComments[i]);
 		
 		for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
 			btns[j].addEventListener('mouseup', self.addHandlerOnCommentsEditBtns.bind(self), false);
@@ -186,7 +186,7 @@ function userEditComment(td, tdId) {
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
 		var prevEditor = tinyMCE.activeEditor.bodyElement.parentElement;
-		prevEditId = prevEditor.getElementsByClassName('comment-id')[0].textContent;
+		prevEditId = getElems(['comment-id', 0], prevEditor).textContent;
 		
 		if(confirm('Уже начато редактирование комментария №'+prevEditId+'. Отменить изменения и редактировать комментарий №'+tdId+' ?')) {
 			this.disablePrevEditors();								// убираем предыдущие объект tinymce
@@ -226,7 +226,7 @@ User.prototype.initEditorForComment = function initEditorForComment(td) {
 	
 	if(tdParent === null) return;
 	
-	var commentsTextTd = tdParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	var commentsTextTd = getElems(['comment-text', 0], tdParent); // нашли текст комментария
 	var commentsText = commentsTextTd.innerHTML;
 	var editPos = commentsText.indexOf('<br><em class=');
 	
@@ -246,8 +246,8 @@ User.prototype.initEditorForComment = function initEditorForComment(td) {
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 User.prototype.disablePrevEditors = function disablePrevEditors() {
 	'use strict';
-	var prevTinymceElems = document.getElementsByClassName('edit-this');
-	var saveLinks = document.getElementsByClassName('edit-comm');
+	var prevTinymceElems = getElems(['edit-this']);
+	var saveLinks = getElems(['edit-comm']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 	
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {

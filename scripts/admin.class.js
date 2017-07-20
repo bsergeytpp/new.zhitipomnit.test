@@ -71,7 +71,7 @@ Admin.prototype.getAdminLogin = function() {
 // проверяем есть ли на странице редактируемые элементы
 Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	'use strict';
-	var elems = document.getElementsByClassName('editable');
+	var elems = getElems(['editable']);
 	
 	// есть хотя бы один элемент
 	if(elems.length > 0) {
@@ -83,7 +83,7 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 // проверяем есть ли на странице редактируемые комментарии
 Admin.prototype.checkForComments = function checkForComments() {
 	'use strict';
-	var commentsTables = document.getElementsByClassName('comments-table');
+	var commentsTables = getElems(['comments-table']);
 	
 	if(commentsTables.length > 0) {
 		this._commentsTables = commentsTables;
@@ -102,12 +102,12 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	if(this._commentsTables === null) return;
 	
 	// если кнопок пока нет
-	if(document.getElementsByClassName('comments-edit').length > 0) return;
+	if(getElems(['comments-edit']).length > 0) return;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		var commId = this._commentsTables[i].getElementsByClassName('comment-id')[0];
-		var editTr = this.createEditCommentsTr(commId.getElementsByTagName('A')[0].textContent);
-		this._commentsTables[i].getElementsByTagName('TBODY')[0].appendChild(editTr);
+		var commId = getElems(['comment-id', 0], this._commentsTables[i]);
+		var editTr = this.createEditCommentsTr(getElems(['', 0, 'A'], commId).textContent);
+		getElems(['', 0, 'TBODY'], this._commentsTables[i]).appendChild(editTr);
 	}
 	
 	this.initCommentsEditBtns();
@@ -119,7 +119,7 @@ Admin.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 	var self = this;
 	
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		var btns = this._commentsTables[i].getElementsByClassName('admin-edit');
+		var btns = getElems(['admin-edit'], this._commentsTables[i]);
 		
 		// ES6 realization
 		if(Array.from) {
@@ -188,7 +188,7 @@ function editComments(td, tdId) {
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
 		var prevEditor = tinymce.activeEditor.bodyElement.parentElement;
-		prevEditId = prevEditor.getElementsByClassName('comment-id')[0].textContent;
+		prevEditId = getElems(['comment-id', 0], prevEditor).textContent;
 
 		if(confirm('Уже начато редактирование комментария №'+prevEditId+
 				   '. Отменить изменения и редактировать комментарий №'+tdId+' ?')) {
@@ -260,7 +260,7 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	
 	if(tdParent === null) return;
 	
-	var commentsTextTd = tdParent.getElementsByClassName('comment-text')[0]; // нашли текст комментария
+	var commentsTextTd = getElems(['comment-text', 0], tdParent); // нашли текст комментария
 	var commentsText = commentsTextTd.innerHTML;
 	var editPos = commentsText.indexOf('<br><em class=');
 	
@@ -280,8 +280,8 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	'use strict';	
-	var prevTinymceElems = document.getElementsByClassName('edit-this');
-	var saveLinks = document.getElementsByClassName('edit-comm');
+	var prevTinymceElems = getElems(['edit-this']);
+	var saveLinks = getElems(['edit-comm']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
@@ -368,7 +368,7 @@ Admin.prototype.initAdminEdit = function initAdminEdit() {
 				
 				// строка оказалась формата JSON
 				if(typeof self._responseObject === 'object') {
-					var editElem = document.getElementsByClassName('admin-edit-elem')[0];
+					var editElem = getElems(['admin-edit-elem', 0]);
 					
 					if(editElem !== undefined) {
 						self._editDiv = null;
@@ -560,7 +560,7 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 // создаем панель администратора
 Admin.prototype.addAdminBar = function addAdminBar() {
 	'use strict';
-	var header = document.getElementsByClassName('header')[0];
+	var header = getElems(['header', 0]);
 	var adminBar = createDOMElem({tagName: 'DIV', className: 'admin-bar'});
 	var adminPanelLink = createDOMElem({tagName: 'A', 
 									    args: [{name: 'href', value: 'admin/index.php'}], 

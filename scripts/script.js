@@ -46,8 +46,8 @@ var _DEBUG = false;
 */
 addEventListenerWithOptions(document, 'scroll', function(e) {
 	var doc = document;
-    var article = doc.getElementsByClassName('article')[0];
-    var scrollBtn = doc.getElementsByClassName('scroll-button')[0];
+    var article = getElems(['article', 0]);
+    var scrollBtn = getElems(['scroll-button', 0]);
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
     //var header = document.getElementsByClassName('header')[0];
 	if(window.innerWidth > 680) {
@@ -79,7 +79,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 
 // добавляет событие по клику на нумерацию
 function addNavigationToList() {
-	var ul = document.getElementsByClassName('news-list');
+	var ul = getElems(['news-list']);
 	
 	if(!ul) return;
 	
@@ -107,8 +107,8 @@ function findParent(child, parentClass) {
 
 // мини-профиль на основном сайте
 function userSwitcher() {
-	var usersDiv = document.getElementsByClassName('users-div')[0];
-	var switcher = usersDiv.getElementsByClassName('users-switcher')[0];
+	var usersDiv = getElems(['users-div', 0]);
+	var switcher = getElems(['users-switcher', 0], usersDiv);
 	
 	switcher.addEventListener('mouseup', function(e) {
 		var style = window.getComputedStyle(usersDiv);
@@ -126,17 +126,17 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {passive
 
 // делаем ссылку на профиль автора комментария
 function addLinksToCommentsId() {
-	var commentsTable = document.getElementsByClassName('comments-table');
+	var commentsTable = getElems(['comments-table']);
 	
 	if(commentsTable.length || commentsTable) {
 		for(var j=0, len=commentsTable.length; j<len; j++) {
-			var trs = commentsTable[j].getElementsByTagName('TR');
+			var trs = getElems(['', -1, 'TR'], commentsTable[j]);
 			
 			for(var i=0, trsLen=trs.length; i<trsLen; i++) {
 				if(trs[i].classList.contains('comments-respond') ||
 				   trs[i].classList.contains('comments-edit')) continue;
 							
-				var loginTd = trs[i].getElementsByTagName('TD');
+				var loginTd = getElems(['', -1, 'TD'], trs[i]);
 				
 				if(!loginTd[2]) continue;	// TD с ником автора
 				
@@ -236,11 +236,11 @@ function getUrlParam(value, obj) {
 
 // функция для исправления ссылок в общем списке старых новостей
 function replaceNewsLinks() {
-	var container = document.body.getElementsByClassName('article')[0];
-	var parents = container.getElementsByTagName('P');
+	var container = getElems(['article', 0]);
+	var parents = getElems(['', -1, 'P'], container);
 	
 	for(var i=0, len=parents.length; i<len; i++) {
-		var link = parents[i].getElementsByTagName('A')[0];
+		var link = getElems(['', 0, 'A'], parents[i]);
 		var linkHref = link.getAttribute('href');
 		
 		if(!link || linkHref === '#') continue;
@@ -253,10 +253,10 @@ function replaceNewsLinks() {
 
 // функция для исправления ссылок в общем списке старых газетах
 function replacePressLinks() {
-	var press = document.body.getElementsByClassName('article-press');
+	var press = getElems(['article-press']);
 	
 	for(var i=0, len=press.length; i<len; i++) {
-		var str = press[i].getElementsByTagName('A')[0];
+		var str = getElems(['', 0, 'A'], press[i]);
 		var strHref = str.getAttribute('href');
 		DEBUG(replacePressLinks.name, strHref);
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + strHref.substring(0, 5));
@@ -265,37 +265,29 @@ function replacePressLinks() {
 
 // функция для исправления ссылок в полной газете
 function replacePressPagesLinks() {
-	var doc = document;
-	var pressContainer = doc.getElementById('press-container');
-	var pagesLinks = pressContainer.getElementsByTagName('A');
+	var pressContainer = getElems('press-container');
+	var pagesLinks = getElems(['', -1, 'A'], pressContainer);
 	
 	for(var i=0, len=pagesLinks.length; i<len; i++) {
 		if(pagesLinks[i].className === 'article-press-links') continue;
 		
 		var strHref = pagesLinks[i].getAttribute('href');
 		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
-		var newHref = doc.getElementsByClassName('article-press-links')[1].getAttribute('href');
+		var newHref = getElems(['article-press-links', 1]).getAttribute('href');
 		// убираем номер страницы
-		var newHref = newHref.substring(0, newHref.length - 1);
-		
-		switch(strHref) {
-			case '1.html': pagesLinks[i].setAttribute('href', newHref + 1); break;
-			case '2.html': pagesLinks[i].setAttribute('href', newHref + 2); break;
-			case '3.html': pagesLinks[i].setAttribute('href', newHref + 3); break;
-			case '4.html': pagesLinks[i].setAttribute('href', newHref + 4); break;
-			default: break;
-		}
+		newHref = newHref.substring(0, newHref.length - 1);
+		pagesLinks[i].setAttribute('href', newHref + strHref[0]);
 	}
 }
 
 // функция для исправления стилей старых новостей
 function changeStyle() {
-	document.getElementById('news-container').style.display = 'block';
+	getElems('news-container').style.display = 'block';
 }
 
 // не используется: добавляет миниатюру к новости
 function displayNewsImage() {
-	var imgs = document.body.getElementsByClassName('article-news-image');
+	var imgs = getElems(['article-news-image']);
 	
 	for(var i=0, len=imgs.length; i<len; i++) {
 		if(isFileExists(imgs[i].getAttribute('src'))) {
@@ -321,17 +313,17 @@ function appendScript(src) {
 
 // делаем дерево комментариев
 function makeCommentsTree() {
-	var comm_tables = document.getElementsByClassName('comments-table');
+	var comm_tables = getElems(['comments-table']);
 	
 	for(var i=0, len=comm_tables.length; i<len; i++) {
-		var tr = comm_tables[i].getElementsByClassName('comments-content')[0];	
+		var tr = getElems(['comments-content', 0], comm_tables[i]);	
 		var parent_id = tr.children[1].textContent;
 		
 		if(parent_id !== '') {
 			DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
 			for(var j=0; j<len; j++) {
-				var temp_tr = comm_tables[j].getElementsByClassName('comments-content')[0];
-				var temp_id = temp_tr.getElementsByClassName('comment-id')[0].textContent;
+				var temp_tr = getElems(['comments-content', 0], comm_tables[j]);
+				var temp_id = getElems(['comment-id', 0], temp_tr);
 				//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
 				
 				if(temp_id === parent_id) {
@@ -365,22 +357,22 @@ function setCommentsParentId(e) {
 	
 	e.preventDefault();
 
-	var parentLink = parent.previousSibling.getElementsByTagName('A')[0];
+	var parentLink = getElems(['', 0, 'A'], parent);
 	var parentId = parentLink.textContent; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
 	var parentAuthor = parentLink.getAttribute('href'); 				// автор комментария, на который отвечаем
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
-	var commentsInput = document.getElementsByClassName('comments-form')[0].elements['comments-parent'];
+	var commentsInput = getElems(['comments-form', 0]).elements['comments-parent'];
 
 	if(commentsInput.tagName !== 'INPUT') return;
 	
 	commentsInput.value = parentId;
 	
-	var postBtn = document.getElementsByClassName('comments-post-button')[0];
+	var postBtn = getElems(['comments-post-button', 0]);
 	postBtn.value = 'Ответ сообщению '+parentId+' за авторством '+parentAuthor;
 	postBtn.focus();
 }
 
-addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
+addEventListenerWithOptions(getElems(['respond-button']), 'click', setCommentsParentId, {});
 
 function getParamFromLocationSearch(parName) {
 	var location = window.location.search.substring(1);
@@ -467,15 +459,15 @@ addEventListenerWithOptions(document, 'mouseup', function(e) {
 	if(target.className !== 'comments-post-button') return;
 	e.preventDefault();
 	removeActiveTinymceEditors();
-	addCommentsAjax(document.getElementsByClassName('comments-form')[0]);
+	addCommentsAjax(getElems(['comments-form', 0]));
 	updateCommentsWrapper();
 }, {});
 
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
-	var wrapper = document.getElementsByClassName('comments-wrapper')[0];
+	var wrapper = getElems(['comments-wrapper', 0]);
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
-	var commentsDiv = wrapper.getElementsByClassName('comments-list-div')[0];
+	var commentsDiv = getElems(['comments-list-div', 0], wrapper);
 	
 	// визульано показываем, что что-то происходит =)
 	wrapper.style.height = height;
@@ -511,7 +503,7 @@ function updateCommentsWrapper() {
 			}
 			
 			makeCommentsTree();
-			addEventListenerWithOptions(document.getElementsByClassName('respond-button'), 'click', setCommentsParentId, {});
+			addEventListenerWithOptions(getElems(['respond-button']), 'click', setCommentsParentId, {});
 		}
 	};
 	
@@ -550,28 +542,28 @@ function updatePageTitle() {
 	
 	// новость
 	if(title === 'Новости' && params.indexOf('custom-news-date') !== -1) {
-		container = doc.getElementsByClassName('news-full-container')[0];
+		container = getElems(['news-full-container', 0]);
 		
 		// в старых новостях может не быть заголовков
 		if(container === undefined) return;
 		
-		header = container.getElementsByTagName('H4')[0];
+		header = getElems(['', 0, 'H4'], container);
 	}
 	// статья
 	else if(title === 'Статьи' && params.indexOf('custom-publ') !== -1) {
-		container = doc.getElementsByClassName('publs-full-container')[0];
+		container = getElems(['publs-full-container', 0]);
 		
 		if(container === undefined) return;
 		
-		header = container.getElementsByTagName('H3')[0];
+		header = getElems(['', 0, 'H3'], container);
 	}
 	// газета
 	else if(title === 'Газета' && params.indexOf('custom-press') !== -1) {
-		container = doc.getElementById('press-container');
+		container = getElems('press-container');
 		
 		if(container === undefined) return;
 		
-		header = container.getElementsByTagName('H1')[0];
+		header = getElems(['', 0, 'H1'], container);
 	}
 	
 	if(!header) return;
@@ -611,7 +603,46 @@ function createDOMElem(elemParams) {
 		elem.innerHTML = elemParams.innerHTML;
 	}
 	
+	DEBUG(createDOMElem.name, 'Элемент создан: ' + elem);
+	
 	return elem;
+}
+
+// поиск элемента
+function getElems(query, parent) {
+	var elem;
+	
+	if(!parent) parent = document;
+	
+	if(typeof(query) !== 'object') {
+		elem = parent.getElementById(query);
+	}
+	else if(query.length){
+		var queryObj = {'name': query[0], 'num': query[1], 'tagname': query[2]};
+
+		if(queryObj.num >= 0) {
+			if(!queryObj.tagname) {
+				elem = parent.getElementsByClassName(queryObj.name)[queryObj.num];
+			}
+			else {
+				elem = parent.getElementsByTagName(queryObj.tagname)[queryObj.num];
+			}
+		}
+		else {
+			if(!queryObj.tagname) {
+				elem = parent.getElementsByClassName(queryObj.name);
+			}
+			else {
+				elem = parent.getElementsByTagName(queryObj.tagname);
+			}
+		}
+	}
+	else DEBUG(getElems.name, "Error in elems searching!");
+	
+	if(elem) {
+		DEBUG(getElems.name, "Found elem/elem: " + elem);
+		return elem;
+	}
 }
 
 // Вывод отладочной информации

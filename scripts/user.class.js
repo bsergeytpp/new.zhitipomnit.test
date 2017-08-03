@@ -10,7 +10,6 @@ function User() {
 	
 	// выясняем текущий логин
 	var checkIfUser = function() {
-		'use strict';
 		self._XMLHttpRequest = new XMLHttpRequest();
 		self._XMLHttpRequest.onreadystatechange = function () {
 			if(self._XMLHttpRequest.readyState == 4) {
@@ -50,7 +49,7 @@ function User() {
 	this.getUserLogin = function() {
 		return userLogin;
 	};
-};
+}
 
 // ищем комментарии пользователя
 User.prototype.checkForUserComments = function checkForUserComments() {
@@ -262,7 +261,7 @@ User.prototype.disablePrevEditors = function disablePrevEditors() {
 	}
 	
 	// убираем все внесенные изменения
-	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
+	for(i=0, len=prevTinymceElems.length; i<len; i++) {
 		if(this._tempText !== '') {
 			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
 			DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
@@ -327,7 +326,7 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 	this._XMLHttpRequest.open('GET', 'users/user_comments.php?login=' + this.getUserLogin() 
 							+ '&comments-location-id=' + encodeURIComponent(location_id), true);
 	this._XMLHttpRequest.send();
-}
+};
 
 // отправляем запрос на сохранение
 User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqTarget, contentType) {
@@ -366,7 +365,7 @@ User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqT
 	this._XMLHttpRequest.open(reqType, reqTarget, true);
 	this._XMLHttpRequest.setRequestHeader("Content-Type", contentType);
 	this._XMLHttpRequest.send(data);
-}
+};
 
 // создаем объект класса User
 var user;

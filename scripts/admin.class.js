@@ -2,7 +2,7 @@ function Admin() {
 	'use strict';
 	this._XMLHttpRequest = null;
 	this._editBtns = [];
-	this._responseObject;
+	this._responseObject = '';
 	this._editDiv = null;
 	this._commentsTables = null;
 	this._tempText = '';
@@ -56,7 +56,7 @@ function Admin() {
 	this.getLogin = function() {
 		return login;
 	};
-};
+}
 
 // получаем isAdmin
 Admin.prototype.getIsAdmin = function() {
@@ -136,9 +136,7 @@ Admin.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 		// Old realization ES5
 		else {
 			for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-				(function() {
-					btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
-				})();
+				btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
 			}
 		}
 	}
@@ -293,7 +291,7 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 		}
 	}
 	
-	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
+	for(i=0, len=prevTinymceElems.length; i<len; i++) {
 		if(this._tempText !== '') {
 			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
 			DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);

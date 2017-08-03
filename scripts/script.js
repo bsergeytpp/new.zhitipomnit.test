@@ -66,7 +66,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 		var timer, body = doc.body;
 		clearTimeout(timer);
 		
-		body.classList.contains('disable-hover', true)
+		body.classList.contains('disable-hover', true);
 		
 		timer = setTimeout(function() {
 			body.classList.remove('disable-hover');
@@ -388,11 +388,12 @@ function getParamFromLocationSearch(parName) {
 }
 
 function checkCookieToken(token) {
+	var secToken = '';
 	var allCookies = document.cookie.split('; ');
 	
 	for(var i = 0, len = allCookies.length; i<len; i++) {
 		if(allCookies[i].indexOf('sec-token') !== -1) {
-			var secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
+			secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
 		}
 	}
 	

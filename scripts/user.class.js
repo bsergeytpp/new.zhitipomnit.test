@@ -86,6 +86,7 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 	}
 };
 
+// расставляем элементы редактирования комментария
 User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	'use strict';
 	var commTables = getElems(['comments-table']);
@@ -107,6 +108,7 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	this.initCommentsEditBtns();
 };
 
+// проверяем ID комментария
 User.prototype.checkId = function checkId(id, object) {
 	for(var i=0, len=object.length; i<len; i++) {
 		if(parseInt(id) === object[i]['comments_id']) {
@@ -116,7 +118,8 @@ User.prototype.checkId = function checkId(id, object) {
 	
 	return false;
 };
-	
+
+// получаем комментарии пользователя
 User.prototype.getUserComments = function getUserComments(commTables, commentsIds) {
 	var temp = [];
 	
@@ -203,6 +206,7 @@ function userEditComment(td, tdId) {
 	}
 }
 
+// сохраняем измененный текст комментария
 function userSaveComments(tdId) {
 	var updatedText = tinymce.activeEditor.getContent();
 	var activeEditorId = tinymce.activeEditor.getParam('id');
@@ -250,12 +254,14 @@ User.prototype.disablePrevEditors = function disablePrevEditors() {
 	var saveLinks = getElems(['edit-comm']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 	
+	// убираем редактор комментариев
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
 		if(tinymce.editors[i].id !== 'comments-text') {
 			tinymce.remove('#'+tinymce.editors[i].id);
 		}
 	}
 	
+	// убираем все внесенные изменения
 	for(var i=0, len=prevTinymceElems.length; i<len; i++) {
 		if(this._tempText !== '') {
 			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
@@ -267,6 +273,7 @@ User.prototype.disablePrevEditors = function disablePrevEditors() {
 		prevTinymceElems[i].classList.toggle('edit-this', false);
 	}
 	
+	// меняем текст кнопки
 	for(i=0, len=saveLinks.length; i<len; i++) {
 		if(saveLinks[i].textContent === 'Сохранить') {
 			saveLinks[i].textContent = 'Редактировать';
@@ -287,6 +294,7 @@ User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	return tr;
 };
 
+// ищем комментарии пользователя по его ID
 User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_id, callback) {
 	'use strict';
 	var self = this;
@@ -303,7 +311,7 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 				DEBUG(getUserCommentsFromId.name, 'Пришло: '+resp);
 				if(resp !== null) {								// в ответ что-то пришло
 					if(typeof callback == 'function') {			
-						callback.call(this);	// отдаем это в виде параметра в callback-функцию 
+						callback.call(this);					// отдаем это в виде параметра в callback-функцию 
 					}											
 				}
 				else {
@@ -321,6 +329,7 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 	this._XMLHttpRequest.send();
 }
 
+// отправляем запрос на сохранение
 User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqTarget, contentType) {
 	'use strict';
 	var data = '', j = 1;

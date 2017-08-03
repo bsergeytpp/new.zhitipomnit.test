@@ -245,6 +245,7 @@ body::before {
 	border-top: 1px solid red;
 	border-left: 1px solid red;
 	border-radius: 15px 0 0 15px;
+	box-shadow: 1px 1px 0.3em black;
 }
 .comments-wrapper {
 	width: 100%;
@@ -256,6 +257,7 @@ body::before {
 	text-decoration: underline;
 	text-align: left;
 	border: none;
+	box-shadow: none;
 }
 .comments-list-div h2:after, .comments-form-div h2:after {
 	display: none;

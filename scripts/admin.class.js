@@ -58,11 +58,13 @@ function Admin() {
 	};
 };
 
+// получаем isAdmin
 Admin.prototype.getIsAdmin = function() {
 	'use strict';
 	return this.getAdmin();
 };
 
+// получаем логин администратора
 Admin.prototype.getAdminLogin = function() {
 	'use strict';
 	return this.getLogin();
@@ -206,6 +208,7 @@ function editComments(td, tdId) {
 	}
 }
 
+// удаляем комментарии
 function deleteComments(tdId) {
 	if(confirm('Точно удалить комментарий №'+tdId+'?')) { 
 		DEBUG(deleteComments.name, 'Удаление: '+tdId);			
@@ -458,6 +461,7 @@ Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 	this._XMLHttpRequest.send();
 };
 
+// создаем элемент для редактирования
 function createEditDivCallback(pattern, id) {
 	var self = this;
 	// удаляем другие объекты tinymce

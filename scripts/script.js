@@ -49,7 +49,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var article = getElems(['article', 0]);
     var scrollBtn = getElems(['scroll-button', 0]);
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
-    //var header = document.getElementsByClassName('header')[0];
+
 	if(window.innerWidth > 680) {
 		if((window.pageYOffset || doc.documentElement.scrollTop) > 550) {
 			if(articleWidth !== '100%') {
@@ -67,9 +67,6 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 		clearTimeout(timer);
 		
 		body.classList.contains('disable-hover', true)
-		/*if(!body.classList.contains('disable-hover')) {
-			body.classList.add('disable-hover');
-		}*/
 		
 		timer = setTimeout(function() {
 			body.classList.remove('disable-hover');
@@ -199,8 +196,10 @@ function navigateUlList(e) {
 	// самый первый/последний элемент списка
 	if(target === this.firstChild || target === this.lastChild) {
 		// идем назад
-		if(target.textContent.indexOf("«") !== -1) {
-			DEBUG(navigateUlList.name, "Назад: " + target.textContent);
+		var listNav = target.textContent;
+		
+		if(listNav.indexOf("«") !== -1) {	// ES6: listNav.includes("«"), no IE support
+			DEBUG(navigateUlList.name, "Назад: " + listNav);
 
 			if(pageNum != 1) {
 				urlParams['page'] = --pageNum;
@@ -208,8 +207,8 @@ function navigateUlList(e) {
 			}
 		}
 		// идем вперед
-		else if(target.textContent.indexOf("»") !== -1) {
-			DEBUG(navigateUlList.name, "Вперед: " + target.textContent);
+		else if(listNav.indexOf("»") !== -1) {	// ES6: listNav.includes("»"), no IE support
+			DEBUG(navigateUlList.name, "Вперед: " + listNav);
 
 			if(pageNum != this.children.length-2) {
 				urlParams['page'] = ++pageNum;

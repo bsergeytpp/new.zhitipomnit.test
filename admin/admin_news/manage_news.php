@@ -21,10 +21,10 @@
 			echo '<tr>';
 			foreach($row as $val) {
 				switch($i) {
-					case 0: echo '<td name='.$newsArr[$i].'>' . $val . '</td>'; break;
-					case 1: echo '<td name='.$newsArr[$i].'>' . $val . '</td>'; break;
-					case 2: echo '<td name='.$newsArr[$i].'>' . $val . '</td>'; break;
-					case 3: echo '<td name='.$newsArr[$i].'>' . $val . '</td>'; break;
+					case 0: echo '<td name="'.$newsArr[$i].'">' . $val . '</td>'; break;
+					case 1: echo '<td name="'.$newsArr[$i].'">' . $val . '</td>'; break;
+					case 2: echo '<td name="'.$newsArr[$i].'">' . $val . '</td>'; break;
+					case 3: echo '<td name="'.$newsArr[$i].'">' . $val . '</td>'; break;
 					default: break;
 				}
 				$i++;

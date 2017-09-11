@@ -6,14 +6,16 @@
 	function getSessionsToTable() {
 		global $db;
 		
-		$query = 'SELECT session_id, session_hash, session_last_seen, session_username, session_data FROM sessions ORDER BY session_id';
+		$query = 'SELECT * FROM sessions ORDER BY session_id';
 		$res = $db->executeQuery($query, null, null);		
 		$usersArr = [
 			0 => 'session_id',
 			1 => 'session_hash',
 			2 => 'session_last_seen',
 			3 => 'session_username',
-			4 => 'session_data'
+			4 => 'session_data',
+			5 => 'session_id',
+			6 => 'session_user_agent'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_ASSOC)) {
@@ -26,6 +28,8 @@
 					case 2: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 3: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 4: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
+					case 5: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
+					case 6: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					default: break;
 				}
 				$i++;
@@ -54,6 +58,8 @@
 			<th>Last seen</th>
 			<th>User</th>
 			<th>Data</th>
+			<th>IP</th>
+			<th>UserAgent</th>
 		</tr>
 		<? getSessionsToTable(); ?>
 	</table> 

@@ -1,5 +1,6 @@
 <?
 	require (__DIR__."/../classes/DB.class.php"); 
+	//require_once (__DIR__."/../admin/admin_security/session.inc.php");
 	
 	define('NEWS_MAXCOUNT', '5');	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
@@ -16,7 +17,7 @@
 	$token = null;
 	$debug = '';
 	
-	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+	//if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	
 	// подключаемся к базе данных
 	$config = parse_ini_file(__DIR__.'/../config.ini');
@@ -45,12 +46,12 @@
 		global $db;
 		
 		if($db->getLink()) {
-			$sessionId = clearStr(session_id());
+			$phpSessionId = clearStr(session_id());
 			$user = $_SESSION['user'];
 			$lastSeen = date('Y-m-d');
 			
 			$query = "SELECT session_id FROM sessions WHERE session_hash = ? LIMIT 1";
-			$result = $db->executeQuery($query, array($sessionId), 'get_session_id');
+			$result = $db->executeQuery($query, array($phpSessionId), 'get_session_id');
 			
 			if($result === false) {
 				echo "<div class='error-message'>Ошибка запроса</div>";
@@ -69,8 +70,8 @@
 					}
 				}
 				else {
-					$query = 'INSERT INTO sessions (session_hash, session_last_seen, "session_user") VALUES (?, ?, ?)';
-					$result = $db->executeQuery($query, array($sessionId, $lastSeen, $user), 'add_session');
+					$query = 'INSERT INTO sessions (session_hash, session_last_seen, session_username) VALUES (?, ?, ?)';
+					$result = $db->executeQuery($query, array($phpSessionId, $lastSeen, $user), 'add_session');
 					
 					if($result === false) {
 						echo "<div class='error-message'>Не удалось добавить сессию</div>";
@@ -87,10 +88,10 @@
 	function deleteSessionDB() {
 		global $db;
 				
-		$sessionId = clearStr(session_id());
+		$phpSessionId = clearStr(session_id());
 		
 		$query = "DELETE FROM sessions WHERE session_hash = ?";
-		$result = $db->executeQuery($query, array($sessionId), 'delete_session');
+		$result = $db->executeQuery($query, array($phpSessionId), 'delete_session');
 		
 		if($result === false) {
 			echo "<div class='error-message'>Ошибка запроса</div>";

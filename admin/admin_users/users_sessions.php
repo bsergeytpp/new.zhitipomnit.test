@@ -1,18 +1,19 @@
 <?
-	require_once (__DIR__."/../admin_security/session.inc.php");
-	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../functions/admin_functions.php");
+	require_once (__DIR__."/../admin_security/secure.inc.php");
+	require_once (__DIR__."/../admin_security/session.inc.php");
 
 	function getSessionsToTable() {
 		global $db;
 		
-		$query = 'SELECT session_id, session_hash, session_last_seen, "session_user" FROM sessions ORDER BY session_id';
+		$query = 'SELECT session_id, session_hash, session_last_seen, session_username, session_data FROM sessions ORDER BY session_id';
 		$res = $db->executeQuery($query, null, null);		
 		$usersArr = [
 			0 => 'session_id',
 			1 => 'session_hash',
 			2 => 'session_last_seen',
-			3 => 'session_user'
+			3 => 'session_username',
+			4 => 'session_data'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_ASSOC)) {
@@ -24,6 +25,7 @@
 					case 1: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 2: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 3: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
+					case 4: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					default: break;
 				}
 				$i++;
@@ -51,6 +53,7 @@
 			<th>Session id</th>
 			<th>Last seen</th>
 			<th>User</th>
+			<th>Data</th>
 		</tr>
 		<? getSessionsToTable(); ?>
 	</table> 

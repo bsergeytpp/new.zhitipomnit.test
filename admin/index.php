@@ -1,7 +1,7 @@
 <?
 	require "functions/admin_functions.php";
-	require_once "admin_security/session.inc.php";
 	require_once "admin_security/secure.inc.php";
+	require_once "admin_security/session.inc.php";
 
 	if(isset($_GET['logout'])) {
 		logOut();

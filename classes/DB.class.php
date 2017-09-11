@@ -77,5 +77,9 @@
 		public function getLink() {
 			return $this->link;
 		}
+		
+		public function getProvider() {
+			return $this->provider;
+		}
 	}
 ?>

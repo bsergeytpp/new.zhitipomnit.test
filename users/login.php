@@ -1,7 +1,8 @@
 <?
-	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-	//header("HTTP/1.0 401 Unauthorized");
 	require_once "../admin/admin_security/secure.inc.php";
+	require_once "../admin/admin_security/session.inc.php";
+	
+	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
@@ -40,7 +41,10 @@
 				header("Location: user_profile.php");
 			}
 			
-			updateSessionDB();
+			if(isset($sessionHandler)) {
+				$sessionHandler->setUser($_SESSION['user']);
+			}
+			//updateSessionDB();
 			
 			$log_type = 4;
 			$log_name = 'login';

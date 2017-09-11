@@ -1,6 +1,8 @@
 <?
-	session_start();
 	require_once (__DIR__."/../functions/functions.php");
+	require_once (__DIR__."/../admin/admin_security/session.inc.php");
+	
+	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 ?>
 <!DOCTYPE html>
 <html>

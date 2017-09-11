@@ -1,7 +1,13 @@
 <?
+	require_once (__DIR__."/../../classes/Sessions.class.php");
+	$sessionHandler = DBSessionHandler::getInstance();
+	session_set_save_handler($sessionHandler, true);
+
 	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+	
 	$isAdmin = (isset($_SESSION['admin'])) ? $_SESSION['admin'] : null;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+	
 	if($isAdmin !== true) {
 		if(strpos($_SERVER['REQUEST_URI'], 'admin') !== false) {
 			if($userLogin !== null) {

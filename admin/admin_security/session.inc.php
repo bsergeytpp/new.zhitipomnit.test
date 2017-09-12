@@ -1,5 +1,7 @@
 <?
+	require_once (__DIR__."/../../functions/functions.php");
 	require_once (__DIR__."/../../classes/Sessions.class.php");
+	
 	$sessionHandler = DBSessionHandler::getInstance();
 	session_set_save_handler($sessionHandler, true);
 

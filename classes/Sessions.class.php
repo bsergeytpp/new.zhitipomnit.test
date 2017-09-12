@@ -1,5 +1,5 @@
 <?
-	require_once ("DB.class.php"); 
+	require_once (__DIR__.'/../functions/functions.php'); 
 	
 	class DBSessionHandler implements \ SessionHandlerInterface {
 		private $db = null;

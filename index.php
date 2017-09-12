@@ -1,7 +1,6 @@
 <? 
 	require "functions/functions.php"; 
 	require_once "admin/admin_security/session.inc.php";
-	
 	// заголовок страницы и путь к контенту
 	$title = ''; $path = '';
 	$params = isset($_GET['pages']) ? $_GET['pages'] : '';

@@ -5,14 +5,16 @@
 		protected $newsArr = [];
 		protected $totalNews = null;
 		protected $newsType = null;
+		protected $newsStyle = 'classic';
 		
 		abstract public function getNews();
 		abstract public function getSingleNews();
 		
-		public function __construct($date, $page, $type) {
+		public function __construct($date, $page, $type, $style) {
 			if(isset($date)) $this->newsDate = $date;
 			if(isset($page)) $this->pageNum = $page;
 			if(isset($type)) $this->newsType = $type;
+			if(isset($style)) $this->newsStyle = $style;
 		}
 		
 		public function setDate($date) {
@@ -62,10 +64,10 @@
 		protected $id = null;
 		private $db = null;
 		
-		public function __construct($id, $date, $page, $type) {
+		public function __construct($id, $date, $page, $type, $style) {
 			if(isset($id)) $this->id = $id;
 			$this->db = DBClass::getInstance();
-			parent::__construct($date, $page, $type);
+			parent::__construct($date, $page, $type, $style);
 		}
 		
 		public function getNews() {			
@@ -160,7 +162,14 @@
 			$dom = DOMDocument::loadHTML($news);
 			libxml_use_internal_errors($internalErrors);
 			$xpath = new DOMXPath($dom);
-			$query = '//div[@class="article-news editable"]';
+			
+			if($this->newsStyle === 'classic') {
+				$query = '//div[@class="article-news editable"]';
+			}
+			else if($this->newsStyle === 'alt') {
+				$query = '//div[@class="alt-news-div editable"]';
+			}
+			
 			$entries = $xpath->query($query);
 
 			// новость приходит одна, выбираем ее ID
@@ -208,7 +217,14 @@
 	
 		protected function createExceptNews($news) {
 			$news['news_header'] = strip_tags($news['news_header']);//exceptStr(strip_tags($news['news_header']));
-			$newsTemplate = file_get_contents('content/templates/news_template.php');
+			
+			if($this->newsStyle === 'classic') {
+				$newsTemplate = file_get_contents('content/templates/news_template.php');
+			}
+			else {
+				$newsTemplate = file_get_contents('content/templates/alt_news_template.php');
+			}
+			
 			$pattern = ['newsId', 'newsDate', 'newsText', 'newsUrl'];
 			$replacement = [$news['news_id'], $news['news_date'], $news['news_header'], $news['news_date']."&id=".$news['news_id']];
 			$newsTemplate = str_replace($pattern, $replacement, $newsTemplate);
@@ -225,6 +241,16 @@
 						$this->newsArr[$j] = $temp;
 					}
 				}
+			}
+		}
+		
+		public function changeNewsStyle($type) {
+			if(!$type) {
+				$this->newsStyle = 'classic';
+			}
+			
+			if($type === 'alt') {
+				$this->newsStyle = 'alt';
 			}
 		}
 	}

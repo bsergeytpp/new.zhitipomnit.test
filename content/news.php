@@ -4,16 +4,22 @@
 				<h2>Новости</h2>
                 <div id="news-container">
 					<!--<div class="clear-div"></div>-->
+					<div class="news-style">
+						<h4>Стиль новости</h4>
+						<strong>classic</strong><br>
+						<strong>alt</strong>
+					</div>
 					<?
 						$customNewsDate = isset($_GET['custom-news-date']) ? $_GET['custom-news-date'] : '';
 						$newsId = isset($_GET['id']) ? $_GET['id'] : '';
 						$pageNum = isset($_GET['page']) ? $_GET['page'] : '1';
 						$type = isset($_GET['type']) ? $_GET['type'] : 'db';
+						$style = isset($_COOKIE['newsStyle']) ? $_COOKIE['newsStyle'] : 'classic';
 						
 						if($type === 'db') {
 							global $dbLink; global $db;
 							if($dbLink && $db) {
-								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db');
+								$newsClass = new DbNewsClass($newsId, $customNewsDate, $pageNum, 'db', $style);
 								
 								if($newsId !== '') {
 									echo $newsClass->getSingleNews();

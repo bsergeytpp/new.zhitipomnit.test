@@ -74,6 +74,31 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 	}
 }, {passive: true});
 
+// смена стиля новостей news-style
+function changeNewsStyle() {
+	var div = getElems(['news-style']);
+	
+	if(!div) return;
+
+	div[0].addEventListener('mouseup', changeNews, false);
+}
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', changeNewsStyle, {passive: true});
+
+function changeNews(e) {
+	var target = e.target;
+	
+	if(target.tagName !== 'STRONG') return;
+	
+	var style = target.innerText;
+		
+	if(style !== 'classic' && style !== 'alt') return;
+	
+	document.cookie = "newsStyle="+style;
+	
+	window.location.reload(false); 
+}
+
 // добавляет событие по клику на нумерацию
 function addNavigationToList() {
 	var ul = getElems(['news-list']);

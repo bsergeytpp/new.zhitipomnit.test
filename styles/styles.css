@@ -308,15 +308,34 @@ body::before {
 .article-publs, .article-press {
     color: white;  
     background: darkred;
-    padding-bottom: 5px;
     position: relative;
     box-shadow: 1px 1px .3em black,
                 -1px -1px .3em black;
     border-top: 1px solid #888;
 	margin: 0 0 15px 0;
 }
-.article-publ-text {
-    
+.article-publ-text a {
+    color: rgba(255, 255, 255, .804) !important;
+	text-decoration: none;
+}
+.article-publ-body {
+	
+}
+.article-publ-footer {
+	background: black;
+	background-image: url(/images/g_lenta_small.png);
+	background-size: 30%;
+	background-repeat: no-repeat;
+	width: 100%;
+	border-top: 2px solid darkorange;
+	border-radius: 0 0 0 7px;
+	height: 30px;
+}
+.article-publs-more {
+	display: block;
+	text-align: right;
+	text-decoration: none;
+	margin-top: 5px;
 }
 .article-press p {
     text-align: center;
@@ -422,6 +441,12 @@ body::before {
 	font-weight: bold;
 	font-size: 14pt;
 }
+.news-style {
+	
+}
+.news-style strong {
+	cursor: pointer;
+}
 .article-news {
     color: white;  
     margin: 10px;
@@ -476,6 +501,7 @@ body::before {
     border-top: 2px solid darkorange;
 	border-radius: 0 0 0 7px;
 }
+
 .article-news-more:hover {
     background: darkred;
     border-top: 3px solid #888;

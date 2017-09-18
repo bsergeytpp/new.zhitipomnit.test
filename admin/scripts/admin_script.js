@@ -126,20 +126,19 @@ function checkActiveEditors(pattern) {
 function saveSettings() {
 	var table = document.getElementsByClassName('settings-table')[0];
 	var inputs = table.getElementsByTagName('input');
-	var data = [];
+	var data = "";
 	
 	for(var i=0, len=inputs.length; i<len; i++) {
 		var name = inputs[i].getAttribute('name');
-		var inputData = encodeURIComponent(inputs[i].getAttribute('value'));
+		var inputData = encodeURIComponent(inputs[i].value);
 		switch(name) {
-			case 'NEWS': data['NEWS'] = inputData; break;
-			case 'OLDNEWS': data['OLDNEWS'] = inputData; break;
-			case 'PUBLS': data['PUBLS'] = inputData; break;
-			case 'PRESS': data['PRESS'] = inputData; break;
+			case 'NEWS': data += "NEWS=" + encodeURIComponent(inputData) + "&"; break;
+			case 'OLDNEWS': data += "OLDNEWS=" + encodeURIComponent(inputData) + "&"; break;
+			case 'PUBLS': data += "PUBLS=" + encodeURIComponent(inputData) + "&"; break;
+			case 'PRESS': data += "PRESS=" + encodeURIComponent(inputData); break;
 			default: break;
 		}
 	}
-	
 	sendRequest(data, 'POST', 'save_settings.php', 'application/x-www-form-urlencoded');
 }
 

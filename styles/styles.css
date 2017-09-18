@@ -442,7 +442,9 @@ body::before {
 	font-size: 14pt;
 }
 .news-style {
-	
+	width: 100%;
+	background: black;
+	color: rgba(255,255,255, .87);
 }
 .news-style strong {
 	cursor: pointer;
@@ -889,6 +891,13 @@ p.quotes:before {
 	}
 	.article h2:after {
 		display: none;
+	}
+	.alt-news-image-div {
+		display: none;
+	}
+	.alt-news-text-div {
+		width: 95%;
+		margin-left: 7px;
 	}
     .scroll-button {
         display: none;

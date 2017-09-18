@@ -6,8 +6,10 @@
 					<!--<div class="clear-div"></div>-->
 					<div class="news-style">
 						<h4>Стиль новости</h4>
-						*<strong>classic</strong><br>
-						*<strong>alt</strong>
+						<img src="images/news_classic.png" alt="classic" width="32">
+						<strong>classic</strong>
+						<img src="images/news_alt.png" alt="alt" width="32">
+						<strong>alt</strong>
 					</div>
 					<?
 						$customNewsDate = isset($_GET['custom-news-date']) ? $_GET['custom-news-date'] : '';

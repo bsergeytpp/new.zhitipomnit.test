@@ -1,7 +1,15 @@
 <?
 	require_once (__DIR__."/../functions/admin_functions.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
-	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../admin_security/session.inc.php");	
+	
+	$res = getSettings(null, 'materials_count');
+	
+	if(!$res) {
+		echo "<div class='error-message'>Настройки не найдены</div>";
+	}
+		
+	$settingsArr = unserialize($res[0]);
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,10 +31,10 @@
 			<th>PRESS_MAXCOUNT</th>
 		</tr>
 		<tr>
-			<td><input name="NEWS" type="number" min="3" max="10" value="<? echo NEWS_MAXCOUNT; ?>"></td>
-			<td><input name="OLDNEWS" type="number" min="3" max="10" value="<? echo OLDNEWS_MAXCOUNT; ?>"></td>
-			<td><input name="PUBLS" type="number" min="3" max="10" value="<? echo PUBLS_MAXCOUNT; ?>"></td>
-			<td><input name="PRESS" type="number" min="3" max="10" value="<? echo PRESS_MAXCOUNT; ?>"></td>
+			<td><input name="NEWS" type="number" min="3" max="10" value="<? echo $settingsArr['NEWS_MAXCOUNT']; ?>"></td>
+			<td><input name="OLDNEWS" type="number" min="3" max="10" value="<? echo $settingsArr['OLDNEWS_MAXCOUNT']; ?>"></td>
+			<td><input name="PUBLS" type="number" min="3" max="10" value="<? echo $settingsArr['PUBLS_MAXCOUNT']; ?>"></td>
+			<td><input name="PRESS" type="number" min="3" max="10" value="<? echo $settingsArr['PRESS_MAXCOUNT']; ?>"></td>
 		</tr>
 	</table> 
 	<a href="#">Сохранить</a>

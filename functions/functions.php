@@ -2,23 +2,6 @@
 	require (__DIR__."/../classes/DB.class.php"); 
 	//require_once (__DIR__."/../admin/admin_security/session.inc.php");
 	
-	define('NEWS_MAXCOUNT', '5');	// новостей на странице
-	define('OLDNEWS_MAXCOUNT', '10');	// старых новостей на странице
-	define('PUBLS_MAXCOUNT', '5');	// статей на странице
-	define('PRESS_MAXCOUNT', '10');	// гaзет на странице
-	$NEWS_MAXCOUNT = 3;
-	$OLDNEWS_MAXCOUNT = 10;
-	$PUBLS_MAXCOUNT = 10;
-	$PRESS_MAXCOUNT = 10;
-	
-	$link = false;
-	$userLogin = null;
-	$secret = null;
-	$token = null;
-	$debug = '';
-	
-	//if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-	
 	// подключаемся к базе данных
 	$config = parse_ini_file(__DIR__.'/../config.ini');
 	$connectStr = "host=".$config['host'].
@@ -30,6 +13,37 @@
 	$db->connectToDB($config, 'PGSQL');
 	$dbLink = $db->getLink();
 	
+	$materialsCount = getSettings(null, 'materials_count');
+	$materialsCount = unserialize($materialsCount[0]);
+	
+	$NEWS_MAXCOUNT = 3;
+	$OLDNEWS_MAXCOUNT = 10;
+	$PUBLS_MAXCOUNT = 10;
+	$PRESS_MAXCOUNT = 10;
+	
+	if(!$materialsCount) {
+		echo "<div class='warning-message'>Настройки не найдены в БД</div>";
+	}
+	else {
+		$NEWS_MAXCOUNT = $materialsCount['NEWS_MAXCOUNT'];
+		$OLDNEWS_MAXCOUNT = $materialsCount['OLDNEWS_MAXCOUNT'];
+		$PUBLS_MAXCOUNT = $materialsCount['PUBLS_MAXCOUNT'];
+		$PRESS_MAXCOUNT = $materialsCount['PRESS_MAXCOUNT'];
+	}
+	
+	define('NEWS_MAXCOUNT', $NEWS_MAXCOUNT);	// новостей на странице
+	define('OLDNEWS_MAXCOUNT', $OLDNEWS_MAXCOUNT);	// старых новостей на странице
+	define('PUBLS_MAXCOUNT', $PUBLS_MAXCOUNT);	// статей на странице
+	define('PRESS_MAXCOUNT', $PRESS_MAXCOUNT);	// гaзет на странице
+	
+	$link = false;
+	$userLogin = null;
+	$secret = null;
+	$token = null;
+	$debug = '';
+	
+	//if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+	
 	function checkToken($str) {
 		$temp = explode(':', $str);
 		$salt = $temp[0];
@@ -37,6 +51,34 @@
 		
 		if($temp === $_SESSION['token']) {
 			return true;
+		}
+		
+		return false;
+	}
+	
+	function getSettings($id, $name) {
+		global $db;
+		global $dbLink;
+		
+		if(!$db || !$dbLink) return false;
+		
+		$query = "SELECT settings_data FROM settings WHERE ";
+		
+		if(isset($id)) {
+			$query .= "settings_id = ?";
+			$result = $db->executeQuery($query, array($id), 'select_settings_by_id');
+		}
+		else if(isset($name)) {
+			$query .= "settings_name = ?";
+			$result = $db->executeQuery($query, array($name), 'select_settings_by_name');
+		}
+		else return false;
+		
+		if($result === false) {
+			echo "<div class='error-message'>Настройки не найдены</div>";
+		}
+		else {
+			return $result->fetch();
 		}
 		
 		return false;

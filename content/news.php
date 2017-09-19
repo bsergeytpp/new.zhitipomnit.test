@@ -37,7 +37,7 @@
 							}
 						}
 						else if($type === 'old') {
-							$newsClass = new OldNewsClass($customNewsDate, $pageNum, 'old');
+							$newsClass = new OldNewsClass($customNewsDate, $pageNum, 'old', null);
 							
 							if(!$customNewsDate) {
 								echo $newsClass->getNews();
@@ -49,7 +49,7 @@
 							}
 						}
 						else if($type === 'other') {
-							$newsClass = new OtherNewsClass($customNewsDate, $pageNum, 'other');
+							$newsClass = new OtherNewsClass($customNewsDate, $pageNum, 'other', null);
 							
 							if(!$customNewsDate) {
 								echo $newsClass->getNews();

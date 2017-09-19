@@ -238,7 +238,7 @@
 		if(file_exists('content/news/'.convertDate($date).'.html')) {	// формат гггг-мм-дд
 			return new OldNewsClass(convertDate($date), $page);
 		}
-		if(file_exists('content/news/'.$date.'.html')) {				// формат дд-мм-гггг
+		if(file_exists('content/news/'.$date.'.html')) {				// формат дд-мм-гг
 			return new OldNewsClass($date, $page);
 		}
 		if(file_exists('content/news/'.$date.'.txt')) {

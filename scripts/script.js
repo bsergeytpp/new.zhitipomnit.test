@@ -37,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = false;
+var _DEBUG = true;
 
 // общая функция-событие на прокрутку
 /*
@@ -631,6 +631,64 @@ function createDOMElem(elemParams) {
 	DEBUG(createDOMElem.name, 'Элемент создан: ' + elem);
 	
 	return elem;
+}
+
+// поиск новости
+function newsSearch(form) {
+	var date = form['custom-news-date'].value;
+	console.log('form date => ' + date);
+	
+	if(!date) return false;
+	
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			
+			if(request.status != 200) {
+				DEBUG(newsSearch.name, 'Ошибка: ' + request.responseText);
+			}
+			else {
+				DEBUG(newsSearch.name, 'Запрос отправлен.');
+				
+				var response = this.responseText;
+				
+				// вернулась строка
+				if(typeof response === 'string') {
+					try{
+						response = JSON.parse(response);
+					}
+					catch(e) {
+						DEBUG(newsSearch.name, 'Пришла не JSON строка: ' + e.toString());
+					}
+				}
+				else {
+					DEBUG(newsSearch.name, 'Пришла не строка: ' + request.responseText);
+				}
+				
+				// строка оказалась формата JSON
+				if(typeof response === 'object') {
+					console.log("PHP response: date => " + response['date'] + "; type => " + response['type']);
+					
+					if(response['type'] === 'db') {
+						window.location.href = 'index.php?pages=news&custom-news-date='+response['date'];
+					}
+					else if(response['type'] === 'old') {
+						window.location.href = 'index.php?pages=news&type=old&custom-news-date='+response['date'];
+					}
+				}
+			}
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	request.open('GET', 'content/news_search.php?news_date='+encodeURIComponent(date), true);
+	request.send();
+	
+	return false;
 }
 
 // поиск элемента

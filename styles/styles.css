@@ -801,6 +801,9 @@ p.quotes:before {
 	background: darkgray;
 	color: white;
 	height: 30px;
+	width: 100%;
+	position: fixed;
+	z-index: 999;
 }
 .admin-bar a {
 	margin-right: 50px;

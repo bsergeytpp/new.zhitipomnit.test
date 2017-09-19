@@ -552,6 +552,9 @@ body::before {
 	display: block;
 	text-align: right;
 	background: black;
+	background-image: url(/images/g_lenta_small.png);
+	background-size: 50%;
+	background-repeat: no-repeat;
 	border-left: 5px solid black;
     border-top: 3px solid #888;
 	border-radius: 0 0 7px 7px;
@@ -560,11 +563,8 @@ body::before {
 }
 .alt-news-info-div {
 	background: black;
-	background-image: url(/images/g_lenta_small.png);
-	background-size: 50%;
-	background-repeat: no-repeat;
 	width: 100%;
-	height: 50px;
+	height: 40px;
 	clear: both;
 	color: white;
 	border-top: 2px solid darkorange;
@@ -644,7 +644,6 @@ p.quotes:before {
 	height: 25px;
 	color: black;
 	font-weight: bold;
-	left: 0;
 	cursor: pointer;
 	text-align: center;
 }

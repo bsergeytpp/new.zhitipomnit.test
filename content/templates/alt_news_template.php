@@ -6,7 +6,7 @@
 		</div>
 		<div class="alt-news-info-div">
 			<div class="alt-news-date-div">
-				<img src="../../images/gear.png" alt="" width="30">
+				<img src="../../images/calendar.png" alt="" width="30">
 				<strong>Дата: newsDate</strong>
 			</div>
 			<div class="alt-news-comments-div">

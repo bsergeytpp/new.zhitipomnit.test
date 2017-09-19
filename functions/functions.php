@@ -13,12 +13,16 @@
 	$db->connectToDB($config, 'PGSQL');
 	$dbLink = $db->getLink();
 	
+	// загружаем настройки
 	$materialsCount = getSettings(null, 'materials_count');
-	$materialsCount = unserialize($materialsCount[0]);
 	
-	$NEWS_MAXCOUNT = 3;
+	if($materialsCount) {
+		$materialsCount = unserialize($materialsCount[0]);
+	}
+	
+	$NEWS_MAXCOUNT = 5;
 	$OLDNEWS_MAXCOUNT = 10;
-	$PUBLS_MAXCOUNT = 10;
+	$PUBLS_MAXCOUNT = 5;
 	$PRESS_MAXCOUNT = 10;
 	
 	if(!$materialsCount) {

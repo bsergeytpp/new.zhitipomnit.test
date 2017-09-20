@@ -1,7 +1,7 @@
 <?
-	//require_once "admin_security/session.inc.php";
 	//require_once "admin_security/secure.inc.php";
 	require_once "functions/admin_functions.php";
+	require_once "admin_security/session.inc.php";
 	global $db;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 	

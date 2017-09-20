@@ -75,6 +75,8 @@ Admin.prototype.checkForEditableContent = function checkForEditableContent() {
 	'use strict';
 	var elems = getElems(['editable']);
 	
+	if(!elems) return;
+	
 	// есть хотя бы один элемент
 	if(elems.length > 0) {
 		this.addEditBtn(elems);
@@ -87,10 +89,11 @@ Admin.prototype.checkForComments = function checkForComments() {
 	'use strict';
 	var commentsTables = getElems(['comments-table']);
 	
-	if(commentsTables.length > 0) {
-		this._commentsTables = commentsTables;
-		this.addCommentsEditBtn();
-	}
+	if(!commentsTables) return;
+	
+	this._commentsTables = commentsTables;
+	this.addCommentsEditBtn();
+	
 };
 
 // добавляем еще один TR к каждому комментарию
@@ -104,8 +107,8 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	if(this._commentsTables === null) return;
 	
 	// если кнопок пока нет
-	if(getElems(['comments-edit']).length > 0) return;
-	
+	if(getElems(['comments-edit'])) return;
+		
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
 		var commId = getElems(['comment-id', 0], this._commentsTables[i]);
 		var editTr = this.createEditCommentsTr(getElems(['', 0, 'A'], commId).textContent);
@@ -284,6 +287,8 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	var prevTinymceElems = getElems(['edit-this']);
 	var saveLinks = getElems(['edit-comm']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
+	
+	if(!prevTinymceElems || !saveLinks) return;
 
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
 		if(tinymce.editors[i].id !== 'comments-text') {
@@ -371,7 +376,7 @@ Admin.prototype.initAdminEdit = function initAdminEdit() {
 				if(typeof self._responseObject === 'object') {
 					var editElem = getElems(['admin-edit-elem', 0]);
 					
-					if(editElem !== undefined) {
+					if(editElem) {
 						self._editDiv = null;
 						document.body.removeChild(editElem);
 					}

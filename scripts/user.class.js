@@ -26,7 +26,7 @@ function User() {
 					userLogin = resp;
 					
 					// хак-проверка на админа, чтобы не было лишних TR'ов
-					if(getElems(['comments-edit']).length === 0) {
+					if(!getElems(['comments-edit'])) {
 						self.checkForUserComments();
 					}
 				}
@@ -57,32 +57,32 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 	var commentsTables = getElems(['comments-table']);
 	var self = this;
 	
-	if(commentsTables.length > 0) {
-		var location_id = getParamFromLocationSearch('id');
+	if(!commentsTables) return;
+	
+	var location_id = getParamFromLocationSearch('id');
+	
+	this.getUserCommentsFromId(location_id, function() {
+		var response = this.responseText;
+		var responseObject = null;
+		DEBUG(checkForUserComments.name, response + ' это объект');
+	
+		if(typeof response === 'string') {
+			try {
+				responseObject = JSON.parse(response);
+			}
+			catch(e) {
+				DEBUG(checkForUserComments.name, 'Пришла не JSON строка: ' + e.toString());
+			}
+		}
 		
-		this.getUserCommentsFromId(location_id, function() {
-			var response = this.responseText;
-			var responseObject = null;
-			DEBUG(checkForUserComments.name, response + ' это объект');
-		
-			if(typeof response === 'string') {
-				try {
-					responseObject = JSON.parse(response);
-				}
-				catch(e) {
-					DEBUG(checkForUserComments.name, 'Пришла не JSON строка: ' + e.toString());
-				}
-			}
-			
-			if(responseObject !== null) {
-				DEBUG(checkForUserComments.name, response + ' это объект');				
-				self.addCommentsEditBtn(responseObject);
-			}
-			else {
-				DEBUG(checkForUserComments.name, response);
-			}
-		});
-	}
+		if(responseObject !== null) {
+			DEBUG(checkForUserComments.name, response + ' это объект');				
+			self.addCommentsEditBtn(responseObject);
+		}
+		else {
+			DEBUG(checkForUserComments.name, response);
+		}
+	});
 };
 
 // расставляем элементы редактирования комментария

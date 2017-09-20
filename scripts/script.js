@@ -12,6 +12,8 @@ try {
 } catch (e) {}
 
 function addEventListenerWithOptions(target, type, handler, options) {
+	if(!target) return;
+	
 	var optionsOrCapture = options;
 	
 	if (!supportsPassive) {
@@ -95,7 +97,6 @@ function changeNews(e) {
 	if(style !== 'classic' && style !== 'alt') return;
 	
 	document.cookie = "newsStyle="+style;
-	
 	window.location.reload(false); 
 }
 
@@ -132,6 +133,8 @@ function userSwitcher() {
 	var usersDiv = getElems(['users-div', 0]);
 	var switcher = getElems(['users-switcher', 0], usersDiv);
 	
+	if(!usersDiv || !switcher) return;
+	
 	switcher.addEventListener('mouseup', function(e) {
 		var style = window.getComputedStyle(usersDiv);
 		var left = parseInt(style.getPropertyValue('left'));
@@ -150,23 +153,25 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {passive
 function addLinksToCommentsId() {
 	var commentsTable = getElems(['comments-table']);
 	
-	if(commentsTable.length || commentsTable) {
-		for(var j=0, len=commentsTable.length; j<len; j++) {
-			var trs = getElems(['', -1, 'TR'], commentsTable[j]);
+	if(!commentsTable) return;
+	
+	for(var j=0, len=commentsTable.length; j<len; j++) {
+		var trs = getElems(['', -1, 'TR'], commentsTable[j]);
+		
+		for(var i=0, trsLen=trs.length; i<trsLen; i++) {
+			if(trs[i].classList.contains('comments-respond') ||
+			   trs[i].classList.contains('comments-edit')) continue;
+						
+			var loginTd = getElems(['', -1, 'TD'], trs[i]);
 			
-			for(var i=0, trsLen=trs.length; i<trsLen; i++) {
-				if(trs[i].classList.contains('comments-respond') ||
-				   trs[i].classList.contains('comments-edit')) continue;
-							
-				var loginTd = getElems(['', -1, 'TD'], trs[i]);
-				
-				if(!loginTd[2]) continue;	// TD с ником автора
-				
-				DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
-				var userLogin = loginTd[2].textContent;
-				var commId = loginTd[0].textContent;
-				loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
-			}
+			if(!loginTd) continue;
+			
+			if(!loginTd[2]) continue;	// TD с ником автора
+			
+			DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
+			var userLogin = loginTd[2].textContent;
+			var commId = loginTd[0].textContent;
+			loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
 		}
 	}
 }
@@ -263,6 +268,8 @@ function replaceNewsLinks() {
 	var container = getElems(['article', 0]);
 	var parents = getElems(['', -1, 'P'], container);
 	
+	if(!parents) return;
+	
 	for(var i=0, len=parents.length; i<len; i++) {
 		var link = getElems(['', 0, 'A'], parents[i]);
 		var linkHref = link.getAttribute('href');
@@ -279,6 +286,8 @@ function replaceNewsLinks() {
 function replacePressLinks() {
 	var press = getElems(['article-press']);
 	
+	if(!press) return;
+	
 	for(var i=0, len=press.length; i<len; i++) {
 		var str = getElems(['', 0, 'A'], press[i]);
 		var strHref = str.getAttribute('href');
@@ -291,6 +300,8 @@ function replacePressLinks() {
 function replacePressPagesLinks() {
 	var pressContainer = getElems('press-container');
 	var pagesLinks = getElems(['', -1, 'A'], pressContainer);
+	
+	if(!pagesLinks) return;
 	
 	for(var i=0, len=pagesLinks.length; i<len; i++) {
 		if(pagesLinks[i].className === 'article-press-links') continue;
@@ -306,12 +317,18 @@ function replacePressPagesLinks() {
 
 // функция для исправления стилей старых новостей
 function changeStyle() {
-	getElems('news-container').style.display = 'block';
+	var newsContainer = getElems('news-container');
+	
+	if(!newsContainer) return;
+	
+	newsContainer.style.display = 'block';
 }
 
 // не используется: добавляет миниатюру к новости
 function displayNewsImage() {
 	var imgs = getElems(['article-news-image']);
+	
+	if(!imgs) return;
 	
 	for(var i=0, len=imgs.length; i<len; i++) {
 		if(isFileExists(imgs[i].getAttribute('src'))) {
@@ -338,6 +355,8 @@ function appendScript(src) {
 // делаем дерево комментариев
 function makeCommentsTree() {
 	var comm_tables = getElems(['comments-table']);
+	
+	if(!comm_tables) return;
 	
 	for(var i=0, len=comm_tables.length; i<len; i++) {
 		var tr = getElems(['comments-content', 0], comm_tables[i]);	
@@ -481,7 +500,9 @@ function addCommentsAjax(commentsForm) {
 
 addEventListenerWithOptions(document, 'mouseup', function(e) {
 	var target = e.target;
+	
 	if(target.className !== 'comments-post-button') return;
+	
 	e.preventDefault();
 	removeActiveTinymceEditors();
 	addCommentsAjax(getElems(['comments-form', 0]));
@@ -493,6 +514,8 @@ function updateCommentsWrapper() {
 	var wrapper = getElems(['comments-wrapper', 0]);
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = getElems(['comments-list-div', 0], wrapper);
+
+	if(!commentsDiv) return;
 	
 	// визульано показываем, что что-то происходит =)
 	wrapper.style.height = height;
@@ -570,7 +593,7 @@ function updatePageTitle() {
 		container = getElems(['news-full-container', 0]);
 		
 		// в старых новостях может не быть заголовков
-		if(container === undefined) return;
+		if(!container) return;
 		
 		header = getElems(['', 0, 'H4'], container);
 	}
@@ -578,7 +601,7 @@ function updatePageTitle() {
 	else if(title === 'Статьи' && params.indexOf('custom-publ') !== -1) {
 		container = getElems(['publs-full-container', 0]);
 		
-		if(container === undefined) return;
+		if(!container) return;
 		
 		header = getElems(['', 0, 'H3'], container);
 	}
@@ -586,7 +609,7 @@ function updatePageTitle() {
 	else if(title === 'Газета' && params.indexOf('custom-press') !== -1) {
 		container = getElems('press-container');
 		
-		if(container === undefined) return;
+		if(!container) return;
 		
 		header = getElems(['', 0, 'H1'], container);
 	}
@@ -706,6 +729,7 @@ function getElems(query, parent) {
 	
 	if(!parent) parent = document;
 	
+	// запрос без параметров - поиск по ID
 	if(typeof(query) !== 'object') {
 		elem = parent.getElementById(query);
 	}
@@ -726,6 +750,11 @@ function getElems(query, parent) {
 			}
 			else {
 				elem = parent.getElementsByTagName(queryObj.tagname);
+			}
+			
+			// объект не найден, вернулся []
+			if(elem.length === 0) {
+				elem = null;
 			}
 		}
 	}

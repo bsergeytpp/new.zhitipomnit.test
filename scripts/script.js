@@ -37,7 +37,7 @@ addEventListenerWithOptions(document, "wheel", function(e) {
 
 /***********************/
 
-var _DEBUG = true;
+var _DEBUG = false;
 
 // общая функция-событие на прокрутку
 /*
@@ -51,7 +51,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
 
 	if(window.innerWidth > 680) {
-		if((window.pageYOffset || doc.documentElement.scrollTop) > 550) {
+		if((window.pageYOffset || doc.documentElement.scrollTop) > 600) {
 			if(articleWidth !== '100%') {
 			   article.style.marginLeft = 0;    
 			   scrollBtn.classList.add("scroll-button-active");
@@ -633,10 +633,14 @@ function createDOMElem(elemParams) {
 	return elem;
 }
 
-// поиск новости
+// Функция поиска новости (вызывается из меню сайта)
+/*
+	- принимает форму из меню сайта
+	- озвращает false для отмены стандартного поведения формы
+*/
 function newsSearch(form) {
 	var date = form['custom-news-date'].value;
-	console.log('form date => ' + date);
+	DEBUG(newsSearch.name, 'form date => ' + date);
 	
 	if(!date) return false;
 	
@@ -668,7 +672,7 @@ function newsSearch(form) {
 				
 				// строка оказалась формата JSON
 				if(typeof response === 'object') {
-					console.log("PHP response: date => " + response['date'] + "; type => " + response['type']);
+					DEBUG(newsSearch.name, "PHP response: date => " + response['date'] + "; type => " + response['type']);
 					
 					if(response['type'] === 'db') {
 						window.location.href = 'index.php?pages=news&custom-news-date='+response['date'];
@@ -691,7 +695,12 @@ function newsSearch(form) {
 	return false;
 }
 
-// поиск элемента
+// Функция поиска элемента 
+/*
+	- принимает параметры элемента, который должен быть найден,
+	- и родителя, от которого искать
+	- возвращает найденный элемент
+*/
 function getElems(query, parent) {
 	var elem;
 	

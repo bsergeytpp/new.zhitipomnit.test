@@ -46,6 +46,8 @@
 				$res = $this->db->executeQuery($query, array($this->sessionId, $this->data, $this->user, $this->ip, $this->userAgent), 'open_session');
 				//error_log("LOG: open new session with hash => $this->sessionId", 0);
 			}
+			
+			return true;
 		}
 
 		public function close() {
@@ -83,6 +85,8 @@
 				$res = $this->db->executeQuery($query, array($this->sessionId, $this->data, $this->user, $this->ip, $this->userAgent, $this->data), 'write_session');
 				//error_log("LOG: write session with hash => $this->sessionId", 0);
 			}
+			
+			return true;
 		}
 
 		public function destroy($sessionId) {

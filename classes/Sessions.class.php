@@ -33,9 +33,9 @@
 			
 			if($this->sessionId === '') {
 				$cookieId = $this->getSessionCookie();
+				$this->sessionId = $cookieId;
 				//error_log("LOG: cookie id => $cookieId", 0);
-
-				return false;
+				if($this->sessionId === '') return true;
 			}
 			
 			if($this->db->getLink()) {
@@ -56,7 +56,7 @@
 		}
 
 		public function read($sessionId) {	
-			if($sessionId !== $this->sessionId) return;
+			if($sessionId !== $this->sessionId) return true;
 			
 			if($this->db->getLink()) {
 				$query = "SELECT session_data FROM sessions WHERE session_hash = ?";
@@ -64,17 +64,18 @@
 				
 				//error_log("LOG: read session with hash => $this->sessionId", 0);
 				
-				if($res === false) return false;
+				if($res === false) return true;
 				
 				$this->data = $res->fetchColumn();
 				$res->closeCursor();
+				return $this->data;
 			}
 
-			return $this->data;
+			return true;
 		}
 
 		public function write($sessionId, $sessionData) {
-			if($sessionId !== $this->sessionId) return;
+			if($sessionId !== $this->sessionId) return true;
 			
 			$this->data = $sessionData;
 			
@@ -90,7 +91,7 @@
 		}
 
 		public function destroy($sessionId) {
-			if($sessionId !== $this->sessionId) return;
+			if($sessionId !== $this->sessionId) return true;
 
 			if($this->db->getLink()) {
 				$query = "DELETE FROM sessions WHERE session_hash = ?";
@@ -100,11 +101,10 @@
 				
 				if($res === true) {
 					setcookie("PHPSESSID", "", time() - 3600);
-					return true;
 				}
 			}
 			
-			return false;
+			return true;
 		}
 
 		public function gc($maxlifetime) {
@@ -113,6 +113,8 @@
 				$res = $this->db->executeQuery($query, array($this->sessionTime), 'gc_session');
 				//error_log("LOG: clear session with hash => $this->sessionId", 0);
 			}
+			
+			return true;
 		}
 		
 		public function setUser($userLogin) {

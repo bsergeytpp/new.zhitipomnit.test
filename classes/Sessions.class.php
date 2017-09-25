@@ -31,11 +31,11 @@
 			$this->getIpAdress();
 			$this->getUserAgent();
 			
-			if($this->sessionId === '') {
+			if(!$this->sessionId) {
 				$cookieId = $this->getSessionCookie();
 				$this->sessionId = $cookieId;
 				//error_log("LOG: cookie id => $cookieId", 0);
-				if($this->sessionId === '') return true;
+				if(!$this->sessionId) return true;
 			}
 			
 			if($this->db->getLink()) {
@@ -154,6 +154,32 @@
 		
 		public function getData() {
 			return $this->data;
+		}
+		
+		public function getActiveSessions() {	
+			if($this->db->getLink()) {
+				$countQuery = "SELECT COUNT(session_id) FROM sessions 
+							   WHERE (session_last_seen + interval '60 seconds') >= ?";
+						  //WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
+				$selectQuery = "SELECT session_username FROM sessions 
+								WHERE (session_last_seen + interval '60 seconds') >= ?";
+				$now = date('Y-m-d H:i:sO', time());
+				$countRes = $this->db->executeQuery($countQuery, array($now), 'get_active_sessions_count');
+				$selectRes = $this->db->executeQuery($selectQuery, array($now), 'get_active_sessions');
+				
+				if($countRes) {
+					$sessionsCount = $countRes->fetchColumn();
+					//error_log("LOG: count => ".$sessionsCount, 0);
+					echo $sessionsCount."<br>";
+				}
+				
+				echo 'Пользователи онлайн(';
+				
+				while($row = $selectRes->fetchColumn()) {
+					echo $row.',';
+				}
+				echo ')';
+			}
 		}
 	}
 ?>

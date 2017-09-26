@@ -6,7 +6,6 @@
 		private static $_instance = null; 
 		
 		private function __construct() {}
-		
 		private function __clone() {}
 		
 		function __destruct() {
@@ -17,8 +16,9 @@
 		
 		public static function getInstance() {
 			if(self::$_instance === null) {
-				self::$_instance = new DBClass();
+				self::$_instance = new self();
 			}
+
 			return self::$_instance;
 		}
 		

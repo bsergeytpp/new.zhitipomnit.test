@@ -6,8 +6,6 @@
 	if(isset($_GET['logout'])) {
 		logOut();
 	}
-	
-	global $sessionHandler;
 ?>
 <!DOCTYPE html>
 <html>
@@ -60,6 +58,7 @@
 	<div>Пользователи онлайн: </div>
 	<strong>
 	<? 
+		global $sessionHandler;
 		$sessHandler = DBSessionHandler::getInstance();
 		$sessHandler->getActiveSessions(); 
 	?></strong>

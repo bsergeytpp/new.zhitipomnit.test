@@ -2,8 +2,8 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 	
 	function logOut() {
-		//deleteSessionDB();
-		require "session.inc.php";
+		require_once "session.inc.php";
+		global $sessionHandler;
 		
 		if(isset($sessionHandler)) {
 			$sessionHandler->destroy(session_id());
@@ -15,7 +15,7 @@
 		}
 		
 		header('Location: ../../users/login.php');
-		exit;
+		//exit;
 	}
 	
 	function checkUser($login, $password) {

@@ -1,5 +1,5 @@
 <?
-	require_once (__DIR__.'/../functions/functions.php'); 
+	//require_once (__DIR__.'/../functions/functions.php'); 
 	
 	class DBSessionHandler implements \ SessionHandlerInterface {
 		private $db = null;
@@ -11,21 +11,25 @@
 		private $data = null;
 		private static $_instance = null; 
 		
+		private function __construct() {}
+		private function __clone() {}
+		
 		function __destruct() {
 			$this->db = null;
 			$this->sessionId = null;
 			$this->data = null;
 			$this->instance = null;
+			session_write_close();
 		}
 		
 		public static function getInstance() {
 			if(self::$_instance === null) {
-				self::$_instance = new DBSessionHandler();
+				self::$_instance = new self();
 			}
 			return self::$_instance;
 		}
 
-		public function open($savePath, $sessionName) {
+		public function open($save_path, $session_name) {
 			$this->db = DBClass::getInstance();
 			$this->sessionId = session_id();
 			$this->getIpAdress();
@@ -34,7 +38,7 @@
 			if(!$this->sessionId) {
 				$cookieId = $this->getSessionCookie();
 				$this->sessionId = $cookieId;
-				//error_log("LOG: cookie id => $cookieId", 0);
+
 				if(!$this->sessionId) return true;
 			}
 			
@@ -103,7 +107,7 @@
 					setcookie("PHPSESSID", "", time() - 3600);
 				}
 			}
-			
+
 			return true;
 		}
 
@@ -159,10 +163,9 @@
 		public function getActiveSessions() {	
 			if($this->db->getLink()) {
 				$countQuery = "SELECT COUNT(session_id) FROM sessions 
-							   WHERE (session_last_seen + interval '60 seconds') >= ?";
-						  //WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
+							   WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
 				$selectQuery = "SELECT session_username FROM sessions 
-								WHERE (session_last_seen + interval '60 seconds') >= ?";
+								WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
 				$now = date('Y-m-d H:i:sO', time());
 				$countRes = $this->db->executeQuery($countQuery, array($now), 'get_active_sessions_count');
 				$selectRes = $this->db->executeQuery($selectQuery, array($now), 'get_active_sessions');

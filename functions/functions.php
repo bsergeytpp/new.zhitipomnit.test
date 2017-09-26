@@ -1,6 +1,6 @@
 <?
-	require (__DIR__."/../classes/DB.class.php"); 
-	//require_once (__DIR__."/../admin/admin_security/session.inc.php");
+	require_once (__DIR__."/../classes/DB.class.php");
+	require_once (__DIR__."/../classes/Sessions.class.php");	
 	
 	// подключаемся к базе данных
 	$config = parse_ini_file(__DIR__.'/../config.ini');

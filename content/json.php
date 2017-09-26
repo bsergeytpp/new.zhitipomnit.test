@@ -1,6 +1,6 @@
 <? 
 	require_once '../admin/admin_security/session.inc.php';
-	
+
 	if($_SERVER['REQUEST_METHOD'] == 'HEAD') {
 		if(isset($_SESSION['admin'])) {
 			if($_SESSION['admin'] === true) {

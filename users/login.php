@@ -1,9 +1,7 @@
 <?
 	require_once "../admin/admin_security/secure.inc.php";
 	require_once "../admin/admin_security/session.inc.php";
-	
-	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
-	
+		
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		$user = trim(strip_tags($_POST['user']));
 		$user = filter_var($user, FILTER_SANITIZE_STRING);

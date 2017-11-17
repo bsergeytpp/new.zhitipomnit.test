@@ -25,10 +25,12 @@
 					}
 					else {
 						//error_log('LOG: no news found', 0);
-						echo "<div class='error-message'>Новости не найдены</div>";
+						// заглушка для переадресации на страницу "Новости не найдены"
+						echo json_encode(['date' => '1991-01-01', 'type' => 'db']);
 					}
 				}
-				else if($newsCount > 1) {
+				else if($newsCount > 0) {
+					//error_log('LOG: found DB news', 0);
 					echo json_encode(['date' => $newsDate, 'type' => 'db']);
 				}
 			}

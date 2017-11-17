@@ -679,7 +679,6 @@ function newsSearch(form) {
 				DEBUG(newsSearch.name, 'Запрос отправлен.');
 				
 				var response = this.responseText;
-				
 				// вернулась строка
 				if(typeof response === 'string') {
 					try{

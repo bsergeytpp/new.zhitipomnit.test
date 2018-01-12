@@ -335,12 +335,13 @@
 				'style=padding-top:10"',
 				'style=padding-top: 10"',
 				'style=padding-top: 10 ""',
+				'style="padding-top: 10""',
 				'"padding-left: 25; padding-right: 25; padding-top: 0; padding-bottom: 25""'
 			];
-			$replacement = array_fill(0, 11, '');
+			$replacement = array_fill(0, 12, '');
 			$replacement[0] = 'content/news/materials';
 			$adaptedNews = str_replace($pattern, $replacement, $newsToAdapt);
-			$adaptedNews = strip_tags($adaptedNews, '<h1><h2><h3><p><strong><a><img><ol><ul><li>');
+			$adaptedNews = strip_tags($adaptedNews, '<style><h1><h2><h3><p><strong><a><img><ol><ul><li>');
 
 			return $adaptedNews;
 		}

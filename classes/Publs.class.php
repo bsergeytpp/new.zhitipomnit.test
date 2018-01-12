@@ -148,7 +148,7 @@
 				$replacemetnt[0] = "content/publ/materials";
 				$publ = str_replace($pattern, $replacemetnt, $publ);
 				$publ = preg_replace("/Фонд Жить и Помнить/", "", $publ, 1);
-				$publ = strip_tags($publ, '<h1><h2><h3><p><strong><a><img><ol><ul><li>');
+				$publ = strip_tags($publ, '<style><h1><h2><h3><p><strong><a><img><ol><ul><li>');
 				
 				return $publ;
 			}

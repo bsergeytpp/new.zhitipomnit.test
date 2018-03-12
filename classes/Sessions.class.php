@@ -71,6 +71,12 @@
 				if($res === false) return true;
 				
 				$this->data = $res->fetchColumn();
+				
+				// http://php.net/manual/ru/function.session-start.php#120589
+				if(is_null($this->data)) {
+					$this->data = '';
+				}
+				
 				$res->closeCursor();
 				return $this->data;
 			}

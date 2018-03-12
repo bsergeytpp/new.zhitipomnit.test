@@ -16,37 +16,37 @@
 </head>
 <body>
 	<h1>Администрирование сайта</h1>
-	<h3>Доступные действия:</h3>
-	<ul>
+	<h2>Доступные действия:</h2>
+	<ul class="admin-nav">
 		<li>
-			Новости
+			<h3>Новости</h3>
 			<ul>
 				<li><a href='admin_news/add_news.php'>Добавление новостей</a></li>
 				<li><a href='admin_news/manage_news.php'>Управление новостями</a></li>
 			</ul>
 		</li>
 		<li>
-			Публикации
+			<h3>Публикации</h3>
 			<ul>
 				<li><a href='admin_publs/add_publs.php'>Добавление публикаций</a></li>
 				<li><a href='admin_publs/manage_publs.php'>Управление публикациями</a></li>
 			</ul>
 		</li>
 		<li>
-			Пользователи
+			<h3>Пользователи</h3>
 			<ul>
 				<li><a href='admin_users/manage_users.php'>Управление пользователями</a></li>
 				<li><a href='admin_users/users_sessions.php'>Сессии пользователей</a></li>
 			</ul>
 		</li>
 		<li>
-			Книга Памяти
+			<h3>Книга Памяти</h3>
 			<ul>
 				<li><a href='admin_search/manage_persons.php'>Управление именами</a></li>
 			</ul>
 		</li>
 		<li>
-			Прочее
+			<h3>Прочее</h3>
 			<ul>
 				<li><a href='admin_settings/settings.php'>Настройки</a></li>
 				<li><a href='admin_security/logs.php'>Логи</a></li>
@@ -55,7 +55,7 @@
 		</li>
 	</ul>
 	<a href="/">Перейти на сайт</a>
-	<div>Пользователи онлайн: </div>
+	<div>Всего онлайн: </div>
 	<strong>
 	<? 
 		global $sessionHandler;

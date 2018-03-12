@@ -45,3 +45,49 @@ table td:hover {
 	background-color: lightgreen;
 	color: white;
 }
+.admin-nav {
+	width: 50%;
+	list-style: none;
+}
+.admin-nav ul li {
+	background: black;
+	margin-bottom: 1%;
+	box-shadow: -1px 1px .3em black;
+    border-top: 1px solid red;
+    border-right: 1px solid red;
+    border-radius: 10px 0 0 10px;
+	transition: background .2s linear;
+	text-align: center;
+	list-style: none;
+}
+.admin-nav ul li a{
+    color: white;
+    font-family: "Book Antiqua";
+    text-decoration: none;
+    font-size: 1.2em;
+	display: block;
+}
+.admin-nav ul li:hover {
+    background: darkred;
+    transition: background .2s linear;
+}
+h2, h3 {
+    padding: 0 40px;
+	text-align: center;
+	background: black;
+	color: white;
+	position: relative;
+	border-top: 1px solid red;
+	border-right: 1px solid red;
+	border-radius: 15px 0 0 15px;
+	box-shadow: 1px 1px 0.3em black;
+	clear: none !important;
+}
+h2 {
+	font-size: 1.6em;
+	margin: 20px -40px 5px 0px !important;
+}
+h3 {
+	background: darkred;
+	margin: 10px -20px 5px 0px !important;
+}

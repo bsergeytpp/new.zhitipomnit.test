@@ -90,13 +90,13 @@ addEventListenerWithOptions(document, 'DOMContentLoaded', changeNewsStyle, {pass
 function changeNews(e) {
 	var target = e.target;
 	
-	if(target.tagName !== 'STRONG') return;
+	if(target.tagName !== 'IMG') return;
 	
-	var style = target.innerText;
+	var type = target.getAttribute('alt');
 		
-	if(style !== 'classic' && style !== 'alt') return;
+	if(type !== 'classic' && type !== 'alt') return;
 	
-	document.cookie = "newsStyle="+style;
+	document.cookie = "newsStyle="+type;
 	window.location.reload(false); 
 }
 

@@ -446,11 +446,20 @@ body::before {
 }
 .news-style {
 	width: 100%;
-	background: black;
-	color: rgba(255,255,255, .87);
+	color: rgba(0,0,0, .87);
+	text-align: right;
+	position: relative;
 }
-.news-style strong {
+#news-alt, #news-classic {
+	position: absolute;
+	top: 1%;
 	cursor: pointer;
+}
+#news-classic {
+	left: 10px;
+}
+#news-alt {
+	left: 50px;
 }
 .article-news {
     color: white;  

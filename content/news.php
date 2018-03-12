@@ -1,16 +1,14 @@
                 <? 
 					require 'classes/News.class.php'; 
 				?>
-				<h2>Новости</h2>
+				
+				<div class="news-style" title="Отображение новостей">
+						<h2>Новости</h2>
+						<img src="images/news_classic.png" alt="classic" id="news-classic" title="Классическое" width="28">
+						<img src="images/news_alt.png" alt="alt" id="news-alt" title="Альтернативное" width="28">
+				</div>
                 <div id="news-container">
 					<!--<div class="clear-div"></div>-->
-					<div class="news-style">
-						<h4>Стиль новости</h4>
-						<img src="images/news_classic.png" alt="classic" width="32">
-						<strong>classic</strong>
-						<img src="images/news_alt.png" alt="alt" width="32">
-						<strong>alt</strong>
-					</div>
 					<?
 						$customNewsDate = isset($_GET['custom-news-date']) ? $_GET['custom-news-date'] : '';
 						$newsId = isset($_GET['id']) ? $_GET['id'] : '';

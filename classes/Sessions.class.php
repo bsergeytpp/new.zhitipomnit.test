@@ -51,7 +51,7 @@
 				//error_log("LOG: open new session with hash => $this->sessionId", 0);
 			}
 			
-			return true;
+			return $res ? true : false;
 		}
 
 		public function close() {
@@ -60,7 +60,7 @@
 		}
 
 		public function read($sessionId) {	
-			if($sessionId !== $this->sessionId) return true;
+			if($sessionId !== $this->sessionId) return '';
 			
 			if($this->db->getLink()) {
 				$query = "SELECT session_data FROM sessions WHERE session_hash = ?";
@@ -68,20 +68,15 @@
 				
 				//error_log("LOG: read session with hash => $this->sessionId", 0);
 				
-				if($res === false) return true;
+				if($res === false) return '';
 				
 				$this->data = $res->fetchColumn();
 				
 				// http://php.net/manual/ru/function.session-start.php#120589
-				if(is_null($this->data)) {
-					$this->data = '';
-				}
-				
-				$res->closeCursor();
-				return $this->data;
+				return is_null($this->data) ? '' : $this->data;
 			}
 
-			return true;
+			return '';
 		}
 
 		public function write($sessionId, $sessionData) {
@@ -97,7 +92,7 @@
 				//error_log("LOG: write session with hash => $this->sessionId", 0);
 			}
 			
-			return true;
+			return $res ? true : false;
 		}
 
 		public function destroy($sessionId) {
@@ -114,17 +109,17 @@
 				}
 			}
 
-			return true;
+			return $res ? true : false;
 		}
 
 		public function gc($maxlifetime) {
 			if($this->db->getLink()) {
-				$query = "DELETE FROM sessions WHERE session_last_seen < (NOW() - INTERVAL '?' SECOND)";
-				$res = $this->db->executeQuery($query, array($this->sessionTime), 'gc_session');
-				//error_log("LOG: clear session with hash => $this->sessionId", 0);
+				$query = "DELETE FROM sessions WHERE session_last_seen < (NOW() - INTERVAL '".$this->sessionTime."' SECOND)";
+				$res = $this->db->executeQuery($query, NULL, 'gc_session');
+				//error_log("LOG: delete old sessions", 0);
 			}
 			
-			return true;
+			return $res ? true : false;
 		}
 		
 		public function setUser($userLogin) {
@@ -182,7 +177,7 @@
 					echo $sessionsCount."<br>";
 				}
 				
-				echo 'Пользователи онлайн(';
+				echo 'Активные сессии (';
 				
 				while($row = $selectRes->fetchColumn()) {
 					echo $row.',';

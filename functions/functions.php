@@ -60,6 +60,27 @@
 		return false;
 	}
 	
+	//https://gist.github.com/jonathanstark/dfb30bdfb522318fc819
+	function verifyCaptcha($userData) {
+		$post_data = http_build_query(
+			array(
+				'secret' => '6LcUgUwUAAAAAOn0cyci0e8FH9x68_Lb2FzPfF-o',
+				'response' => $userData,
+				'remoteip' => $_SERVER['REMOTE_ADDR']
+			)
+		);
+		$opts = array('http' =>
+			array(
+				'method'  => 'POST',
+				'header'  => 'Content-type: application/x-www-form-urlencoded',
+				'content' => $post_data
+			)
+		);
+		$context  = stream_context_create($opts);
+		$response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+		return $response;
+	}
+	
 	function getSettings($id, $name) {
 		global $db;
 		global $dbLink;

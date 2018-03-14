@@ -164,9 +164,9 @@
 		public function getActiveSessions() {	
 			if($this->db->getLink()) {
 				$countQuery = "SELECT COUNT(session_id) FROM sessions 
-							   WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
+							   WHERE (session_last_seen + interval '60 seconds') >= ?";
 				$selectQuery = "SELECT session_username FROM sessions 
-								WHERE (session_last_seen + interval '".$this->sessionTime." seconds') >= ?";
+								WHERE (session_last_seen + interval '60 seconds') >= ?";
 				$now = date('Y-m-d H:i:sO', time());
 				$countRes = $this->db->executeQuery($countQuery, array($now), 'get_active_sessions_count');
 				$selectRes = $this->db->executeQuery($selectQuery, array($now), 'get_active_sessions');

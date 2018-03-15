@@ -15,15 +15,16 @@
 				$query = "UPDATE users SET " . pg_escape_string($name) . " = ? WHERE user_id = ?";
 				$result = $db->executeQuery($query, array($text, $id), 'update_user');
 				
-				if($result === false) echo "<div class='error-message'>Логин пользователя не был обновлен</div>";
+				if($result === false) echo "<div class='error-message'>Данные пользователя не были обновлены</div>";
 				else {
-					echo "<div class='success-message'>Логин пользователя был обновлен</div>";
+					echo "<div class='success-message'>Данные пользователя были обновлены</div>";
+					$log_type = 4;
 					$log_name = 'user-update';
 					$log_text = 'user '.$_SESSION['user'].' has updated user: '.$name;
 					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 					$log_date = date('Y-m-d H:i:sO');;
 					$log_important = $_SESSION['admin'];
-					echo addLogs($log_name, $log_text, $log_location, $log_date, $log_important);
+					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
 				}
 			}
 			echo "<div class='error-message'>Нет данных для обновления.</div>";

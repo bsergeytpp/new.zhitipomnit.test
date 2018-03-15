@@ -18,8 +18,7 @@
 			<p>Логин: <input type="text" name="user-login" required></p>
 			<p>Пароль: <input type="password" name="user-password" required></p>
 			<p>Email: <input type="email" name="user-email" required></input></p>
-			<p>Группа: <input name="user-group" type="text"></input></p>
-			<p> Код-безопасности: <div name="recaptcha" id="recaptcha" required></div></p> 
+			<p>Код-безопасности: <div name="recaptcha" id="recaptcha" required></div></p> 
 			<p><input type="submit" value="Добавить"></p>
 		</form>
 		<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>

@@ -11,29 +11,39 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<script src="../scripts/tinymce/tinymce.min.js"></script>
 	<script src="../admin/scripts/admin_script.js"></script>
-	<link type="text/css" rel="StyleSheet" href="../admin/styles/admin_styles.css" />
+	<link type="text/css" rel="StyleSheet" href="../styles/styles.css" />
 </head>
 <body>
-	<h1>Профиль пользователя</h1>
-	<a href="login.php">Назад</a><br> 
-	<a href="login.php?logout">Выйти</a>
-	<h3>Данные:</h3>
-	<table border='1'>
-		<tr>
-			<th>Логин</th>
-			<th>Email</th>
-			<th>Группа</th>
-		</tr>
+	<div id="wrapper" class="blocks">
 		<? 
 			global $userLogin; 
+			
+			// переход по ссылке из мини-профиля
 			$userLogin = (isset($_GET['user_login'])) ? $_GET['user_login'] : null;
 			
+			// зашел другой пользователь или по прямому адресу
 			if($userLogin == null) $userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
-
-			if($userLogin !== null) {
-				getUserData($userLogin);
-			}		
+			
+			// зашел гость
+			if($userLogin == null) {
+				header("Location: login.php");
+			}
+			
+			$userData = getUserData($userLogin); 
+			if(!$userData) {
+				echo "<h2>Пользователь <strong>".$userLogin."</strong> не найден!</h2>";
+				exit;
+			}
 		?>
-	</table> 
+		<h1>Профиль пользователя <?=$userLogin?></h1>
+		<a href="/">Главная</a><br> 
+		<h3>Данные:</h3>
+		<p><strong>Логин: </strong><? echo $userData['user_login']; ?></p>
+		<p><strong>Email: </strong><? echo $userData['user_email']; ?></p>
+		<p><strong>Группа: </strong><? echo $userData['user_group']; ?></p>
+		<p><strong>Дата регистрации: </strong><? echo $userData['user_reg_date']; ?></p>
+		<p><strong>Последний вход: </strong><? echo $userData['user_last_seen']; ?></p>
+		<a href="login.php?logout">Выйти</a>
+	</div>
 </body>
 </html>

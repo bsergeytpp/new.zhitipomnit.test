@@ -300,22 +300,33 @@
 	
 	/*
 		Функция вывода информации о пользователе
-		- получает ID пользователя
+		- получает логин пользователя
+		- возвращает массив из данных пользователя
 	*/
 	function getUserData($userLogin) {
 		if(!$userLogin) return;
 		
 		global $db;
-		$query = "SELECT user_login, user_email, user_group FROM users WHERE user_login LIKE ?";
-		$result = $db->executeQuery($query, array($userLogin), 'get_user_info');
 		
-		while($row = $result->fetch(PDO::FETCH_ASSOC)) {
-			echo '<tr>';
-			foreach($row as $val) {
-				echo '<td>' . $val . '</td>';
-			}
-			echo '</tr>';
-		}
+		$query = "SELECT user_login, user_email, user_group, user_reg_date, user_last_seen FROM users WHERE user_login LIKE ?";
+		$result = $db->executeQuery($query, array($userLogin), 'get_user_info');
+				
+		return ($result) ? $result->fetch(PDO::FETCH_ASSOC) : false;
+	}
+	
+	/*
+		Функция обновления информации о последнем входе пользователя
+		- получает логин пользователя
+	*/
+	function updateUserLastSeen($userLogin) {
+		if(!$userLogin) return;
+		
+		global $db;
+		$currentTime = date('Y-m-d H:i:sO');
+		$query = "UPDATE users SET user_last_seen = ? WHERE user_login LIKE ?";
+		$result = $db->executeQuery($query, array($currentTime, $userLogin), 'update_user_last_seen');
+				
+		return $result ? true : false;
 	}
 	
 	/*

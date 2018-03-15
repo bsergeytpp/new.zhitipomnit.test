@@ -6,14 +6,16 @@
 	function getUsersToTable() {
 		global $db;
 		
-		$query = 'SELECT user_id, user_login, user_email, user_group FROM users ORDER BY user_id';
+		$query = 'SELECT user_id, user_login, user_email, user_group, user_reg_date, user_last_seen FROM users ORDER BY user_id';
 		$res = $db->executeQuery($query, null, null);
 		
 		$usersArr = [
 			0 => 'user_id',
 			1 => 'user_login',
 			2 => 'user_email',
-			3 => 'user_group'
+			3 => 'user_group',
+			4 => 'user_reg_date',
+			5 => 'user_last_seen'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_ASSOC)) {
@@ -25,6 +27,8 @@
 					case 1: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 2: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					case 3: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
+					case 4: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
+					case 5: echo '<td name='.$usersArr[$i].'>' . $val . '</td>'; break;
 					default: break;
 				}
 				$i++;
@@ -57,6 +61,8 @@
 			<th>Login</th>
 			<th>Email</th>
 			<th>Group</th>
+			<th>Reg date</th>
+			<th>Last login</th>
 		</tr>
 		<? getUsersToTable(); ?>
 	</table> 

@@ -26,6 +26,7 @@
 			$_SESSION['token'] = $salt . ':' . md5($salt . ':' . $_SESSION['secret']);
 			
 			setcookie("sec-token", $_SESSION['token'], 0, '/', 'new.zhitipomnit.test');
+			updateUserLastSeen($user);
 			
 			if($row['user_group'] == 'admins') {
 				$_SESSION['admin'] = true;
@@ -100,5 +101,7 @@
 			<button type="submit">Войти</button>
 		</div>	
 	</form>
+	<a href="/">На главную</a>
+	<a href="reg_users.php">Зарегистрироваться</a>
 </body>
 </html>

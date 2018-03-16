@@ -43,7 +43,6 @@
 			if(isset($sessionHandler)) {
 				$sessionHandler->setUser($_SESSION['user']);
 			}
-			//updateSessionDB();
 			
 			$log_type = 4;
 			$log_name = 'login';

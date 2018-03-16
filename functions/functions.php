@@ -109,65 +109,6 @@
 		return false;
 	}
 	
-	function updateSessionDB() {
-		global $db;
-		
-		if($db->getLink()) {
-			$phpSessionId = clearStr(session_id());
-			$user = $_SESSION['user'];
-			$lastSeen = date('Y-m-d');
-			
-			$query = "SELECT session_id FROM sessions WHERE session_hash = ? LIMIT 1";
-			$result = $db->executeQuery($query, array($phpSessionId), 'get_session_id');
-			
-			if($result === false) {
-				echo "<div class='error-message'>Ошибка запроса</div>";
-			}
-			else {
-				$dbSessionId = $result->fetch();
-				if($dbSessionId) {
-					$query = 'UPDATE sessions SET session_last_seen = ? WHERE session_id = ?';
-					$result = $db->executeQuery($query, array($lastSeen, $dbSessionId[0]), 'update_session');
-					
-					if($result === false) {
-						echo "<div class='error-message'>Не удалось добавить сессию</div>";
-					}
-					else {
-						echo "<div class='success-message'>Сессия успешно добавлена</div>";
-					}
-				}
-				else {
-					$query = 'INSERT INTO sessions (session_hash, session_last_seen, session_username) VALUES (?, ?, ?)';
-					$result = $db->executeQuery($query, array($phpSessionId, $lastSeen, $user), 'add_session');
-					
-					if($result === false) {
-						echo "<div class='error-message'>Не удалось добавить сессию</div>";
-					}
-					else {
-						echo "<div class='success-message'>Сессия успешно добавлена</div>";
-					}
-				}
-			}
-		}
-		else echo "<div class='error-message'>Соединение не установлено</div>";
-	}
-	
-	function deleteSessionDB() {
-		global $db;
-				
-		$phpSessionId = clearStr(session_id());
-		
-		$query = "DELETE FROM sessions WHERE session_hash = ?";
-		$result = $db->executeQuery($query, array($phpSessionId), 'delete_session');
-		
-		if($result === false) {
-			echo "<div class='error-message'>Ошибка запроса</div>";
-		}
-		else {
-			echo "<div class='success-message'>Сессия удалена</div>";
-		}
-	}
-	
 	function addLogs($type, $name, $text, $location, $date, $important) {
 		global $db;
 		
@@ -443,27 +384,6 @@
 			}
 		}
 	}
-	
-	/*
-		Функция получения электронного адреса пользователя по логину
-		- принимает логин
-		- возвращает email
-		- TODO: пока не используется
-	*/
-	function getUserEmail($userLogin) {
-		global $db;
-		
-		if($db->getLink()) {
-			$query = "SELECT user_email FROM users WHERE user_login = ?";
-			$result = $db->executeQuery($query, array($userLogin), 'get_user_mail');
-			
-			if($result === false) echo "<div class='error-message'>Такого пользователя нет</div>";
-			else {
-				$row = $result->fetch();
-				return $row[0];	// TODO: не проверялось
-			}
-		}
-	}	
 	
 	/*
 		Функция подключения частей сайта

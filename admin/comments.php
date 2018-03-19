@@ -15,7 +15,7 @@
 				if($result === false) echo "<div class='error-message'>Ошибка в запросе</div>";
 				else if($result->fetchColumn() > 0) {
 	?>
-					<div class='comments-wrapper'>
+					<div id='comments-wrapper'>
 						<? 
 							// есть комментарии
 							if(checkComments($id) > 0) {

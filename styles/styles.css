@@ -249,7 +249,7 @@ body::before {
 	box-shadow: 1px 1px 0.3em black;
 	clear: none !important;
 }
-.comments-wrapper {
+#comments-wrapper {
 	width: 100%;
 }
 .comments-list-div h2, .comments-form-div h2 {
@@ -583,13 +583,20 @@ body::before {
 	border-radius: 0 0 0 7px;
 }
 .alt-news-date-div {
-	width: 50%;
+	width: 90%;
 	float: left;
 }
 .alt-news-comments-div {
-	width: 50%;
-	margin-left: 50%;
+	width: 10%;
+	margin-left: 90%;
 	text-align: right;
+	cursor: pointer;
+}
+.alt-news-comments-div img {
+	margin-top: 5px;
+}
+.alt-news-comments-div strong {
+	vertical-align: super;
 }
 /* END alt news style*/
 p.quotes {
@@ -617,27 +624,14 @@ p.quotes:before {
     color: rgba(255,255,255, .8);
 }
 .scroll-button {
-    background: black;
-    border-radius: 75px;
-    padding: 35px 10px;
     color: white;
-    width: 70px;
-    opacity: 0;
-    position: fixed;
-    bottom: -100px;
-    right: 50px;
+    opacity: .5;
+    position: absolute;
+    bottom: 70px;
+    left: 20px;
     transition: bottom .3s linear,
                 opacity .5s linear;
     cursor: pointer;
-    border-top: 1px solid #888;
-    border-left: 1px solid #888;
-	z-index: 999;
-}
-.scroll-button-active {
-    bottom: 100px;
-    opacity: .5;
-    transition: bottom .3s linear,
-                opacity 1s linear;
 }
 .scroll-button:hover {
     opacity: 1;
@@ -900,7 +894,7 @@ p.quotes:before {
         padding: 5px 15px;
     }
 	.article h2 {
-		margin-right: 0;
+		margin-right: 0 !important;
 		width: auto;
 	}
 	.article h2:after {
@@ -914,7 +908,8 @@ p.quotes:before {
 		margin-left: 7px;
 	}
     .scroll-button {
-        display: none;
+		bottom: 10px;
+		left: 10px;
     }
     .footer-copyright,
 	.comments-table{
@@ -954,7 +949,8 @@ p.quotes:before {
         width: 100%;
     }
     .scroll-button {
-        display: none;
+		bottom: 10px;
+		left: 45%;
     }
     .nav {
         display: none;
@@ -964,7 +960,7 @@ p.quotes:before {
         margin: 5px;
     }
 	.article h2 {
-		margin-right: 0;
+		margin-right: 0 !important;
 		width: auto;
 	}
 	.article h2:after {
@@ -1000,7 +996,8 @@ p.quotes:before {
         font-size: 1.0em;
     }
     .scroll-button {
-        display: none;
+		bottom: 10px;
+		left: 45%;
     }
 	body {
 		background-image: url(../images/background.jpg);

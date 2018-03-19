@@ -88,6 +88,11 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 // расставляем элементы редактирования комментария
 User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	'use strict';
+	
+	if(typeof tinymce === 'undefined') {
+		appendScript('scripts/tinymce/tinymce.min.js');							
+	}
+	
 	var commTables = getElems(['comments-table']);
 
 	// если есть комментарии
@@ -156,7 +161,7 @@ User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditB
 	var self = this;
 	var targetId = target.getAttribute('data-id');
 	
-	if(target.classList.contains('edit-comm')) {
+	if(checkClass(target, 'edit-comm')) {
 		e.preventDefault();
 		var targetText = target.textContent;
 		

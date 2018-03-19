@@ -5,4 +5,5 @@
                 <img src="http://www.zhitipomnit.ru/images/viic.jpg" alt="" class="footer-image">
                 <img src="images/img1.jpg" alt="" class="footer-image">
             </div>
+			<div class="scroll-button" onclick="window.scrollTo(0,0);">↑ Наверх</div>
         </div>

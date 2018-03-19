@@ -49,19 +49,16 @@ var _DEBUG = false;
 addEventListenerWithOptions(document, 'scroll', function(e) {
 	var doc = document;
     var article = getElems(['article', 0]);
-    var scrollBtn = getElems(['scroll-button', 0]);
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
 
 	if(window.innerWidth > 680) {
 		if((window.pageYOffset || doc.documentElement.scrollTop) > 600) {
 			if(articleWidth !== '100%') {
 			   article.style.marginLeft = 0;    
-			   scrollBtn.classList.add("scroll-button-active");
 			}
 		}
 		else {
 			article.style.marginLeft = "";
-			scrollBtn.classList.remove("scroll-button-active");
 		}
 	
 		// делаем элементы при прокрутке ненажимаемыми
@@ -304,7 +301,7 @@ function replacePressPagesLinks() {
 	if(!pagesLinks) return;
 	
 	for(var i=0, len=pagesLinks.length; i<len; i++) {
-		if(pagesLinks[i].className === 'article-press-links') continue;
+		if(checkClass(pagesLinks[i], 'article-press-links')) continue;
 		
 		var strHref = pagesLinks[i].getAttribute('href');
 		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
@@ -389,12 +386,12 @@ function setCommentsParentId(e) {
 	console.log('TEST');
 	var target = e.target;
 	
-	if(target.className !== 'respond-button') return;
+	if(!checkClass(target, 'respond-button')) return;
 	
 	var parent = target.parentNode; 									// TD - родитель кнопки "Ответить"
 	
 	while(parent.tagName !== 'TABLE') {
-		if(parent.className === 'comments-respond') break;				// ищем TR с классом 'comments-respond'
+		if(!checkClass(parent, 'comments-respond')) break;				// ищем TR с классом 'comments-respond'
 		parent = parent.parentNode;
 	}
 	
@@ -429,6 +426,53 @@ function getParamFromLocationSearch(parName) {
 	}
 	
 	return null;
+}
+
+addEventListenerWithOptions(getElems(['comments-num']), 'click', openNewsComments, {});
+addEventListenerWithOptions(getElems(['alt-news-comments-div']), 'click', openNewsComments, {});
+
+// открываем новость на уровне комментариев
+function openNewsComments(e) {
+	var target = e.target;
+	var link;
+	
+	// для обоих стилей новостей
+	if(!checkClass(target, ['comments-num', 'alt-news-comments-div'])) {
+		while(target && (!checkClass(target, ['comments-num', 'alt-news-info-div']))) {
+			target = target.parentNode;
+			// элемент не найден
+			if(checkClass(target, ['article-news-header', 'alt-news-div'])) {
+				return;	
+			}
+		}
+	}
+	// обычный стиль
+	if(checkClass(target, 'comments-num')) {
+		var parent = target.parentNode;
+		if(!checkClass(parent, 'article-news-header')) {
+			return;
+		}
+		// находим элемент со ссылкой на новость
+		while(parent && !checkClass(parent, 'article-news-more')) {
+			parent = parent.nextElementSibling;
+		}	
+		
+		link = parent.getAttribute('href');
+	}
+	// альтернативный стиль
+	else if(checkClass(target, 'alt-news-info-div')) {
+		var prevElem = target.previousElementSibling;
+		// находим элемент со ссылкой на новость
+		if(checkClass(prevElem, 'alt-news-text-div')) {
+			while(prevElem && !checkClass(prevElem, 'alt-news-text-div')) {
+				prevElem = prevElem.previousElementSibling;
+			}
+		}
+		link = getElems(['alt-news-more', 0], prevElem);
+		link = link.getAttribute('href');
+	}
+	
+	if(link) window.location.href = link + '#comments-wrapper';
 }
 
 function checkCookieToken(token) {
@@ -501,7 +545,7 @@ function addCommentsAjax(commentsForm) {
 addEventListenerWithOptions(document, 'mouseup', function(e) {
 	var target = e.target;
 	
-	if(target.className !== 'comments-post-button') return;
+	if(!checkClass(target,'comments-post-button')) return;
 	
 	e.preventDefault();
 	removeActiveTinymceEditors();
@@ -511,7 +555,7 @@ addEventListenerWithOptions(document, 'mouseup', function(e) {
 
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
-	var wrapper = getElems(['comments-wrapper', 0]);
+	var wrapper = getElems('comments-wrapper');
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = getElems(['comments-list-div', 0], wrapper);
 
@@ -763,6 +807,35 @@ function getElems(query, parent) {
 		DEBUG(getElems.name, "Found elem/elem: " + elem);
 		return elem;
 	}
+}
+
+// Проверяем есть ли класс/классы у элемента
+/*
+	- принимает параметры элемента, который должен быть найден,
+	- строку или массив классов
+	- параметр на строгий поиск всех классов
+	- возвращает true/false
+*/
+function checkClass(elem, className, strict) {
+	if(!elem) return false;
+	
+	if(typeof(className) === 'object') {
+		for(var i=0, len = className.length; i<len; i++) {
+			if(strict) {
+				if(elem.classList.contains(className[i])) continue
+				// хотя бы один пропуску и false
+				else return false;					
+			}
+			else {
+				if(elem.classList.contains(className[i])) return true;
+				// до этого классов не найдено, проверяем последний класс
+				if(className[i] === className[len-1]) return elem.classList.contains(className[i]);
+			}
+		}
+		// все классы найдены
+		return true;
+	}
+	else return elem.classList.contains(className);
 }
 
 // Вывод отладочной информации

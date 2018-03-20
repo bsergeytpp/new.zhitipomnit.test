@@ -161,7 +161,7 @@ User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditB
 	var self = this;
 	var targetId = target.getAttribute('data-id');
 	
-	if(checkClass(target, 'edit-comm')) {
+	if(checkClass(target, ['edit-comm'])) {
 		e.preventDefault();
 		var targetText = target.textContent;
 		

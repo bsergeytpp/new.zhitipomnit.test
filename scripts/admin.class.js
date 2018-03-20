@@ -153,7 +153,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 	var targetId = target.getAttribute('data-id');
 	var targetText = target.textContent;
 	
-	if(checkClass(target, 'edit-comm')) {
+	if(checkClass(target, ['edit-comm'])) {
 		e.preventDefault();
 		e.stopPropagation();
 		
@@ -164,7 +164,7 @@ Admin.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEdit
 			saveComments.call(self, targetId);
 		}
 	}
-	else if(checkClass(target, 'del-comm')) {
+	else if(checkClass(target, ['del-comm'])) {
 		e.preventDefault();
 		e.stopPropagation();
 		deleteComments.call(self, targetId);

@@ -115,11 +115,10 @@ function findParent(child, parentClass) {
 	var parent = child.parentNode;
 
 	while(parent && parent.parentNode) {
-		parent = parent.parentNode;
-		
 		if(parent.classList.contains(parentClass)) return parent;
-		
 		if(parent.tagName === 'BODY') return null;
+		
+		parent = parent.parentNode;
 	}
 	
 	return null;
@@ -301,7 +300,7 @@ function replacePressPagesLinks() {
 	if(!pagesLinks) return;
 	
 	for(var i=0, len=pagesLinks.length; i<len; i++) {
-		if(checkClass(pagesLinks[i], 'article-press-links')) continue;
+		if(checkClass(pagesLinks[i], ['article-press-links'])) continue;
 		
 		var strHref = pagesLinks[i].getAttribute('href');
 		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
@@ -386,12 +385,12 @@ function setCommentsParentId(e) {
 	console.log('TEST');
 	var target = e.target;
 	
-	if(!checkClass(target, 'respond-button')) return;
+	if(!checkClass(target, ['respond-button'])) return;
 	
 	var parent = target.parentNode; 									// TD - родитель кнопки "Ответить"
 	
 	while(parent.tagName !== 'TABLE') {
-		if(!checkClass(parent, 'comments-respond')) break;				// ищем TR с классом 'comments-respond'
+		if(!checkClass(parent, ['comments-respond'])) break;				// ищем TR с классом 'comments-respond'
 		parent = parent.parentNode;
 	}
 	
@@ -434,45 +433,34 @@ addEventListenerWithOptions(getElems(['alt-news-comments-div']), 'click', openNe
 // открываем новость на уровне комментариев
 function openNewsComments(e) {
 	var target = e.target;
-	var link;
-	
+	var link, linkClass, parent;
+
 	// для обоих стилей новостей
 	if(!checkClass(target, ['comments-num', 'alt-news-comments-div'])) {
-		while(target && (!checkClass(target, ['comments-num', 'alt-news-info-div']))) {
-			target = target.parentNode;
-			// элемент не найден
-			if(checkClass(target, ['article-news-header', 'alt-news-div'])) {
-				return;	
-			}
+		parent = findParent(target, 'comments-num');
+		if(!parent) {
+			parent = findParent(target, 'alt-news-comments-div');
 		}
-	}
-	// обычный стиль
-	if(checkClass(target, 'comments-num')) {
-		var parent = target.parentNode;
-		if(!checkClass(parent, 'article-news-header')) {
-			return;
-		}
-		// находим элемент со ссылкой на новость
-		while(parent && !checkClass(parent, 'article-news-more')) {
-			parent = parent.nextElementSibling;
-		}	
-		
-		link = parent.getAttribute('href');
-	}
-	// альтернативный стиль
-	else if(checkClass(target, 'alt-news-info-div')) {
-		var prevElem = target.previousElementSibling;
-		// находим элемент со ссылкой на новость
-		if(checkClass(prevElem, 'alt-news-text-div')) {
-			while(prevElem && !checkClass(prevElem, 'alt-news-text-div')) {
-				prevElem = prevElem.previousElementSibling;
-			}
-		}
-		link = getElems(['alt-news-more', 0], prevElem);
-		link = link.getAttribute('href');
 	}
 	
+	if(parent) target = parent;
+	
+	if(checkClass(target, ['comments-num'])) {
+		target = findParent(target, 'article-news');
+		linkClass = 'article-news-more';
+	}
+	else if(checkClass(target, ['alt-news-comments-div'])) {
+		target = findParent(target, 'alt-news-div');
+		linkClass = 'alt-news-more';
+	} 
+
+	link = getElems([linkClass, 0], target);
+	link = link.getAttribute('href');
+	
 	if(link) window.location.href = link + '#comments-wrapper';
+	
+	
+	return;
 }
 
 function checkCookieToken(token) {
@@ -545,7 +533,7 @@ function addCommentsAjax(commentsForm) {
 addEventListenerWithOptions(document, 'mouseup', function(e) {
 	var target = e.target;
 	
-	if(!checkClass(target,'comments-post-button')) return;
+	if(!checkClass(target, ['comments-post-button'])) return;
 	
 	e.preventDefault();
 	removeActiveTinymceEditors();
@@ -812,30 +800,20 @@ function getElems(query, parent) {
 // Проверяем есть ли класс/классы у элемента
 /*
 	- принимает параметры элемента, который должен быть найден,
-	- строку или массив классов
+	- массив классов
 	- параметр на строгий поиск всех классов
 	- возвращает true/false
 */
-function checkClass(elem, className, strict) {
-	if(!elem) return false;
-	
-	if(typeof(className) === 'object') {
-		for(var i=0, len = className.length; i<len; i++) {
-			if(strict) {
-				if(elem.classList.contains(className[i])) continue
-				// хотя бы один пропуску и false
-				else return false;					
-			}
-			else {
-				if(elem.classList.contains(className[i])) return true;
-				// до этого классов не найдено, проверяем последний класс
-				if(className[i] === className[len-1]) return elem.classList.contains(className[i]);
-			}
+function checkClass(elem, classes, strict) {
+	if(classes.length > 1) {
+		if(!elem.classList.contains(classes.pop())) {
+			return strict ? false : checkClass(elem, classes);
 		}
-		// все классы найдены
-		return true;
+		else {
+			return !strict ? true : checkClass(elem, classes, strict);
+		}
 	}
-	else return elem.classList.contains(className);
+	else return elem.classList.contains(classes.pop());	// последний элемент
 }
 
 // Вывод отладочной информации

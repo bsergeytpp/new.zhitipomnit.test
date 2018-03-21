@@ -82,6 +82,7 @@
         <?
             include "content/bottom.php";
         ?> 
+        <script src="scripts/jslib.js"></script>
         <script src="scripts/script.js"></script>
         <script src="scripts/admin.class.js"></script>
         <script src="scripts/user.class.js"></script>

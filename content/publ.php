@@ -1,7 +1,7 @@
                 <? 
 					require 'classes/Publs.class.php'; 
 				?>
-				<h2>Публикации</h2>
+				<h2 class="publs-header">Публикации</h2>
                 <div id="publs-container">
 					<div class="clear-div"></div>
 					<?

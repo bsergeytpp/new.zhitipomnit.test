@@ -235,12 +235,12 @@ body::before {
     color: rgba(0,0,0,.8);
     font-family: "Book Antiqua";
 }
-.article h2:first-child {
+.article h2:first-child, .publs-header {
     padding: 0 40px;
     font-size: 1.6em;
 	text-align: right;
 	background: black;
-	color: white;
+	color: white !important;
 	margin: 20px -40px 20px 0px !important;
 	position: relative;
 	border-top: 1px solid red;

@@ -517,7 +517,7 @@ function updatePageTitle() {
 	
 	// старые новости
 	if(params.indexOf('old') !== -1) {
-		var pageParams = window.location.search.split('&');
+		var pageParams = params.split('&');
 		container = getElems(['', 0, 'P']);	// первый абзац новости		
 		
 		for(var i=0, len=pageParams.length; i<len; i++) {
@@ -540,20 +540,16 @@ function updatePageTitle() {
 	// старые статьи
 	if(params.indexOf('html') !== -1) {
 		var parent = getElems('publs-container');
-		container = getElems(['', 0, 'H2'], parent);	// первый заголовок статьи		
+		var searchElems = ['H2', 'H3', 'P'];	// ищем заголовок в этих элементах
 		
-		if(!container) {
-			container = getElems(['', 0, 'H3'], parent);	// первый абзац статьи		
-		} 
-		
-		if(!container) {
-			container = getElems(['', 0, 'P'], parent);	// первый абзац статьи		
-		} 
-		
-		if(container) {
-			header = container.textContent;
-			if(header !== '') {
+		for(var i=0, len=searchElems.length; i<len; i++) {
+			container = getElems(['', 0, searchElems[i]], parent);
+			// есть текст в найденном элементе
+			if(container && container.textContent !== '') {
+				header = container.textContent;
 				doc.title = header.substr(0, 50) + '...';
+				
+				return;
 			}
 		}
 		

@@ -538,9 +538,13 @@ function updatePageTitle() {
 	}
 	
 	// старые статьи
-	if(params.indexOf('html' !== -1)) {
+	if(params.indexOf('html') !== -1) {
 		var parent = getElems('publs-container');
 		container = getElems(['', 0, 'H2'], parent);	// первый заголовок статьи		
+		
+		if(!container) {
+			container = getElems(['', 0, 'H3'], parent);	// первый абзац статьи		
+		} 
 		
 		if(!container) {
 			container = getElems(['', 0, 'P'], parent);	// первый абзац статьи		

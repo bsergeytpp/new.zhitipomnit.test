@@ -1,16 +1,23 @@
 'use strict';
+var _DEBUG = false;
+
+addEventListenerWithOptions(document, 'DOMContentLoaded', changeNewsStyle, {});
+addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {});
+addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {});
+addEventListenerWithOptions(document, 'DOMContentLoaded', addLinksToCommentsId, {});
+addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {});
+addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {});
+addEventListenerWithOptions(getElems(['respond-button']), 'click', setCommentsParentId, {});
+addEventListenerWithOptions(getElems(['comments-num']), 'click', openNewsComments, {});
+addEventListenerWithOptions(getElems(['alt-news-comments-div']), 'click', openNewsComments, {});
+addEventListenerWithOptions(document, 'mouseup', postComment, {});
 addEventListenerWithOptions(document, "touchstart", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "touchmove", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "touchend", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "wheel", function(e) {
 	//var respTime = performance.now() - e.timeStamp;
 	//DEBUG('', "event on wheel; respTime: " + respTime);
-	
 }, {passive: true} );
-
-/***********************/
-
-var _DEBUG = false;
 
 // общая функция-событие на прокрутку
 /*
@@ -42,7 +49,7 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
 			body.classList.remove('disable-hover');
 		}, 500);
 	}
-}, {passive: true});
+}, {});
 
 // смена стиля новостей news-style
 function changeNewsStyle() {
@@ -52,8 +59,6 @@ function changeNewsStyle() {
 
 	div[0].addEventListener('mouseup', changeNews, false);
 }
-
-addEventListenerWithOptions(document, 'DOMContentLoaded', changeNewsStyle, {passive: true});
 
 function changeNews(e) {
 	var target = e.target;
@@ -68,6 +73,18 @@ function changeNews(e) {
 	window.location.reload(false); 
 }
 
+// выводит последний комментарий
+function postComment(e) {
+	var target = e.target;
+	
+	if(!checkClass(target, ['comments-post-button'])) return;
+	
+	e.preventDefault();
+	removeActiveTinymceEditors();
+	addCommentsAjax(getElems(['comments-form', 0]));
+	updateCommentsWrapper();
+}
+
 // добавляет событие по клику на нумерацию
 function addNavigationToList() {
 	var ul = getElems(['news-list']);
@@ -78,8 +95,6 @@ function addNavigationToList() {
 		ul[i].addEventListener('mouseup', navigateUlList, false);
 	}
 }
-
-addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {passive: true});
 
 // мини-профиль на основном сайте
 function userSwitcher() {
@@ -99,8 +114,6 @@ function userSwitcher() {
 		else usersDiv.style.left = '';
 	}, false);
 }
-
-addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {passive: true});
 
 // делаем ссылку на профиль автора комментария
 function addLinksToCommentsId() {
@@ -128,8 +141,6 @@ function addLinksToCommentsId() {
 		}
 	}
 }
-
-addEventListenerWithOptions(document, 'DOMContentLoaded', addLinksToCommentsId, {passive: true});
 
 // инициализируем элемент TinyMCE
 function initTinyMCE(className, isInline, width, height) {
@@ -178,9 +189,8 @@ function navigateUlList(e) {
 
 	// самый первый/последний элемент списка
 	if(target === this.firstChild || target === this.lastChild) {
-		// идем назад
 		var listNav = target.textContent;
-		
+		// идем назад
 		if(listNav.indexOf("«") !== -1) {	// ES6: listNav.includes("«"), no IE support
 			DEBUG(navigateUlList.name, "Назад: " + listNav);
 
@@ -310,8 +320,6 @@ function makeCommentsTree() {
 	}
 }
 
-addEventListenerWithOptions(document, 'DOMContentLoaded', makeCommentsTree, {passive: true});
-
 // при клике на кнопку "Ответить" записываем в скрытое поле формы комментирования ID комментария
 // ссылаемся на ID в тексте кнопки "Ответ"
 function setCommentsParentId(e) {
@@ -343,10 +351,6 @@ function setCommentsParentId(e) {
 	postBtn.value = 'Ответ сообщению '+parentId+' за авторством '+parentAuthor;
 	postBtn.focus();
 }
-
-addEventListenerWithOptions(getElems(['respond-button']), 'click', setCommentsParentId, {});
-addEventListenerWithOptions(getElems(['comments-num']), 'click', openNewsComments, {});
-addEventListenerWithOptions(getElems(['alt-news-comments-div']), 'click', openNewsComments, {});
 
 // открываем новость на уровне комментариев
 function openNewsComments(e) {
@@ -447,17 +451,6 @@ function addCommentsAjax(commentsForm) {
 	DEBUG(addCommentsAjax.name, 'Отправили запрос');
 }
 
-addEventListenerWithOptions(document, 'mouseup', function(e) {
-	var target = e.target;
-	
-	if(!checkClass(target, ['comments-post-button'])) return;
-	
-	e.preventDefault();
-	removeActiveTinymceEditors();
-	addCommentsAjax(getElems(['comments-form', 0]));
-	updateCommentsWrapper();
-}, {});
-
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
 	var wrapper = getElems('comments-wrapper');
@@ -522,13 +515,20 @@ function updatePageTitle() {
 	var params = window.location.search;
 	var container, header;
 	
-	// пропускаем старые новости/статьи
+	// старые новости/статьи
 	if(params.indexOf('old') !== -1) {
-		var test = window.location.search.split('&');
+		var pageParams = window.location.search.split('&');
+		container = getElems(['', 0, 'P']);	// первый абзац новости		
 		
-		for(var i=0, len=test.length; i<len; i++) {
-			if(test[i].indexOf('custom-news-date') !== -1) {
-				doc.title = 'Старая новость от ' + test[i].substr(-8);
+		for(var i=0, len=pageParams.length; i<len; i++) {
+			if(pageParams[i].indexOf('custom-news-date') !== -1) {
+				header = pageParams[i].substr(-8);	// дата новости
+				
+				if(container) {
+					header += ': ' + container.textContent;
+				}
+				
+				doc.title = header.substr(0, 50) + '...';
 				return;
 			}
 		}
@@ -566,10 +566,8 @@ function updatePageTitle() {
 	if(!header) return;
 	
 	header = header.textContent;	
-	doc.title += ' - ' + header.substr(0, 25) + '...';
+	doc.title = header.substr(0, 50) + '...';
 }
-
-addEventListenerWithOptions(document, 'DOMContentLoaded', updatePageTitle, {passive: true});
 
 // Функция поиска новости (вызывается из меню сайта)
 /*

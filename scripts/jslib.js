@@ -28,6 +28,8 @@ function addEventListenerWithOptions(target, type, handler, options) {
 	else target.addEventListener(type, handler, optionsOrCapture);
 }
 
+/***********************/
+
 // ищем родителя элемента
 function findParent(child, parentClass) {
 	var parent = child.parentNode;

@@ -515,7 +515,7 @@ function updatePageTitle() {
 	var params = window.location.search;
 	var container, header;
 	
-	// старые новости/статьи
+	// старые новости
 	if(params.indexOf('old') !== -1) {
 		var pageParams = window.location.search.split('&');
 		container = getElems(['', 0, 'P']);	// первый абзац новости		
@@ -535,6 +535,25 @@ function updatePageTitle() {
 		
 		doc.title = 'Старые новости';
 		return; 						
+	}
+	
+	// старые статьи
+	if(params.indexOf('html' !== -1)) {
+		var parent = getElems('publs-container');
+		container = getElems(['', 0, 'H2'], parent);	// первый заголовок статьи		
+		
+		if(!container) {
+			container = getElems(['', 0, 'P'], parent);	// первый абзац статьи		
+		} 
+		
+		if(container) {
+			header = container.textContent;
+			if(header !== '') {
+				doc.title = header.substr(0, 50) + '...';
+			}
+		}
+		
+		return; 	
 	}
 	
 	// новость

@@ -235,7 +235,7 @@ body::before {
     color: rgba(0,0,0,.8);
     font-family: "Book Antiqua";
 }
-.article h2 {
+.article h2:first-child {
     padding: 0 40px;
     font-size: 1.6em;
 	text-align: right;

@@ -24,6 +24,7 @@
 	$OLDNEWS_MAXCOUNT = 10;
 	$PUBLS_MAXCOUNT = 5;
 	$PRESS_MAXCOUNT = 10;
+	$LOGS_MAXCOUNT = 50;
 	
 	if(!$materialsCount) {
 		echo "<div class='warning-message'>Настройки не найдены в БД</div>";
@@ -33,12 +34,14 @@
 		$OLDNEWS_MAXCOUNT = $materialsCount['OLDNEWS_MAXCOUNT'];
 		$PUBLS_MAXCOUNT = $materialsCount['PUBLS_MAXCOUNT'];
 		$PRESS_MAXCOUNT = $materialsCount['PRESS_MAXCOUNT'];
+		$LOGS_MAXCOUNT = $materialsCount['LOGS_MAXCOUNT'];
 	}
 	
 	define('NEWS_MAXCOUNT', $NEWS_MAXCOUNT);	// новостей на странице
 	define('OLDNEWS_MAXCOUNT', $OLDNEWS_MAXCOUNT);	// старых новостей на странице
 	define('PUBLS_MAXCOUNT', $PUBLS_MAXCOUNT);	// статей на странице
 	define('PRESS_MAXCOUNT', $PRESS_MAXCOUNT);	// гaзет на странице
+	define('LOGS_MAXCOUNT', $LOGS_MAXCOUNT);	// логов на странице
 	
 	$link = false;
 	$userLogin = null;
@@ -160,7 +163,7 @@
 	}
 	
 	function getULlist($totalElems, $elemsPerPage, $href, $pageNum) {
-		$list = '<ul class="news-list"><li> « ';
+		$list = '<ul class="elems-list"><li> « ';
 		$totalPages = ceil($totalElems/$elemsPerPage);
 		
 		for($j = 1; $j <= $totalPages; $j++) {

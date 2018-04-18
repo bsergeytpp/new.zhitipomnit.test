@@ -341,7 +341,7 @@
 			$replacement = array_fill(0, 12, '');
 			$replacement[0] = 'content/news/materials';
 			$adaptedNews = str_replace($pattern, $replacement, $newsToAdapt);
-			$adaptedNews = strip_tags($adaptedNews, '<style><h1><h2><h3><p><strong><a><img><ol><ul><li>');
+			$adaptedNews = strip_tags($adaptedNews, '<style><h1><h2><h3><p><strong><a><img><ol><ul><li><iframe>');
 
 			return $adaptedNews;
 		}

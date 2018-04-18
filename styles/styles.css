@@ -423,22 +423,25 @@ body::before {
 #news-container hr {
     width: 100%;
 }
+#news-container iframe {
+	width: 100%;
+}
 .news-full-container {
 	position: relative;
     width: 95%;
     margin: 0 auto;
 }
-.news-list {
+.elems-list {
 	list-style-type: none;
 	width: 100%;
 	text-align: center;
 	padding: 10px 0 10px 0;
 	margin: 0;
 }
-.news-list li:first-child, .news-list li:last-child {
+.elems-list li:first-child, .elems-list li:last-child {
 	cursor: pointer;
 }
-.news-list li {
+.elems-list li {
 	float: left;
 	margin-right: 3%;
 	font-weight: bold;

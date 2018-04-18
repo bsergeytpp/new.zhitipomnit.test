@@ -87,7 +87,7 @@ function postComment(e) {
 
 // добавляет событие по клику на нумерацию
 function addNavigationToList() {
-	var ul = getElems(['news-list']);
+	var ul = getElems(['elems-list']);
 	
 	if(!ul) return;
 	

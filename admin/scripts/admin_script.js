@@ -135,7 +135,8 @@ function saveSettings() {
 			case 'NEWS': data += "NEWS=" + encodeURIComponent(inputData) + "&"; break;
 			case 'OLDNEWS': data += "OLDNEWS=" + encodeURIComponent(inputData) + "&"; break;
 			case 'PUBLS': data += "PUBLS=" + encodeURIComponent(inputData) + "&"; break;
-			case 'PRESS': data += "PRESS=" + encodeURIComponent(inputData); break;
+			case 'PRESS': data += "PRESS=" + encodeURIComponent(inputData) + "&"; break;
+			case 'LOGS': data += "LOGS=" + encodeURIComponent(inputData); break;
 			default: break;
 		}
 	}

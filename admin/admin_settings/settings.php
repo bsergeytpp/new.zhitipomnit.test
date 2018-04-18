@@ -29,12 +29,14 @@
 			<th>OLDNEWS_MAXCOUNT</th>
 			<th>PUBLS_MAXCOUNT</th>
 			<th>PRESS_MAXCOUNT</th>
+			<th>LOGS_MAXCOUNT</th>
 		</tr>
 		<tr>
 			<td><input name="NEWS" type="number" min="3" max="10" value="<? echo $settingsArr['NEWS_MAXCOUNT']; ?>"></td>
 			<td><input name="OLDNEWS" type="number" min="3" max="10" value="<? echo $settingsArr['OLDNEWS_MAXCOUNT']; ?>"></td>
 			<td><input name="PUBLS" type="number" min="3" max="10" value="<? echo $settingsArr['PUBLS_MAXCOUNT']; ?>"></td>
 			<td><input name="PRESS" type="number" min="3" max="10" value="<? echo $settingsArr['PRESS_MAXCOUNT']; ?>"></td>
+			<td><input name="LOGS" type="number" min="3" max="10" value="<? echo $settingsArr['LOGS_MAXCOUNT']; ?>"></td>
 		</tr>
 	</table> 
 	<a href="#">Сохранить</a>

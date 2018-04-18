@@ -71,6 +71,22 @@ table td:hover {
     background: darkred;
     transition: background .2s linear;
 }
+.elems-list {
+	list-style-type: none;
+	width: 100%;
+	text-align: center;
+	padding: 10px 0 10px 0;
+	margin: 0;
+}
+.elems-list li:first-child, .elems-list li:last-child {
+	cursor: pointer;
+}
+.elems-list li {
+	float: left;
+	margin-right: 3%;
+	font-weight: bold;
+	font-size: 14pt;
+}
 h2, h3 {
     padding: 0 40px;
 	text-align: center;

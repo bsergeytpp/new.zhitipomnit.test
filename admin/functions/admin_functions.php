@@ -49,20 +49,7 @@
 			echo "<div class='error-message'>Настройки сохранены</div>";
 		}
 	}
-	
-	// всего логов
-	function getLogsCount($queryString) {
-		global $db;
 		
-		if($queryString) {
-			$res = $db->executeQuery($queryString, null, null);
-			
-			if($res) return $res->fetchColumn();
-		}
-		
-		return false;
-	}
-	
 	// записываем логи в таблицу
 	function getLogsToTable($pars) {
 		global $db, $logPage;
@@ -86,12 +73,15 @@
 			$logsCountQuery .= 'WHERE log_important = TRUE ';
 		}
 		
-		$totalLogs = getLogsCount($logsCountQuery);
 		$query .= 'ORDER BY log_id';
+		$totalRes = $db->executeQuery($logsCountQuery, null, null);
+		
+		if($totalRes) $totalLogs = $totalRes->fetchColumn();
 		
 		// делаем список и ограничиваем кол-во логов на странице
 		if($totalLogs > LOGS_MAXCOUNT) {
 			$logsList = getULlist($totalLogs, LOGS_MAXCOUNT, 'logs.php?page=', $logPage);
+			echo "Всего: $totalLogs";
 			echo $logsList;
 			$query .= ' LIMIT '.LOGS_MAXCOUNT;
 			
@@ -111,17 +101,94 @@
 			6 => 'log_location'
 		];
 		
-		while($row = $res->fetch(PDO::FETCH_ASSOC)) {
-			$i = 0;
+		while($row = $res->fetch(PDO::FETCH_NUM)) {
 			echo '<tr>';
-			foreach($row as $val) {
-				switch($i) {
-					case 0: case 1: case 2: case 3: case 4: case 5: case 6: 
-						echo '<td name='.$logsArr[$i].'>' . $val . '</td>'; break;
-					default: break;
-				}
-				$i++;
+			for($i=0, $len=count($logsArr); $i<$len; $i++) {
+				echo '<td name='.$logsArr[$i].'>' . $row[$i] . '</td>';
 			}
+			echo '</tr>';
+		}
+	}
+	
+	function getNewsToTable() {
+		global $db, $newsPage;
+		
+		$query = 'SELECT * FROM news ORDER BY news_id';
+		$newsCountQuery = 'SELECT COUNT(news_id) FROM news';
+		$totalRes = $db->executeQuery($newsCountQuery, null, null);
+		
+		if($totalRes) $totalNews = $totalRes->fetchColumn();
+		
+		if($totalNews > NEWS_MAXCOUNT) {
+			$newsList = getULlist($totalNews, NEWS_MAXCOUNT, 'manage_news.php?page=', $newsPage);
+			echo "Всего: $totalNews";
+			echo $newsList;
+			$query .= ' LIMIT '.NEWS_MAXCOUNT;
+			
+			if($newsPage > 1) {
+				$query .= ' OFFSET '.(NEWS_MAXCOUNT * ($newsPage-1));
+			}
+		}
+		
+		$res = $db->executeQuery($query, null, null);
+		
+		$newsArr = [
+			0 => 'news_id',
+			1 => 'news_date',
+			2 => 'news_header',
+			3 => 'news_text'
+		];
+		
+		while($row = $res->fetch(PDO::FETCH_NUM)) {
+			echo '<tr>';
+			for($i=0, $len=count($newsArr); $i<$len; $i++) {
+				echo '<td name='.$newsArr[$i].'>' . $row[$i] . '</td>';
+			}
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td class="edit-btn" colspan="3"><strong>Редактировать</strong></td>';
+			echo '<td class="delete-btn" colspan="1"><strong>Удалить</strong></td>';
+			echo '</tr>';
+		}
+	}
+	
+	function getPublsToTable() {
+		global $db, $publsPage;
+		
+		$query = 'SELECT * FROM publs ORDER BY publs_id';
+		$totalPublsQuery = 'SELECT COUNT(publs_id) FROM publs';
+		$totalRes = $db->executeQuery($totalPublsQuery, null, null);
+		
+		if($totalRes) $totalPubls = $totalRes->fetchColumn();
+		
+		if($totalPubls > PUBLS_MAXCOUNT) {
+			$newsList = getULlist($totalPubls, PUBLS_MAXCOUNT, 'manage_publs.php?page=', $publsPage);
+			echo "Всего: $totalPubls";
+			echo $newsList;
+			$query .= ' LIMIT '.PUBLS_MAXCOUNT;
+			
+			if($publsPage > 1) {
+				$query .= ' OFFSET '.(PUBLS_MAXCOUNT * ($publsPage-1));
+			}
+		}
+		
+		$res = $db->executeQuery($query, null, null);
+		
+		$publsArr = [
+			0 => 'publs_id',
+			1 => 'publs_header',
+			2 => 'publs_text',
+		];
+		
+		while($row = $res->fetch(PDO::FETCH_NUM)) {
+			echo '<tr>';
+			for($i=0, $len=count($publsArr); $i<$len; $i++) {
+				echo '<td name='.$publsArr[$i].'>' . $row[$i] . '</td>';
+			}
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td class="edit-btn" colspan="2"><strong>Редактировать</strong></td>';
+			echo '<td class="delete-btn"><strong>Удалить</strong></td>';
 			echo '</tr>';
 		}
 	}

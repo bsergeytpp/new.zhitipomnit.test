@@ -287,3 +287,69 @@ function getPersonsLetters() {
 		request.send();
 	}, 1500);
 }
+
+document.addEventListener('DOMContentLoaded', addNavigationToList, false);
+
+// добавляет событие по клику на нумерацию
+function addNavigationToList() {
+	var ul = getElems(['elems-list']);
+	
+	if(!ul) return;
+	
+	for(var i=0, len=ul.length; i<len; i++) {
+		ul[i].addEventListener('mouseup', navigateUlList, false);
+	}
+}
+
+// создаем нумерованный список для навигации по материалам
+function navigateUlList(e) {
+	var target = e.target;
+	
+	if(target === e.currentTarget) {
+		e.stopPropagation();
+		return;
+	}
+	
+	// рабиваем часть URL по параметрам
+	var urlArr = decodeURIComponent(location.search.substr(1)).split('&');
+	var pair, urlParams = {};
+	
+	// запоминаем параметры и их значения
+	for(var i=0, len=urlArr.length; i<len; i++) {
+		pair = urlArr[i].split("=");
+		urlParams[pair[0]] = pair[1];
+	}
+	
+	var pageNum = getUrlParam('page', urlParams);
+	
+	// одна страница есть всегда
+	if(!pageNum) pageNum = 1;
+
+	// самый первый/последний элемент списка
+	if(target === this.firstChild || target === this.lastChild) {
+		var listNav = target.textContent;
+		// идем назад
+		if(listNav.indexOf("«") !== -1) {	// ES6: listNav.includes("«"), no IE support
+			console.log("Назад: " + listNav);
+
+			if(pageNum != 1) {
+				urlParams['page'] = --pageNum;
+				urlArr = [];
+			}
+		}
+		// идем вперед
+		else if(listNav.indexOf("»") !== -1) {	// ES6: listNav.includes("»"), no IE support
+			console.log("Вперед: " + listNav);
+
+			if(pageNum != this.children.length-2) {
+				urlParams['page'] = ++pageNum;
+				urlArr = [];
+			}
+		}
+		// создаем новый URL и открываем его
+		for(var elem in urlParams) {
+			urlArr.push(elem + "=" + urlParams[elem]); 
+		}
+		location.search = urlArr.join('&');
+	}
+}

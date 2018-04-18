@@ -87,6 +87,9 @@ table td:hover {
 	font-weight: bold;
 	font-size: 14pt;
 }
+.edit-btn, .delete-btn {
+	cursor: pointer;
+}
 h2, h3 {
     padding: 0 40px;
 	text-align: center;

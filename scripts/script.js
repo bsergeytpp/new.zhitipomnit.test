@@ -1,6 +1,4 @@
 'use strict';
-var _DEBUG = false;
-
 addEventListenerWithOptions(document, 'DOMContentLoaded', changeNewsStyle, {});
 addEventListenerWithOptions(document, 'DOMContentLoaded', addNavigationToList, {});
 addEventListenerWithOptions(document, 'DOMContentLoaded', userSwitcher, {});

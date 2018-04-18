@@ -1,4 +1,5 @@
 'use strict';
+var _DEBUG = false;
 /*Passive event listeners for Blink*/
 var supportsPassive = false;
 

@@ -32,6 +32,7 @@
 <head>
 	<title>Логи</title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<script src="../../scripts/jslib.js"></script>
 	<script src="../scripts/admin_script.js"></script>
 	<link type="text/css" rel="StyleSheet" href="../styles/admin_styles.css" />
 </head>

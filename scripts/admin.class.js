@@ -565,18 +565,18 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 };
 
 // создаем панель администратора
-Admin.prototype.addAdminBar = function addAdminBar() {
+Admin.prototype.addAdminPanelLink = function addAdminPanelLink() {
 	'use strict';
-	var header = getElems(['header', 0]);
-	var adminBar = createDOMElem({tagName: 'DIV', className: 'admin-bar'});
-	var adminPanelLink = createDOMElem({tagName: 'A', 
-									    args: [{name: 'href', value: 'admin/index.php'}], 
-										innerHTML: 'Переход в Панель Администратора'
-									   });
-	var adminLoginSpan = createDOMElem({tagName: 'SPAN', innerHTML: 'Ваш логин: '+this.getAdminLogin()});
-	adminBar.appendChild(adminPanelLink);
-	adminBar.appendChild(adminLoginSpan);
-	document.body.insertBefore(adminBar, header);
+	var headerLinks = getElems(['header-links', 0]);
+	var headerUl = getElems(['', 0, 'UL'], headerLinks);
+	var liElem = createDOMElem({tagName: 'LI'});
+	var linkElem = createDOMElem({
+									tagName: 'A', 
+									args: [{name: 'href', value: 'admin/index.php'}], 
+									innerHTML: 'Админ Панель'
+							    });
+	liElem.appendChild(linkElem);
+	headerUl.appendChild(liElem);
 };
 
 // создаем объект класса Admin
@@ -594,7 +594,7 @@ Admin.prototype.setPrivilege = function setPrivilege() {
 	if(this.getIsAdmin()) {
 		this.checkForEditableContent();			// расставляем кнопки редактирования
 		this.checkForComments();
-		this.addAdminBar();						// добавляем панель администратора
+		this.addAdminPanelLink();				// добавляем ссылку на панель администратора
 	}
 	else {
 		DEBUG(setPrivilege.name, 'Вы не админ. Хватит хулиганить!');

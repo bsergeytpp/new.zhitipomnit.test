@@ -16,6 +16,16 @@
 					<li><a href="index.php?pages=mail">Почта</a></li>
 					<li><a href="index.php?pages=search">Поиск</a></li>
 					<li><a href="index.php?pages=contacts">Контакты</a></li>
+					<?
+						$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+						if($userLogin) {
+							echo "<li><a href='users/user_profile.php?user_login=$userLogin'>Профиль</a></li>";
+							echo "<li><a href='users/login.php?logout'>Выйти</a></li>";
+						}
+						else {
+							echo "<li><a href='users/login.php'>Войти</a></li>";
+						}
+					?>
 				</ul>
 			</div>
 		</div>

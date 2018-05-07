@@ -67,7 +67,7 @@
 		<div class="clear-div"></div>
         <div id="wrapper" class="blocks">
             <?
-				include "content/users.php";
+				//include "content/users.php";
 			?>
 			<?
 				include "content/menu.php";

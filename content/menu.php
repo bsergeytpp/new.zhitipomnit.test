@@ -9,6 +9,7 @@
                     <li><a href="#">Карты Калиниского фронта</a></li>
                     <li><a href="index.php?pages=memory">Книга Памяти</a></li>
                     <li><a href="index.php?pages=search">Поиск по Книге Памяти</a></li>
+                    <li><a href="index.php?pages=guestbook">Гостевая книга</a></li>
                     <li>
 						<form action="#" class="menu-form" onsubmit="return newsSearch(this)">
 							Открыть новость от

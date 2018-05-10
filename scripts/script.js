@@ -9,6 +9,7 @@ addEventListenerWithOptions(getElems(['respond-button']), 'click', setCommentsPa
 addEventListenerWithOptions(getElems(['comments-num']), 'click', openNewsComments, {});
 addEventListenerWithOptions(getElems(['alt-news-comments-div']), 'click', openNewsComments, {});
 addEventListenerWithOptions(document, 'mouseup', postComment, {});
+addEventListenerWithOptions(document, 'mouseup', postGuestbookMessage, {});
 addEventListenerWithOptions(document, "touchstart", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "touchmove", function(e) {}, {passive: true} );
 addEventListenerWithOptions(document, "touchend", function(e) {}, {passive: true} );
@@ -79,7 +80,31 @@ function postComment(e) {
 	
 	e.preventDefault();
 	removeActiveTinymceEditors();
-	addCommentsAjax(getElems(['comments-form', 0]));
+	
+	var commentsForm = getElems(['comments-form', 0]);
+	var text = tinymce.activeEditor.getContent();
+	var login = commentsForm.elements['comments-login'].value;
+	var parentId = commentsForm.elements['comments-parent'].value;
+	var id = commentsForm.elements['comments-location-id'].value;
+	var token = commentsForm.elements['security-token'].value;
+
+	if(!checkCookieToken(token)) {
+		console.log("Ошибка безопасности.");
+		return;
+		//request.setRequestHeader("X-CSRF-TOKEN", csrfCookie[1]);
+	}
+	
+	if(!id) {
+		id = getParamFromLocationSearch('id');
+	}
+	
+	var data = "comments-text=" + encodeURIComponent(text) + "&" +
+			   "comments-login=" + encodeURIComponent(login) + "&" +
+			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
+			   "token=" + encodeURIComponent(token) + "&" +
+			   "comments-location-id=" + encodeURIComponent(id);
+	
+	sendAjaxRequest(data, 'admin/save_comments.php');
 	updateCommentsWrapper();
 }
 
@@ -404,29 +429,8 @@ function removeActiveTinymceEditors() {
 	}
 }
 
-// добавляем комментарии без перезагрузки страницы
-function addCommentsAjax(commentsForm) {
-	var text = tinymce.activeEditor.getContent();
-	var login = commentsForm.elements['comments-login'].value;
-	var parentId = commentsForm.elements['comments-parent'].value;
-	var id = commentsForm.elements['comments-location-id'].value;
-	var token = commentsForm.elements['security-token'].value;
-
-	if(!checkCookieToken(token)) {
-		console.log("Ошибка безопасности.");
-		return;
-		//request.setRequestHeader("X-CSRF-TOKEN", csrfCookie[1]);
-	}
-	
-	if(!id) {
-		id = getParamFromLocationSearch('id');
-	}
-	
-	var data = "comments-text=" + encodeURIComponent(text) + "&" +
-			   "comments-login=" + encodeURIComponent(login) + "&" +
-			   "comments-parent=" + encodeURIComponent(parentId) + "&" +
-			   "token=" + encodeURIComponent(token) + "&" +
-			   "comments-location-id=" + encodeURIComponent(id);
+// AJAX запрос к странице
+function sendAjaxRequest(data, url) {
 	var request = new XMLHttpRequest();
 	
 	request.onreadystatechange = function() {
@@ -434,8 +438,8 @@ function addCommentsAjax(commentsForm) {
 			clearTimeout(timeout);
 			
 			(request.status != 200) 
-			? DEBUG(addCommentsAjax.name, 'Ошибка: ' + request.responseText)
-			: DEBUG(addCommentsAjax.name, 'Запрос отправлен. Ответ сервера: '+request.responseText);
+			? DEBUG(sendAjaxRequest.name, 'Ошибка: ' + request.responseText)
+			: DEBUG(sendAjaxRequest.name, 'Запрос отправлен. Ответ сервера: '+request.responseText);
 		}
 	};
 	
@@ -443,19 +447,18 @@ function addCommentsAjax(commentsForm) {
 		request.abort();
 	}, 60*1000);
 	
-	request.open('POST', 'admin/save_comments.php', true);
+	request.open('POST', url, true);
 	request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 	request.send(data);
-	DEBUG(addCommentsAjax.name, 'Отправили запрос');
+	DEBUG(sendAjaxRequest.name, 'Отправили запрос');
 }
 
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
+	console.log('вызвана');
 	var wrapper = getElems('comments-wrapper');
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = getElems(['comments-list-div', 0], wrapper);
-
-	if(!commentsDiv) return;
 	
 	// визульано показываем, что что-то происходит =)
 	wrapper.style.height = height;
@@ -472,7 +475,9 @@ function updateCommentsWrapper() {
 			// выключаем форму комментирования
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
 			// удаляем div с комментариями 
-			wrapper.removeChild(commentsDiv);
+			if(commentsDiv) {
+				wrapper.removeChild(commentsDiv);
+			}
 			// вставляем обновленный список комментариев + старую форму
 			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
 			// включаем обратно форму комментирования
@@ -645,4 +650,57 @@ function newsSearch(form) {
 	request.send();
 	
 	return false;
+}
+
+function postGuestbookMessage(e) {
+	var target = e.target;
+	
+	if(!checkClass(target, ['guestbook-post-button'])) return;
+	
+	e.preventDefault();
+	var guestbookForm = getElems(['guestbook-form', 0]);
+	var text = guestbookForm.elements['guestbook-text'].value;
+	var author = guestbookForm.elements['guestbook-author'].value;
+	var email = guestbookForm.elements['guestbook-email'].value;
+	var data = "guestbook-text=" + encodeURIComponent(text) + "&" +
+			   "guestbook-author=" + encodeURIComponent(author) + "&" +
+			   "guestbook-email=" + encodeURIComponent(email);
+	
+	sendAjaxRequest(data, 'content/guestbook.php');
+	updateGuestbookDiv();
+}
+
+// обновляем элемент с гостевыми сообщениями
+function updateGuestbookDiv() {
+	var gbDiv = getElems('guestbook-container');
+
+	if(!gbDiv) return;
+	
+	// визульано показываем, что что-то происходит =)
+	gbDiv.style.opacity = 0.5;
+	
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function() {
+		if(request.readyState == 4) {
+			clearTimeout(timeout);
+			(request.status != 200) 
+			? DEBUG(updateGuestbookDiv.name, 'Ошибка: ' + request.responseText)
+			: DEBUG(updateGuestbookDiv.name, 'Запрос отправлен.');
+			
+			// вставляем обновленный список сообщение
+			gbDiv.innerHTML = request.responseText;
+			
+			// обнуляем стили
+			gbDiv.style.opacity = '';
+		}
+	};
+	
+	var timeout = setTimeout(function() {
+		request.abort();
+	}, 60*1000);
+	
+	setTimeout(function() {
+		request.open('GET', 'content/guestbook.php', true);
+		request.send();
+	}, 1500);
 }

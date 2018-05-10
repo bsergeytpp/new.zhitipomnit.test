@@ -40,6 +40,10 @@
 			$title = 'Поиск по Книге Памяти'; 
 			$path = 'content/search.php'; 
 			break;
+		case 'guestbook':
+			$title = 'Гостевая книга'; 
+			$path = 'content/guestbook.php'; 
+			break;
 		default:
 			$title = 'Главная страница';
 			$path = [

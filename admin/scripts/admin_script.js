@@ -1,3 +1,4 @@
+'use strict';
 /*
 	Функция создания редактора TinyMCE
 	- принимает 
@@ -131,14 +132,12 @@ function saveSettings() {
 	for(var i=0, len=inputs.length; i<len; i++) {
 		var name = inputs[i].getAttribute('name');
 		var inputData = encodeURIComponent(inputs[i].value);
-		switch(name) {
-			case 'NEWS': data += "NEWS=" + encodeURIComponent(inputData) + "&"; break;
-			case 'OLDNEWS': data += "OLDNEWS=" + encodeURIComponent(inputData) + "&"; break;
-			case 'PUBLS': data += "PUBLS=" + encodeURIComponent(inputData) + "&"; break;
-			case 'PRESS': data += "PRESS=" + encodeURIComponent(inputData) + "&"; break;
-			case 'LOGS': data += "LOGS=" + encodeURIComponent(inputData); break;
-			default: break;
+		
+		if(i>0) {
+			data += "&";
 		}
+		
+		data += name + "=" + encodeURIComponent(inputData);
 	}
 	sendRequest(data, 'POST', 'save_settings.php', 'application/x-www-form-urlencoded');
 }

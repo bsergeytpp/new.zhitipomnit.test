@@ -1,5 +1,5 @@
+'use strict';
 function User() {
-	'use strict';
 	this._XMLHttpRequest = null;
 	this._commentsTables = null;
 	this._userComments = null;
@@ -53,7 +53,6 @@ function User() {
 
 // ищем комментарии пользователя
 User.prototype.checkForUserComments = function checkForUserComments() {
-	'use strict';
 	var commentsTables = getElems(['comments-table']);
 	var self = this;
 	
@@ -87,8 +86,6 @@ User.prototype.checkForUserComments = function checkForUserComments() {
 
 // расставляем элементы редактирования комментария
 User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
-	'use strict';
-	
 	if(typeof tinymce === 'undefined') {
 		appendScript('scripts/tinymce/tinymce.min.js');							
 	}
@@ -142,7 +139,6 @@ User.prototype.getUserComments = function getUserComments(commTables, commentsId
 
 // вешаем события на кнопки редактировать/удалить/сохранить
 User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
-	'use strict';
 	var self = this;
 	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
@@ -156,7 +152,6 @@ User.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 
 // описываем события для кнопок (редактировать/удалить/сохранить)
 User.prototype.addHandlerOnCommentsEditBtns = function addHandlerOnCommentsEditBtns(e) {
-	'use strict';
 	var target = e.target;
 	var self = this;
 	var targetId = target.getAttribute('data-id');
@@ -185,10 +180,9 @@ function userEditComment(td, tdId) {
 		totalEditors = 2;
 	} 
 	
-	if(tinymce.editors.length > 1) {
-		if(tinymce.activeEditor.id === 'comments-text') {			// была выбрана форма комментирования
-			tinymce.editors[1].focus();
-		}
+	if(tinymce.editors.length > 1 && 
+	   tinymce.activeEditor.id === 'comments-text') {				// была выбрана форма комментирования
+		tinymce.editors[1].focus();
 	}
 	
 	if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
@@ -228,7 +222,6 @@ function userSaveComments(tdId) {
 
 // инициализируем объект tinymce
 User.prototype.initEditorForComment = function initEditorForComment(td) {
-	'use strict';
 	var tdParent = findParent(td, 'comments-table');
 	DEBUG(initEditorForComment.name, "tdElem: " + td);
 	
@@ -253,41 +246,39 @@ User.prototype.initEditorForComment = function initEditorForComment(td) {
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 User.prototype.disablePrevEditors = function disablePrevEditors() {
-	'use strict';
 	var prevTinymceElems = getElems(['edit-this']);
 	var saveLinks = getElems(['edit-comm']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 	
 	// убираем редактор комментариев
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
-		if(tinymce.editors[i].id !== 'comments-text') {
-			tinymce.remove('#'+tinymce.editors[i].id);
-		}
+		if(tinymce.editors[i].id === 'comments-text') continue;
+		
+		tinymce.remove('#'+tinymce.editors[i].id);
 	}
 	
 	// убираем все внесенные изменения
 	for(i=0, len=prevTinymceElems.length; i<len; i++) {
-		if(this._tempText !== '') {
-			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
-			DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
-			prevTinymceElems[i].innerHTML = this._tempText;
-			this._tempText = '';
-		}
-		
 		prevTinymceElems[i].classList.toggle('edit-this', false);
+		
+		if(this._tempText === '') continue;
+		
+		DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
+		DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
+		prevTinymceElems[i].innerHTML = this._tempText;
+		this._tempText = '';
 	}
 	
 	// меняем текст кнопки
 	for(i=0, len=saveLinks.length; i<len; i++) {
-		if(saveLinks[i].textContent === 'Сохранить') {
-			saveLinks[i].textContent = 'Редактировать';
-		}
+		if(saveLinks[i].textContent !== 'Сохранить') continue;
+		
+		saveLinks[i].textContent = 'Редактировать';
 	}
 };
 
 // создаем TR с кнопками редактировать/удалить 
 User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
-	'use strict';
 	var tr = createDOMElem({tagName: 'TR', className: 'comments-edit'});
 	var editTd = createDOMElem({tagName: 'TD', 
 								innerHTML: '<a href="#" class="user-edit edit-comm" data-id="'+commId+'">Редактировать</a>'});
@@ -300,7 +291,6 @@ User.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 
 // ищем комментарии пользователя по его ID
 User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_id, callback) {
-	'use strict';
 	var self = this;
 	this._XMLHttpRequest = new XMLHttpRequest();
 	this._XMLHttpRequest.onreadystatechange = function () {
@@ -313,10 +303,8 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 			else {
 				var resp = this.responseText;
 				DEBUG(getUserCommentsFromId.name, 'Пришло: '+resp);
-				if(resp !== null) {								// в ответ что-то пришло
-					if(typeof callback == 'function') {			
-						callback.call(this);					// отдаем это в виде параметра в callback-функцию 
-					}											
+				if(resp !== null &&	typeof callback == 'function') {		// в ответ что-то пришло
+					callback.call(this);									// отдаем это в виде параметра в callback-функцию 										
 				}
 				else {
 					DEBUG(getUserCommentsFromId.name, "Херово!");
@@ -335,7 +323,6 @@ User.prototype.getUserCommentsFromId = function getUserCommentsFromId(location_i
 
 // отправляем запрос на сохранение
 User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqTarget, contentType) {
-	'use strict';
 	var data = '', j = 1;
 	var self = this;
 	
@@ -375,7 +362,6 @@ User.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, reqT
 // создаем объект класса User
 var user;
 function createUserClass() {
-	'use strict';
 	user = new User();
 }
 

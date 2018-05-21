@@ -62,7 +62,7 @@ body::before {
     border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
     -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
-	transition: margin .1s linear;
+	/*transition: margin .1s linear;*/
 	transform: translate3d(0,0,0);
 }
 .full-width {
@@ -714,24 +714,28 @@ p.quotes:before {
 	top: 45%;
 	right: 0;
 }
-.comments-form {
+.guestbook-message textarea{
+	width: 90%;
+	height: auto;
+}
+.comments-form, .guestbook-form {
 	clear: both;
 	width: 80%;
 	background: rgba(0,0,0,.75);
 	margin: 0 auto;
 	box-shadow: -1px 1px .3em black;
 }
-.comments-form p {
+.comments-form p, .guestbook-form p {
 	font-weight: bold;
 	color: rgba(255,255,255,.75);
 	background: darkred;
 	padding: 7px;
 }
-.comments-form span {
+.comments-form span, .guestbook-form span {
 	width: 100%;
 	display: block;
 }
-.comments-form input{
+.comments-form input, .guestbook-form input {
 	width: 100%;
 	text-align: center;
 }
@@ -850,7 +854,7 @@ p.quotes:before {
     }
     .header-links ul {
         position: relative;
-        padding: 0;
+        padding: 0 !important;
     }
     .header-links ul li {
         left: -9999px;

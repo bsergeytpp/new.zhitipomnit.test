@@ -324,21 +324,22 @@ function makeCommentsTree() {
 		var tr = getElems(['comments-content', 0], comm_tables[i]);	
 		var parent_id = tr.children[1].textContent;
 		
-		if(parent_id !== '') {
-			DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
-			for(var j=0; j<len; j++) {
-				var temp_tr = getElems(['comments-content', 0], comm_tables[j]);
-				var temp_id = getElems(['comment-id', 0], temp_tr);
-				//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
-				
-				if(temp_id === parent_id) {
-					DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
-					comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
-				}
-			}
-		}
-		else if(parent_id === '') {
+		// самый верхний уровень
+		if(parent_id === '') {
 			comm_tables[i].parentNode.style.width = '100%';
+			return;
+		}
+		
+		DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
+		for(var j=0; j<len; j++) {
+			var temp_tr = getElems(['comments-content', 0], comm_tables[j]);
+			var temp_id = getElems(['comment-id', 0], temp_tr);
+			//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
+			
+			if(temp_id !== parent_id) continue;
+			
+			DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
+			comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
 		}
 	}
 }
@@ -354,7 +355,8 @@ function setCommentsParentId(e) {
 	var parent = target.parentNode; 									// TD - родитель кнопки "Ответить"
 	
 	while(parent.tagName !== 'TABLE') {
-		if(!checkClass(parent, ['comments-respond'])) break;				// ищем TR с классом 'comments-respond'
+		if(!checkClass(parent, ['comments-respond'])) break;
+		
 		parent = parent.parentNode;
 	}
 	
@@ -362,7 +364,7 @@ function setCommentsParentId(e) {
 
 	var parentLink = getElems(['', 0, 'A'], parent);
 	var parentId = parentLink.textContent; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
-	var parentAuthor = parentLink.getAttribute('href'); 				// автор комментария, на который отвечаем
+	var parentAuthor = parentLink.getAttribute('href'); 
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = getElems(['comments-form', 0]).elements['comments-parent'];
 
@@ -383,6 +385,7 @@ function openNewsComments(e) {
 	// для обоих стилей новостей
 	if(!checkClass(target, ['comments-num', 'alt-news-comments-div'])) {
 		parent = findParent(target, 'comments-num');
+		
 		if(!parent) {
 			parent = findParent(target, 'alt-news-comments-div');
 		}
@@ -403,8 +406,6 @@ function openNewsComments(e) {
 	link = link.getAttribute('href');
 	
 	if(link) window.location.href = link + '#comments-wrapper';
-	
-	return;
 }
 
 function checkCookieToken(token) {
@@ -412,9 +413,9 @@ function checkCookieToken(token) {
 	var allCookies = document.cookie.split('; ');
 	
 	for(var i = 0, len = allCookies.length; i<len; i++) {
-		if(allCookies[i].indexOf('sec-token') !== -1) {
-			secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
-		}
+		if(allCookies[i].indexOf('sec-token') === -1) continue;
+		
+		secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
 	}
 	
 	return (secToken === token) ? true : false;
@@ -422,6 +423,7 @@ function checkCookieToken(token) {
 
 function removeActiveTinymceEditors() {
 	var len = tinymce.editors.length;
+	
 	if(len > 1) {
 		for(var i=1; i<len; i++) {
 			tinymce.editors[i].destroy();
@@ -455,7 +457,6 @@ function sendAjaxRequest(data, url) {
 
 // обновляем родительский элемент с комментариями
 function updateCommentsWrapper() {
-	console.log('вызвана');
 	var wrapper = getElems('comments-wrapper');
 	var height = window.getComputedStyle(wrapper).getPropertyValue('height');
 	var commentsDiv = getElems(['comments-list-div', 0], wrapper);
@@ -472,17 +473,14 @@ function updateCommentsWrapper() {
 			? DEBUG(updateCommentsWrapper.name, 'Ошибка: ' + request.responseText)
 			: DEBUG(updateCommentsWrapper.name, 'Запрос отправлен.');
 			
-			// выключаем форму комментирования
 			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
-			// удаляем div с комментариями 
+
 			if(commentsDiv) {
 				wrapper.removeChild(commentsDiv);
 			}
 			// вставляем обновленный список комментариев + старую форму
 			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
-			// включаем обратно форму комментирования
 			initTinyMCE('.comments-textarea', false, '100%');
-			// обнуляем стили
 			wrapper.style.height = '';
 			wrapper.style.opacity = '';
 			
@@ -516,7 +514,8 @@ function updatePageTitle() {
 	var doc = document;
 	var title = doc.title;
 	var params = window.location.search;
-	var container, header;
+	var container;
+	var	header;
 	
 	// старые новости
 	if(params.indexOf('old') !== -1) {
@@ -524,16 +523,16 @@ function updatePageTitle() {
 		container = getElems(['', 0, 'P']);	// первый абзац новости		
 		
 		for(var i=0, len=pageParams.length; i<len; i++) {
-			if(pageParams[i].indexOf('custom-news-date') !== -1) {
-				header = pageParams[i].substr(-8);	// дата новости
-				
-				if(container) {
-					header += ': ' + container.textContent;
-				}
-				
-				doc.title = header.substr(0, 50) + '...';
-				return;
+			if(pageParams[i].indexOf('custom-news-date') === -1) continue;
+			
+			header = pageParams[i].substr(-8);	// дата новости
+			
+			if(container) {
+				header += ': ' + container.textContent;
 			}
+			
+			doc.title = header.substr(0, 50) + '...';
+			return;
 		}
 		
 		doc.title = 'Старые новости';
@@ -543,17 +542,16 @@ function updatePageTitle() {
 	// старые статьи
 	if(params.indexOf('html') !== -1) {
 		var parent = getElems('publs-container');
-		var searchElems = ['H2', 'H3', 'P'];	// ищем заголовок в этих элементах
+		var searchElems = ['H2', 'H3', 'P'];
 		
 		for(var i=0, len=searchElems.length; i<len; i++) {
 			container = getElems(['', 0, searchElems[i]], parent);
-			// есть текст в найденном элементе
-			if(container && container.textContent !== '') {
-				header = container.textContent;
-				doc.title = header.substr(0, 50) + '...';
-				
-				return;
-			}
+
+			if(container && container.textContent == '') continue;
+			
+			header = container.textContent;
+			doc.title = header.substr(0, 50) + '...';
+			return;
 		}
 		
 		return; 	
@@ -594,7 +592,7 @@ function updatePageTitle() {
 // Функция поиска новости (вызывается из меню сайта)
 /*
 	- принимает форму из меню сайта
-	- озвращает false для отмены стандартного поведения формы
+	- возвращает false для отмены стандартного поведения формы
 */
 function newsSearch(form) {
 	var date = form['custom-news-date'].value;
@@ -689,9 +687,11 @@ function updateGuestbookDiv() {
 			
 			// вставляем обновленный список сообщение
 			gbDiv.innerHTML = request.responseText;
-			
-			// обнуляем стили
 			gbDiv.style.opacity = '';
+			
+			if(window.admin) {
+				admin.setPrivilege();
+			}
 		}
 	};
 	

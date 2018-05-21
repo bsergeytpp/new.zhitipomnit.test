@@ -56,11 +56,7 @@
 		$salt = $temp[0];
 		$temp = $salt . ':' . md5($salt . ':' . $_SESSION['secret']);
 		
-		if($temp === $_SESSION['token']) {
-			return true;
-		}
-		
-		return false;
+		return ($temp === $_SESSION['token']) ? true : false;
 	}
 	
 	//https://gist.github.com/jonathanstark/dfb30bdfb522318fc819

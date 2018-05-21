@@ -12,7 +12,7 @@
 		public function __clone() {}
 		
 		public function getMessages() {
-			$query = "SELECT gb_date, gb_author, gb_text, gb_email FROM guestbook ORDER BY gb_id";
+			$query = "SELECT * FROM guestbook ORDER BY gb_id";
 			$res = $this->db->executeQuery($query, null, null);
 
 			while($row = $res->fetch(PDO::FETCH_ASSOC)) {
@@ -34,7 +34,7 @@
 		}
 		
 		public function createMessageFromTemplate($message) {
-			$messageKeys = ['gbDate', 'gbAuthor', 'gbText', 'gbEmail'];
+			$messageKeys = ['gbId', 'gbDate', 'gbAuthor', 'gbText', 'gbEmail'];
 			$message = array_combine($messageKeys, $message);
 			$messageTemplate = file_get_contents(__DIR__.'/../content/templates/guestbook_template.php');
 			$messageTemplate = replaceTemplateTags($messageTemplate, $message);

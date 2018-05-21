@@ -7,25 +7,24 @@
 		- возвращает ID
 	*/
 	function getUserId($login) {
-		global $db;
+		global $db, $dbLink;
 		
-		if($db->getLink()) {
-			$query = "SELECT user_id FROM users WHERE user_login = ? LIMIT 1";
-			$result = $db->executeQuery($query, array($login), 'select_user_id');
-			
-			if($result === false) {
-				echo "<div class='error-message'>Пользователь не найден</div>";
-			}
-			else {
-				$row = $result->fetch();
-				return $row[0];	// TODO: не проверялось
-			} 	
+		if(!$dbLink) return false;
+		
+		$query = "SELECT user_id FROM users WHERE user_login = ? LIMIT 1";
+		$result = $db->executeQuery($query, array($login), 'select_user_id');
+		
+		if($result === false) {
+			echo "<div class='error-message'>Пользователь не найден</div>";
 		}
+		else {
+			$row = $result->fetch();
+			return $row[0];	// TODO: не проверялось
+		} 	
 	}
 	
 	function updateSettings($data) {
-		global $db;
-		global $dbLink;
+		global $db, $dbLink;
 		
 		if(!isset($data)) {
 			$data = [

@@ -165,6 +165,7 @@ function getElems(query, parent) {
 		DEBUG(getElems.name, "Found elem/elem: " + elem);
 		return elem;
 	}
+	else return false;
 }
 
 // Проверяем есть ли класс/классы у элемента

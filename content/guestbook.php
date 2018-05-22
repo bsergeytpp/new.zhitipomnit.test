@@ -45,3 +45,13 @@
 					</form>
                 </div>
                 <div class="clear-div"></div>
+				<script>
+					var timer;
+					clearTimeout(timer);
+					document.addEventListener('DOMContentLoaded', function(e) { 
+						appendScript('scripts/tinymce/tinymce.min.js');
+						timer = setTimeout(function() {
+							initTinyMCE('.guestbook-textarea', false, '100%');
+						}, 1000);
+					});
+				</script>

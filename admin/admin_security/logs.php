@@ -48,6 +48,8 @@
 				<option value="2">2
 				<option value="3">3
 				<option value="4">4
+				<option value="4">5
+				<option value="4">6
 				<option value="0" selected>All
 			</select>
 		</p>
@@ -57,12 +59,12 @@
 	<table border='1'>
 		<tr>
 			<th>ID</th>
-			<th>Category</th>
 			<th>Name</th>
 			<th>Text</th>
 			<th>Date</th>
 			<th>Important</th>
 			<th>Location</th>
+			<th>Category</th>
 		</tr>
 		<? getLogsToTable($logParams); ?>
 	</table> 

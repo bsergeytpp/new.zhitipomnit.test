@@ -92,12 +92,12 @@
 		$res = $db->executeQuery($query, null, null);
 		$logsArr = [
 			0 => 'log_id',
-			1 => 'log_type_category',
-			2 => 'log_name',
-			3 => 'log_text',
-			4 => 'log_date',
-			5 => 'log_important',
-			6 => 'log_location'
+			1 => 'log_name',
+			2 => 'log_text',
+			3 => 'log_date',
+			4 => 'log_important',
+			5 => 'log_location',
+			6 => 'log_type_category'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {

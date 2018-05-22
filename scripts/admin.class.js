@@ -152,26 +152,83 @@ Admin.prototype.addHandlerOnGuestbookEditBtns = function addHandlerOnGuestbookEd
 	var targetId = target.getAttribute('data-id');
 	var targetText = target.textContent;
 	
-	if(target.innerHTML === 'Редактировать') {
+	if(checkClass(target, ['gb-edit-button'])) {
 		e.preventDefault();
 		e.stopPropagation();
 		
-		if(targetText === 'Редактировать') {
-			//editGuestbook.call(self, target, targetId);
-			console.log('Edit message');
-		}
-		else if(targetText === 'Сохранить') {
-			//saveGuestbook.call(self, targetId);
-			console.log('Save message');
+		switch(targetText) {
+			case 'Редактировать': editGuestbookMessage.call(self, target, targetId); break;
+			case 'Сохранить': saveGuestbookMessage.call(self, targetId); break;
+			case 'Удалить': deleteGuestbookMessage.call(self, targetId); break;
 		}
 	}
-	else if(target.innerHTML === 'Удалить') {
-		e.preventDefault();
-		e.stopPropagation();
-		//deleteGuestbook.call(self, targetId);
-		console.log('Delete message');
- 	}
 };
+
+function editGuestbookMessage(btn, gbId) {
+	// если есть форма сообщения гостевой, то пропускаем ее
+	var totalEditors = tinymce.editors.length;
+	var gbEditors = (tinymce.activeEditor.getElement.id === 'guestbook-text') ? totalEditors - 1 : totalEditors;
+	
+	if(totalEditors > 1) {
+		if(tinymce.editors[1].id === 'edit-textarea') {
+			alert("Закончите текущее редактирование!");
+			return;
+		}
+		
+		if(tinymce.activeEditor.id === 'guestbook-text') {
+			tinymce.editors[1].focus();
+		}
+	}
+	
+	if(gbEditors > 1) {
+		var currentEditId = tinymce.activeEditor.targetElm.parentElement.id;
+
+		if(confirm('Уже начато редактирование сообщения №'+currentEditId+
+				   '. Отменить изменения и редактировать сообщение №'+gbId+' ?')) {
+			this.disablePrevEditors();
+			this.initEditorForGuestbook(btn);
+		}
+		else return; 			
+	} 
+	else {		
+		this.initEditorForGuestbook(btn);
+	}
+}
+
+function saveGuestbookMessage(gbId) {
+	// выбрана форма добавления сообщения
+	if(tinymce.editors.length > 1 && tinymce.activeEditor.id === 'guestbook-text') {
+		tinymce.editors[1].focus();
+	}
+	
+	var updatedText = tinymce.activeEditor.getContent();
+	removeActiveTinymceEditors();
+
+	DEBUG(saveGuestbookMessage.name, gbId + "|" + updatedText);
+	// запрос на сохранение элемента
+	this._sendSaveRequest({
+		'gb-id': gbId,
+		'gb-text': updatedText,
+	   },
+	   'POST', 
+	   'admin/admin_guestbook/update_guestbook.php', 
+	   'application/x-www-form-urlencoded');
+	updateGuestbookDiv();
+}
+
+function deleteGuestbookMessage(gbId) {
+	if(confirm('Точно удалить сообщение №'+gbId+'?')) { 
+		DEBUG(deleteGuestbookMessage.name, 'Удаление: '+gbId);			
+		removeActiveTinymceEditors();
+		this._sendSaveRequest({
+			'gb-id': gbId
+		   },
+		   'POST', 
+		   'admin/admin_guestbook/delete_guestbook.php', 
+		   'application/x-www-form-urlencoded');
+		updateGuestbookDiv();
+	}
+}
 
 // проверяем есть ли на странице редактируемые комментарии
 Admin.prototype.checkForComments = function checkForComments() {
@@ -342,7 +399,7 @@ function saveComments(tdId) {
 	updateCommentsWrapper();
 }
 
-// инициализируем объект tinymce
+// инициализируем объекты tinymce
 Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	var tdParent = findParent(td, 'comments-table');
 	
@@ -365,16 +422,34 @@ Admin.prototype.initEditorForComment = function initEditorForComment(td) {
 	initTinyMCE('.edit-this', true, 'auto', 'auto');
 };
 
+// инициализируем объект tinymce
+Admin.prototype.initEditorForGuestbook = function initEditorForGuestbook(btn) {
+	var gbForm = findParent(btn, 'guestbook-message');
+	
+	if(gbForm === null) return;
+	
+	var gbTextarea = getElems(['', 0, 'TEXTAREA'], gbForm);
+	gbTextarea.removeAttribute('disabled');
+	
+	DEBUG(initEditorForGuestbook.name, 'gbTextarea: '+gbTextarea);
+	DEBUG(initEditorForGuestbook.name, 'Редактирование: '+btn.getAttribute('data-id'));
+
+	gbTextarea.classList.add('edit-this');
+	btn.textContent = 'Сохранить';
+	initTinyMCE('.edit-this', false, 'auto', 'auto');
+};
+
 // убираем предыдущий объект tinymce и меняем назначение кнопок
 Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	var prevTinymceElems = getElems(['edit-this']);
-	var saveLinks = getElems(['edit-comm']);
+	var saveLinks = getElems(['edit-comm']) || getElems(['gb-edit-button']);
 	var activeEditorId = tinymce.activeEditor.getParam('id');
 	
 	if(!prevTinymceElems || !saveLinks) return;
 
 	for(var i=0, len=tinymce.editors.length; i<len; i++) {
-		if(tinymce.editors[i].id === 'comments-text') continue;
+		if(tinymce.editors[i].id === 'comments-text' ||
+		   tinymce.editors[i].id === 'guestbook-text') continue;
 		
 		tinymce.remove('#'+tinymce.editors[i].id);
 	}
@@ -655,7 +730,7 @@ Admin.prototype.addAdminPanelLink = function addAdminPanelLink() {
 };
 
 // создаем объект класса Admin
-admin = null;
+var admin = null;
 function createAdminClass() {
 	admin = new Admin();					
 }

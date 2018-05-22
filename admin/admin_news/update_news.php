@@ -7,7 +7,7 @@
 	
 	if(!$_SESSION['admin']) {
 		echo "<div class='error-message'>Вы не админ</div>";
-		break;
+		exit;
 	}
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {

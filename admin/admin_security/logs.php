@@ -48,8 +48,8 @@
 				<option value="2">2
 				<option value="3">3
 				<option value="4">4
-				<option value="4">5
-				<option value="4">6
+				<option value="5">5
+				<option value="6">6
 				<option value="0" selected>All
 			</select>
 		</p>

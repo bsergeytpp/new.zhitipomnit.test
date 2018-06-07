@@ -717,6 +717,7 @@ p.quotes:before {
 .guestbook-message textarea{
 	width: 90%;
 	height: auto;
+	resize: none;
 }
 .comments-form, .guestbook-form {
 	clear: both;

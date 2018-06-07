@@ -201,7 +201,7 @@ function saveGuestbookMessage(gbId) {
 		tinymce.editors[1].focus();
 	}
 	
-	var updatedText = tinymce.activeEditor.getContent();
+	var updatedText = tinymce.activeEditor.getContent({ format: 'text' });
 	removeActiveTinymceEditors();
 
 	DEBUG(saveGuestbookMessage.name, gbId + "|" + updatedText);
@@ -437,6 +437,9 @@ Admin.prototype.initEditorForGuestbook = function initEditorForGuestbook(btn) {
 	gbTextarea.classList.add('edit-this');
 	btn.textContent = 'Сохранить';
 	initTinyMCE('.edit-this', false, 'auto', 'auto');
+	// TODO: добавить возможность отключения панелей в initTinyMCE
+	getElems(['mce-menubar', 0]).style.display = 'none';
+	getElems(['mce-toolbar-grp', 0]).style.display = 'none';;
 };
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок

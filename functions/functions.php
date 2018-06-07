@@ -12,24 +12,47 @@
 	$db = DBClass::getInstance();
 	$db->connectToDB($config, 'PGSQL');
 	$dbLink = $db->getLink();
+	$defaultSettings = [
+		'site_settings' => [
+			'NEWS_MAXCOUNT' => 5,
+			'OLDNEWS_MAXCOUNT' => 10,
+			'PUBLS_MAXCOUNT' => 5,
+			'PRESS_MAXCOUNT' => 10,
+			'LOGS_MAXCOUNT' => 50
+		],
+		'user_settings' => [
+			'news_style' => 'classic'
+		]
+	];
+	$sessionHandler = DBSessionHandler::getInstance();
+	session_set_save_handler($sessionHandler, true);
+	session_start();
 	
 	// загружаем настройки
-	$materialsCount = getSettings(null, 'materials_count');
+	$userSettings = getSettings();
+	$materialsCount = null;
+	$siteSettings = null;
+
+	if($userSettings) {
+		$userSettings = unserialize($userSettings[0]);
+		$materialsCount = $userSettings['site_settings'];
+		$siteSettings = $userSettings['user_settings'];
+	}
+	else if(isset($_SESSION['user'])) {
+		saveDefaultSettings(serialize($defaultSettings));
+	}
+	
+	if(!$siteSettings) {
+		$_COOKIE["newsStyle"] = 'alt';
+	}
+	
+	$NEWS_MAXCOUNT = $defaultSettings['site_settings']['NEWS_MAXCOUNT'];
+	$OLDNEWS_MAXCOUNT = $defaultSettings['site_settings']['OLDNEWS_MAXCOUNT'];
+	$PUBLS_MAXCOUNT = $defaultSettings['site_settings']['PUBLS_MAXCOUNT'];
+	$PRESS_MAXCOUNT = $defaultSettings['site_settings']['PRESS_MAXCOUNT'];
+	$LOGS_MAXCOUNT = $defaultSettings['site_settings']['LOGS_MAXCOUNT'];
 	
 	if($materialsCount) {
-		$materialsCount = unserialize($materialsCount[0]);
-	}
-	
-	$NEWS_MAXCOUNT = 5;
-	$OLDNEWS_MAXCOUNT = 10;
-	$PUBLS_MAXCOUNT = 5;
-	$PRESS_MAXCOUNT = 10;
-	$LOGS_MAXCOUNT = 50;
-	
-	if(!$materialsCount) {
-		echo "<div class='warning-message'>Настройки не найдены в БД</div>";
-	}
-	else {
 		$NEWS_MAXCOUNT = $materialsCount['NEWS_MAXCOUNT'];
 		$OLDNEWS_MAXCOUNT = $materialsCount['OLDNEWS_MAXCOUNT'];
 		$PUBLS_MAXCOUNT = $materialsCount['PUBLS_MAXCOUNT'];
@@ -42,6 +65,7 @@
 	define('PUBLS_MAXCOUNT', $PUBLS_MAXCOUNT);	// статей на странице
 	define('PRESS_MAXCOUNT', $PRESS_MAXCOUNT);	// гaзет на странице
 	define('LOGS_MAXCOUNT', $LOGS_MAXCOUNT);	// логов на странице
+	define('NEWS_STYLE', 'alt');	// логов на странице
 	
 	$link = false;
 	$userLogin = null;
@@ -80,32 +104,48 @@
 		return $response;
 	}
 	
-	function getSettings($id, $name) {
+	function getSessionId() {
 		global $db;
 		global $dbLink;
+		global $sessionHandler;
 		
 		if(!$db || !$dbLink) return false;
 		
-		$query = "SELECT settings_data FROM settings WHERE ";
+		$sessionHash = $sessionHandler->getSessionHash();
 		
-		if(isset($id)) {
-			$query .= "settings_id = ?";
-			$result = $db->executeQuery($query, array($id), 'select_settings_by_id');
-		}
-		else if(isset($name)) {
-			$query .= "settings_name = ?";
-			$result = $db->executeQuery($query, array($name), 'select_settings_by_name');
-		}
-		else return false;
+		if(!$sessionHash) return;
 		
-		if($result === false) {
-			echo "<div class='error-message'>Настройки не найдены</div>";
-		}
-		else {
-			return $result->fetch();
-		}
+		$query = "SELECT session_id FROM sessions WHERE session_hash = ?";
+		$result = $db->executeQuery($query, array($sessionHash), 'get_session_id');
+		$sessionId = $result->fetch();
 		
-		return false;
+		return $sessionId ? $sessionId[0] : null;
+	}
+	
+	function getSettings() {
+		global $db;
+		global $dbLink;
+		$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+		
+		if(!$db || !$dbLink || !$userLogin) return false;
+		
+		$query = "SELECT settings_data FROM settings WHERE settings_user_login = ?";
+		$result = $db->executeQuery($query, array($userLogin), 'select_settings_by_user_login');
+
+		return $result ? $result->fetch() : false;
+	}
+	
+	function saveDefaultSettings($data) {
+		global $db;
+		global $dbLink;
+		$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
+		
+		if(!$db || !$dbLink) return false;
+		
+		if(!$userLogin) return false;
+		
+		$query = "INSERT INTO settings (settings_user_login, settings_data) VALUES (?, ?)";
+		$result = $db->executeQuery($query, array($userLogin, $data), 'save_settings');
 	}
 	
 	function addLogs($type, $name, $text, $location, $date, $important) {

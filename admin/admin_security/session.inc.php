@@ -2,8 +2,8 @@
 	require_once (__DIR__."/../../functions/functions.php");
 
 	$sessionHandler = DBSessionHandler::getInstance();
-	session_set_save_handler($sessionHandler, true);
-	session_start();
+	//session_set_save_handler($sessionHandler, true);
+	//session_start();
 	
 	$isAdmin = (isset($_SESSION['admin'])) ? $_SESSION['admin'] : null;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;

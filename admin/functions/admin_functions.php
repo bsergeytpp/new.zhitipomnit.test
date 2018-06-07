@@ -23,23 +23,42 @@
 		} 	
 	}
 	
-	function updateSettings($data) {
-		global $db, $dbLink;
-		
-		if(!isset($data)) {
-			$data = [
-				'NEWS_MAXCOUNT' => 5,
-				'OLDNEWS_MAXCOUNT' => 10,
-				'PUBLS_MAXCOUNT' => 5,
-				'PRESS_MAXCOUNT' => 10,
-				'LOGS_MAXCOUNT' => 50,
-			];
-		}
+	function updateSettings($data, $userLogin, $settingsName) {
+		global $db;
+		global $dbLink;
 		
 		if(!$db || !$dbLink) return false;
 		
-		$query = "UPDATE settings SET settings_data = ? WHERE settings_name = ?";
-		$result = $db->executeQuery($query, array(serialize($data), 'materials_count'), 'update_settings');
+		if(!$userLogin) return false;
+		
+		$currentSettings = getSettings();
+		$currentSettings = unserialize($currentSettings[0]);
+		
+		switch($settingsName) {
+			case 'site_settings':
+				if(!$data) {
+					$data = [
+						'NEWS_MAXCOUNT' => NEWS_MAXCOUNT,
+						'OLDNEWS_MAXCOUNT' => OLDNEWS_MAXCOUNT,
+						'PUBLS_MAXCOUNT' => PUBLS_MAXCOUNT,
+						'PRESS_MAXCOUNT' => PRESS_MAXCOUNT,
+						'LOGS_MAXCOUNT' => LOGS_MAXCOUNT,
+					];
+				}
+				$newSettings['site_settings'] = $data;
+				break;
+			case 'user_settings':
+				if(!$data) {
+					$data = [
+						'news_style' => 'classic'
+					];
+				}
+				$newSettings['user_settings'] = $data;
+				break;
+		}
+		
+		$query = "UPDATE settings SET settings_data = ? WHERE settings_user_login = ?";
+		$result = $db->executeQuery($query, array(serialize($data), $userLogin), 'update_settings');
 		
 		if($result === false) {
 			echo "<div class='error-message'>Настройки не сохранены</div>";

@@ -22,7 +22,7 @@ function initTinyMCE(className, isInline) {
 	- проверяет текст кнопки и либо сохраняет изменения, либо вызывает редактор TinyMCE
 */
 function editBtnOnClick(pattern) {
-	var editBtns = document.getElementsByClassName("edit-btn");
+	var editBtns = getElems(['edit-btn']);
 		
 	for(var i=0, len=editBtns.length; i<len; i++) {
 		editBtns[i].addEventListener('click', function(e) {
@@ -48,7 +48,7 @@ function editBtnOnClick(pattern) {
 
 // Вспомогательные функции для редактирования и сохранения
 function editBtnHandler(parent, prevNode, pattern) {
-	var editedArea = prevNode.getElementsByClassName('selected')[0];
+	var editedArea = getElems(['selected', 0], prevNode);
 				
 	if(!editedArea) return;
 	
@@ -58,8 +58,8 @@ function editBtnHandler(parent, prevNode, pattern) {
 	editedArea.className = pattern + '-textarea';
 	initTinyMCE('.' + pattern + '-textarea', true);
 	this.innerHTML = '<strong>Сохранить</strong>';
-	parent.style.background = 'lightgray';
-	prevNode.style.background = 'lightgray';
+	parent.classList.add('active-elem');
+	prevNode.classList.add('active-elem');
 }
 
 function saveBtnHandler(prevNode, pattern) {
@@ -117,16 +117,14 @@ function saveEditedText(text, id, name, pattern) {
 	- принимает шаблон
 */
 function checkActiveEditors(pattern) {
-	if(tinymce.editors.length == 1) return false;
+	if(tinymce.editors.length <= 1) return false;
 	
-	return (confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?')) 	
-	? false
-	: true;
+	return confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?');
 }
 
 function saveSettings() {
-	var table = document.getElementsByClassName('settings-table')[0];
-	var inputs = table.getElementsByTagName('input');
+	var table = getElems(['settings-table', 0]);
+	var inputs = getElems(['', -1, 'INPUT'], table);
 	var data = "";
 	
 	for(var i=0, len=inputs.length; i<len; i++) {
@@ -172,7 +170,7 @@ function sendRequest(data, reqType, reqTarget, contentType) {
 	- принимает выделенной родителя ячейки
 */
 function removeSelection(parent) {
-	var selectedElems = parent.getElementsByClassName('selected');
+	var selectedElems = getElems(['selected'], parent);
 	
 	for(var i=0, len=selectedElems.length; i<len; i++) {
 		selectedElems[i].classList.remove('selected');
@@ -192,9 +190,9 @@ function getLogsTypes() {
 			? console.log('func: getLogsTypes; Ошибка: ' + request.responseText)
 			: console.log('func: getLogsTypes; Запрос отправлен. Все - хорошо.');
 			
-			var form = document.getElementsByClassName('comments-form')[0];
-			var select = form.getElementsByTagName('select')[0];
-			var options = select.getElementsByTagName('option');
+			var form = getElems(['comments-form', 0]);
+			var select = getElems(['', 0, 'SELECT'], form);
+			var options = getElems(['', -1, 'OPTION'], select);
 			
 			if(select.getAttribute('name') === 'log-type') {
 				var result = request.responseText;
@@ -246,9 +244,9 @@ function getPersonsLetters() {
 			? console.log('func: getPersonsLetters; Ошибка: ' + request.responseText)
 			: console.log('func: getPersonsLetters; Запрос отправлен. Все - хорошо.');
 			
-			var form = document.getElementsByClassName('letters-form')[0];
-			var select = form.getElementsByTagName('select')[0];
-			var options = select.getElementsByTagName('option');
+			var form = getElems(['letters-form', 0]);
+			var select = getElems(['', 0, 'SELECT'], form);
+			var options = getElems(['', -1, 'OPTION'], select);
 			
 			if(select.getAttribute('name') === 'select-letter') {
 				var result = request.responseText;

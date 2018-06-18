@@ -36,7 +36,7 @@ function findParent(child, parentClass) {
 	var parent = child.parentNode;
 
 	while(parent && parent.parentNode) {
-		if(parent.classList.contains(parentClass)) return parent;
+		if(checkClass(parent, [parentClass])) return parent;
 		if(parent.tagName === 'BODY') return null;
 		
 		parent = parent.parentNode;

@@ -28,26 +28,26 @@ addEventListenerWithOptions(document, 'scroll', function(e) {
     var article = getElems(['article', 0]);
 	var articleWidth = window.getComputedStyle(article).getPropertyValue('width');
 
-	if(window.innerWidth > 680) {
-		if((window.pageYOffset || doc.documentElement.scrollTop) > 600) {
-			if(articleWidth !== '100%') {
-			   article.style.marginLeft = 0;    
-			}
-		}
-		else {
-			article.style.marginLeft = "";
-		}
+	if(window.innerWidth < 680) return;
 	
-		// делаем элементы при прокрутке ненажимаемыми
-		var timer, body = doc.body;
-		clearTimeout(timer);
-		
-		body.classList.contains('disable-hover', true);
-		
-		timer = setTimeout(function() {
-			body.classList.remove('disable-hover');
-		}, 500);
+	if((window.pageYOffset || doc.documentElement.scrollTop) > 600) {
+		if(articleWidth !== '100%') {
+		   article.style.marginLeft = 0;    
+		}
 	}
+	else {
+		article.style.marginLeft = "";
+	}
+
+	// делаем элементы при прокрутке ненажимаемыми
+	var timer, body = doc.body;
+	clearTimeout(timer);
+	
+	body.classList.contains('disable-hover', true);
+	
+	timer = setTimeout(function() {
+		body.classList.remove('disable-hover');
+	}, 500);
 }, {});
 
 // смена стиля новостей news-style
@@ -424,10 +424,10 @@ function checkCookieToken(token) {
 function removeActiveTinymceEditors() {
 	var len = tinymce.editors.length;
 	
-	if(len > 1) {
-		for(var i=1; i<len; i++) {
-			tinymce.editors[i].destroy();
-		}
+	if(len <= 1) return;
+	
+	for(var i=1; i<len; i++) {
+		tinymce.editors[i].destroy();
 	}
 }
 
@@ -551,7 +551,6 @@ function updatePageTitle() {
 			
 			header = container.textContent;
 			doc.title = header.substr(0, 50) + '...';
-			return;
 		}
 		
 		return; 	
@@ -674,7 +673,7 @@ function updateGuestbookDiv() {
 
 	if(!gbDiv) return;
 	
-	// визульано показываем, что что-то происходит =)
+	// визуально показываем, что что-то происходит =)
 	gbDiv.style.opacity = 0.5;
 	
 	var request = new XMLHttpRequest();

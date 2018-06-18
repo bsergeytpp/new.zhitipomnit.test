@@ -85,9 +85,11 @@
 	
 	//https://gist.github.com/jonathanstark/dfb30bdfb522318fc819
 	function verifyCaptcha($userData) {
+		global $config;
+		
 		$post_data = http_build_query(
 			array(
-				'secret' => '6LcUgUwUAAAAAOn0cyci0e8FH9x68_Lb2FzPfF-o',
+				'secret' => $config['secret'],
 				'response' => $userData,
 				'remoteip' => $_SERVER['REMOTE_ADDR']
 			)
@@ -412,10 +414,8 @@
 				}
 				echo "</tr>";
 				
-				if(isset($_SESSION['user'])) {
-					if($_SESSION['user']!== null) {
-						echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
-					}
+				if(isset($_SESSION['user']) && $_SESSION['user'] !== null) {
+					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
 				}
 				
 				echo "</table>";

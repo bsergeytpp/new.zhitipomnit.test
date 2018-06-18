@@ -21,6 +21,9 @@ table td {
 table td:hover {
 	background: lightgray;
 }
+.active-elem {
+	background: lightgray;
+}
 .error-message, .warning-message, .success-message {
 	width: 100%;
 	margin: 5px;

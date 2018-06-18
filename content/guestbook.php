@@ -10,6 +10,7 @@
 					}
 					else {
 						echo "<div class='error-message'>Нет подключения к базе данных</div>";
+						exit;
 					}
 					
 					if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -35,6 +36,7 @@
 					}
 					else {
 						echo "<div class='error-message'>Не создан класс гостевой книги</div>";
+						exit;
 					}
 				?>
 					<form onsubmit="return false;" method="POST" class="guestbook-form">

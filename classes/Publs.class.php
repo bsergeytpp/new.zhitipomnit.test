@@ -161,8 +161,8 @@
 		
 		protected function createExceptPubl($publ) {
 			$publTemplate = file_get_contents('content/templates/publ_template.php');
-			$pattern =["publUrl", "publHeader"];
-			$replacement = [$publ['link'], $publ['text']];
+			$pattern =["publUrl", "publHeader", "editable"];
+			$replacement = [$publ['link'], $publ['text'], ''];
 			$publTemplate = str_replace($pattern, $replacement, $publTemplate);
 			
 			return $publTemplate;

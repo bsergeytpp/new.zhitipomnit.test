@@ -517,12 +517,43 @@ function updatePageTitle() {
 	var container;
 	var	header;
 	
+	function findElem(tagName, parent) {
+		if(!parent) parent = document;
+		
+		return tagName ? getElems(['', 0, tagName], parent) : false;
+	}
+	
 	// старые новости
 	if(params.indexOf('old') !== -1) {
 		var pageParams = params.split('&');
-		container = getElems(['', 0, 'P']);	// первый абзац новости		
+		var newsContainer = getElems('news-container');
 		
-		for(var i=0, len=pageParams.length; i<len; i++) {
+		var i=0;
+		var tags = ['H1', 'H2', 'H3', 'STRONG', 'P'];
+		var hElem = false;
+		
+		// ищем текст для заголовка
+		while(i < tags.length) {
+			if(tags[i] === 'STRONG') {
+				hElem = getElems(['', 1, 'STRONG'], parent);	// пропускаем первый strong -> 'К новостям'
+
+				if(hElem && hElem.parentNode.tagName === 'P') hElem = false;
+			}
+			else hElem = findElem(tags[i], newsContainer);
+			
+			if(!hElem) {
+				i++;
+				continue;
+			}
+			
+			if(hElem.innerText !== '') {
+				container = hElem;
+				break;
+			}
+			i++;
+		}
+
+		for(i=0, len=pageParams.length; i<len; i++) {
 			if(pageParams[i].indexOf('custom-news-date') === -1) continue;
 			
 			header = pageParams[i].substr(-8);	// дата новости

@@ -10,7 +10,6 @@
 					}
 					else {
 						echo "<div class='error-message'>Нет подключения к базе данных</div>";
-						exit;
 					}
 					
 					if($_SERVER['REQUEST_METHOD'] == 'POST') {

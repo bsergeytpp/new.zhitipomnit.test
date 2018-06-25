@@ -28,21 +28,8 @@
 		<tr>
 			<th>ID</th>
 			<th>Header</th>
-			<th>Text</th>
 		</tr>
 		<? getPublsToTable(); ?>
 	</table> 
-	<script> editBtnOnClick('publs'); </script>
-	<script>
-		var table = document.getElementsByTagName('table')[0];
-		table.addEventListener('click', function(e) {
-			var target = e.target;
-			
-			if(target.tagName !== 'TD') return;
-			
-			removeSelection(table);
-			target.classList.add('selected');
-		}, false);
-	</script>
 </body>
 </html>

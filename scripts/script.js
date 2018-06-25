@@ -566,7 +566,7 @@ function updatePageTitle() {
 			return;
 		}
 		
-		doc.title = 'Старые новости';
+		doc.title = 'Жить и Помнить - Старые новости';
 		return; 						
 	}
 	
@@ -577,14 +577,16 @@ function updatePageTitle() {
 		
 		for(var i=0, len=searchElems.length; i<len; i++) {
 			container = getElems(['', 0, searchElems[i]], parent);
-
-			if(container && container.textContent == '') continue;
 			
+			if(!container || container.textContent === '') continue;
+
 			header = container.textContent;
-			doc.title = header.substr(0, 50) + '...';
+			doc.title = 'Жить и Помнить - Старые публикации ' + header.substr(0, 50) + '...';
+			return;
 		}
 		
-		return; 	
+		doc.title = 'Жить и Помнить - Старые публикации';
+		return;	
 	}
 	
 	// новость

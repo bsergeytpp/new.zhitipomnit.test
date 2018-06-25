@@ -2,12 +2,29 @@
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	
+	global $db;
+	
+	if($_SERVER['REQUEST_METHOD'] == 'GET') {
+		if($db->getLink()) {
+			if(isset($_GET['news_id'])) {
+				$newsId = $_GET['news_id'];
+				$query = "SELECT * FROM news WHERE news_id = ? ORDER BY news_id";
+				$result = $db->executeQuery($query, array($newsId), 'get_single_news_query');
+				$newsArr = $result->fetch(PDO::FETCH_ASSOC);
+			}
+			else {
+				$query = "SELECT * FROM news WHERE news_id = ? ORDER BY news_id";
+				$result = $db->executeQuery($query, array('1'), 'get_single_news_query');
+				$newsArr = $result->fetch(PDO::FETCH_ASSOC);
+			}
+		}
+	}	
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Форма добавления новости</title>
+        <title>Форма редактирования новости</title>
 		<script src="/scripts/tinymce/tinymce.min.js"></script>
 		<link type="text/css" rel="StyleSheet" href="../styles/admin_styles.css" />
 		<script type="text/javascript">
@@ -23,12 +40,12 @@
     </head>
     <body>
         <a href="/admin">Назад к админке</a><br>
-		<h2>Форма добавления новости:</h2>
-        <form action="save_news.php" method="post" enctype="multipart/form-data">
-			<p>Дата: <input type="date" name="news-date" size="10" required></p>
-			<p>Заголовок: <input type="text" name="news-header" size="100" required></p>
-			<p>Текст: <textarea id="news-textarea" name="news-text" size="50"></textarea></p>
-			<!--<p>Есть логотип: <input name="hasImage" type="checkbox" required>Да/Нет</input></p>-->
+		<h2>Форма редактирования новости:</h2>
+        <form action="update_news.php" method="post" enctype="multipart/form-data">
+			<p>Дата: <input type="date" name="news-date" size="10" required value="<? echo $newsArr['news_date']; ?>"></p>
+			<p>Заголовок: <input type="text" name="news-header" size="100" required value="<? echo $newsArr['news_header']; ?>"></p>
+			<p>Текст: <textarea id="news-textarea" name="news-text" size="50"><? echo $newsArr['news_text']; ?></textarea></p>
+			<input name="news-id" type="hidden" value="<? echo $newsId; ?>"></input>
 			<p><strong>Добавить картинку:</strong></p> 
 			<div class="image-upload-div">
 				<p class="image-file">[$IMAGE1]<input type="file" name="news-image[]"></p>
@@ -49,7 +66,7 @@
 				</ul>
 			</div>
 			<p><a class="add-image-btn" href="#more-images">+</a></p>
-			<p><input type="submit" value="Добавить"></p>
+			<p><input type="submit" value="Изменить"></p>
 		</form>
     </body>
 	<script>

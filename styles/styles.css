@@ -283,8 +283,8 @@ body::before {
 	background-color: transparent !important;
 }
 .article img {
-    max-width: 90%;
-    height: auto;
+    max-width: 90% !important;
+    height: auto !important;
 }
 .article-image {
     width: 50%;

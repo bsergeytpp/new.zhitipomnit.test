@@ -28,21 +28,8 @@
 			<th>ID</th>
 			<th>Date</th>
 			<th>Header</th>
-			<th>Text</th>
 		</tr>
 		<? getNewsToTable(); ?>
 	</table> 
-	<script> editBtnOnClick('news'); </script>
-	<script>
-		var table = document.getElementsByTagName('table')[0];
-		table.addEventListener('click', function(e) {
-			var target = e.target;
-			
-			if(target.tagName !== 'TD') return;
-			
-			removeSelection(table);
-			target.classList.add('selected');
-		}, false);
-	</script>
 </body>
 </html>

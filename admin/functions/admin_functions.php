@@ -154,7 +154,6 @@
 			0 => 'news_id',
 			1 => 'news_date',
 			2 => 'news_header',
-			3 => 'news_text'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
@@ -164,7 +163,8 @@
 			}
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td class="edit-btn" colspan="3"><strong>Редактировать</strong></td>';
+			echo '<td class="edit-btn" colspan="2"><strong>';
+			echo '<a href="edit_single_news.php?news_id='.$row[0].'">Редактировать</a></strong></td>';
 			echo '<td class="delete-btn" colspan="1"><strong>Удалить</strong></td>';
 			echo '</tr>';
 		}
@@ -195,7 +195,6 @@
 		$publsArr = [
 			0 => 'publs_id',
 			1 => 'publs_header',
-			2 => 'publs_text',
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
@@ -205,7 +204,8 @@
 			}
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td class="edit-btn" colspan="2"><strong>Редактировать</strong></td>';
+			echo '<td class="edit-btn"><strong>';
+			echo '<a href="edit_single_publ.php?publId='.$row[0].'">Редактировать</a></strong></td>';
 			echo '<td class="delete-btn"><strong>Удалить</strong></td>';
 			echo '</tr>';
 		}

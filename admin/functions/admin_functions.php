@@ -98,7 +98,8 @@
 		
 		// делаем список и ограничиваем кол-во логов на странице
 		if($totalLogs > LOGS_MAXCOUNT) {
-			$logsList = getULlist($totalLogs, LOGS_MAXCOUNT, 'logs.php?page=', $logPage);
+			$logsQuery = 'logs.php?log-type='.$pars["type"].'&log-important='.$pars["importance"].'&';
+			$logsList = getULlist($totalLogs, LOGS_MAXCOUNT, $logsQuery.'page=', $logPage);
 			echo "Всего: $totalLogs";
 			echo $logsList;
 			$query .= ' LIMIT '.LOGS_MAXCOUNT;
@@ -122,6 +123,12 @@
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
 			echo '<tr>';
 			for($i=0, $len=count($logsArr); $i<$len; $i++) {
+				if($logsArr[$i] === 'log_important') {
+					$impValue = $row[$i] ? 'true' : 'false';
+					echo '<td name='.$logsArr[$i].'>' . $impValue . '</td>';
+					continue;
+				}
+				
 				echo '<td name='.$logsArr[$i].'>' . $row[$i] . '</td>';
 			}
 			echo '</tr>';

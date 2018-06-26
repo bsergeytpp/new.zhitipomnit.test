@@ -3,26 +3,30 @@
 	require_once (__DIR__."/../admin_security/secure.inc.php");
 	require_once (__DIR__."/../admin_security/session.inc.php");
 	
-	$logImportant = false;
-	$logType = 0;
-	$logParams = ['type' => 0,'importance' => false];
+	$logParams = ['type' => 0,'importance' => 0];
 	$logPage = 1;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if(isset($_POST['log-important'])) {
-			$logImportant = $_POST['log-important'];
-		}
-		if(isset($_POST['log-type'])) {
-			$logType = $_POST['log-type'];
+			$logParams['importance'] = $_POST['log-important'];
 		}
 		
-		$logParams['type'] = $logType;
-		$logParams['importance'] = $logImportant;
+		if(isset($_POST['log-type'])) {
+			$logParams['type'] = $_POST['log-type'];
+		}
 	}
 	
 	if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		if(isset($_GET['page'])) {
 			$logPage = $_GET['page'];
+		}
+		
+		if(isset($_GET['log-important'])) {
+			$logParams['importance'] = $_GET['log-important'];
+		}
+		
+		if(isset($_GET['log-type'])) {
+			$logParams['type'] = $_GET['log-type'];
 		}
 	}
 	
@@ -40,7 +44,7 @@
 	<h1>Логи</h1>
 	<a href="/admin">Назад к админке</a>
 	<h3>Доступные действия:</h3>
-	<form action="logs.php" method="POST" class="comments-form">
+	<form action="logs.php" method="GET" class="comments-form">
 		<p>
 			<span>Категория логов:</span>
 			<select name="log-type">

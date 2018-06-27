@@ -18,13 +18,17 @@
 				if($result === false) echo "<div class='error-message'>Данные пользователя не были обновлены</div>";
 				else {
 					echo "<div class='success-message'>Данные пользователя были обновлены</div>";
-					$log_type = 4;
-					$log_name = 'user-update';
-					$log_text = 'user '.$_SESSION['user'].' has updated user: '.$name;
-					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');;
-					$log_important = $_SESSION['admin'];
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+					
+					// данные для логирования
+					global $logData;
+					$logData['type'] = 4;
+					$logData['name'] = 'user-update';
+					$logData['text'] = 'user '.$_SESSION['user'].' has updated user: '.$name;
+					$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+					$logData['date'] = date('Y-m-d H:i:sO');
+					$logData['important'] = $_SESSION['admin'] || false;
+					$logData['ip'] = getUserIp();
+					echo addLogs($logData);
 				}
 			}
 			echo "<div class='error-message'>Нет данных для обновления.</div>";

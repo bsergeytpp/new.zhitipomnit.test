@@ -11,37 +11,40 @@
 	}
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$text = ''; $id = -1;
 		if($db->getLink()) {
-			if(isset($_POST['news-text']) && 
-				isset($_POST['news-id'] && 
-				isset($_POST['news-date'] && 
-				isset($_POST['news-header']))) {
+			if(isset($_POST['news-text']) || 
+				isset($_POST['news-id']) || 
+				isset($_POST['news-date']) || 
+				isset($_POST['news-header'])) {
 				$newsText = clearStr($_POST['news-text']);
 				$newsHeader = strip_tags(clearStr($_POST['news-header']));
 				$newsId = clearStr($_POST['news-id']);
-				$newsDate = $_POST['news-date']);
-				$query = "UPDATE news SET news_date = ?, news_text = ?, news_header = ? WHERE news_id = ?";
-				$result = $db->executeQuery($query, array("$newsDate", "$newsText", "$newsHeader", "$id"), 'update_news_query');
+				$newsDate = $_POST['news-date'];
+				$query = "UPDATE news SET news_date = COALESCE(?, news_date),
+										  news_text = COALESCE(?, news_text),
+										  news_header = COALESCE(?, news_header) WHERE news_id = ?";
+				$result = $db->executeQuery($query, array("$newsDate", "$newsText", "$newsHeader", "$newsId"), 'update_news_query');
 				
 				// данные для логирования
-				$log_type = 2;
-				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');
-				$log_important = $_SESSION['admin'];
+				global $logData;
+				$logData['type'] = 2;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = $_SESSION['admin'] || false;
+				$logData['ip'] = getUserIp();
 				
 				if($result === false) {
 					echo "<div class='error-message'>Новость не была обновлена</div>";
-					$log_name = 'failed to update news';
-					$log_text = 'user '.$_SESSION['user'].' has failed to update news: '.$id;
+					$logData['name'] = 'failed to update news';
+					$logData['text'] = 'user '.$_SESSION['user'].' has failed to update news: '.$newsId;
 				}
 				else {
 					echo "<div class='success-message'>Новость была обновлена</div>";
-					$log_name = 'updated news';
-					$log_text = 'user '.$_SESSION['user'].' has updated news: '.$id;
+					$logData['name'] = 'updated news';
+					$logData['text'] = 'user '.$_SESSION['user'].' has updated news: '.$newsId;
 				}
 				
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				echo addLogs($logData);
 			}
 			else {
 				echo "<div class='error-message'>Нет данных для обновления.</div>";

@@ -58,23 +58,25 @@
 		    $result = $db->executeQuery($query, array("$date", "$header", "$text", "$author"), 'save_news_query');
 			
 			// данные для логирования
-			$log_type = 2;
-			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-			$log_date = date('Y-m-d H:i:sO');
-			$log_important = $_SESSION['admin'];
-						
+			global $logData;
+			$logData['type'] = 2;
+			$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			$logData['date'] = date('Y-m-d H:i:sO');
+			$logData['important'] = $_SESSION['admin'] || false;
+			$logData['ip'] = getUserIp();
+			
 			if($result === false) {
 				echo "<div class='error-message'>Новость не была добавлена</div>";
-				$log_name = 'failed to add news';
-				$log_text = 'user '.$_SESSION['user'].' has failed to add news: '.$header;
+				$logData['name'] = 'failed to add news';
+				$logData['text'] = 'user '.$_SESSION['user'].' has failed to add news: '.$header;
 			}
 			else {
 				echo "<div class='success-message'>Новость была добавлена</div>";
-				$log_name = 'added news';
-				$log_text = 'user '.$_SESSION['user'].' has added news: '.$header;
+				$logData['name'] = 'added news';
+				$logData['text'] = 'user '.$_SESSION['user'].' has added news: '.$header;
 			}
 			
-			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+			echo addLogs($logData);
 		}
 		else {
 			/*$newsArr[] = clearStr($_POST['news-date']);

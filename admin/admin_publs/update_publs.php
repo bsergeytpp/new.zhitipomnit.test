@@ -11,7 +11,6 @@
 	}
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$text = ''; $id = -1;
 		if($db->getLink()) {
 			if(isset($_POST['publ-header']) &&
 				isset($_POST['publ-text']) && 			
@@ -19,27 +18,30 @@
 				$publId = clearStr($_POST['publ-id']);
 				$publHeader = strip_tags(clearStr($_POST['publ-header']));
 				$publText = clearStr($_POST['publ-text']);
-				$query = "UPDATE publs SET publs_text = ?, publs_header = ? WHERE publs_id = ?";
+				$query = "UPDATE publs SET publs_text = COALESCE(?, publs_text),
+										   publs_header = COALESCE(?, publs_header) WHERE publs_id = ?";
 			    $result = $db->executeQuery($query, array("$publText", "$publHeader" "$publId"), 'update_publs_query');
 				
 				// данные для логирования
-				$log_type = 3;
-				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');
-				$log_important = $_SESSION['admin'];
+				global $logData;
+				$logData['type'] = 3;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = $_SESSION['admin'] || false;
+				$logData['ip'] = getUserIp();
 				
 				if($result === false) {
 					echo "<div class='error-message'>Публикация не была обновлена</div>";
-					$log_name = 'failed to update a publ';
-					$log_text = 'user '.$_SESSION['user'].' has failed to update a publ: '.$id;
+					$logData['log_name'] = 'failed to update a publ';
+					$logData['log_text'] = 'user '.$_SESSION['user'].' has failed to update a publ: '.$publId;
 				}
 				else {
 					echo "<div class='success-message'>Публикация была обновлена</div>";
-					$log_name = 'updated a publ';
-					$log_text = 'user '.$_SESSION['user'].' has updated a publ: '.$id;
+					$logData['log_name'] = 'updated a publ';
+					$logData['log_text'] = 'user '.$_SESSION['user'].' has updated a publ: '.$publId;
 				}
 
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				echo addLogs($logData);
 			}
 			echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}

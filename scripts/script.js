@@ -324,19 +324,19 @@ function makeCommentsTree() {
 		var tr = getElems(['comments-content', 0], comm_tables[i]);	
 		var parent_id = tr.children[1].textContent;
 		
-		// самый верхний уровень
 		if(parent_id === '') {
 			comm_tables[i].parentNode.style.width = '100%';
-			return;
+			continue;
 		}
 		
+		// самый верхний уровень
 		DEBUG(makeCommentsTree.name, 'Parent: '+parent_id);
 		for(var j=0; j<len; j++) {
 			var temp_tr = getElems(['comments-content', 0], comm_tables[j]);
 			var temp_id = getElems(['comment-id', 0], temp_tr);
 			//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
 			
-			if(temp_id !== parent_id) continue;
+			if(temp_id !== parent_id) continue;			
 			
 			DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
 			comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);

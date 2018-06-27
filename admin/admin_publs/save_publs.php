@@ -12,26 +12,26 @@
 		    $query = "INSERT INTO publs (publs_header, publs_text) VALUES (?, ?)";
 			$result = $db->executeQuery($query, array("$header", "$text"), 'save_publs_query');
 			
+			// данные для логирования
+			global $logData;
+			$logData['type'] = 3;
+			$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			$logData['date'] = date('Y-m-d H:i:sO');
+			$logData['important'] = $_SESSION['admin'] || false;
+			$logData['ip'] = getUserIp();
+			
 			if($result === false) {
 				echo "<div class='error-message'>Публикация не была добавлена</div>";
-				$log_type = 3;
-				$log_name = 'failed to add a publ';
-				$log_text = 'user '.$_SESSION['user'].' has failed to add a publ: '.$header;
-				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');
-				$log_important = true;
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				$logData['name'] = 'failed to add a publ';
+				$logData['text'] = 'user '.$_SESSION['user'].' has failed to add a publ: '.$header;
 			}
 			else {
 				echo "<div class='success-message'>Публикация была добавлена</div>";
-				$log_type = 3;
-				$log_name = 'added a publ';
-				$log_text = 'user '.$_SESSION['user'].' has added a publ: '.$header;
-				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');
-				$log_important = $_SESSION['admin'];
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
-			}				
+				$logData['name'] = 'added a publ';
+				$logData['text'] = 'user '.$_SESSION['user'].' has added a publ: '.$header;
+			}
+			
+			echo addLogs($logData);
 		}
 		else {
 			echo "<div class='error-message'>Тут могла быть ваша Публикация.</div>";

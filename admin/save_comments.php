@@ -28,26 +28,26 @@
 						 "VALUES (?, ?, ?, ?, ?)";
 				$result = $db->executeQuery($query, array($user_id, $id, $text, $date, $parent_id), 'insert_comment');
 				
+				// данные для логирования
+				global $logData;
+				$logData['type'] = 1;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = $_SESSION['admin'] || false;
+				$logData['ip'] = getUserIp();
+				
 				if($result === false) {
 					echo "<div class='error-message'>Комментарий не был добавлен</div>";
-					$log_type = 1;
-					$log_name = 'failed to add a comment';
-					$log_text = 'user '.$_SESSION['user'].' has failed to add a comment with text: '.$text;
-					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');
-					$log_important = true;
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+					$logData['name'] = 'failed to add a comment';
+					$logData['text'] = 'user '.$_SESSION['user'].' has failed to add a comment with text: '.$text;
 				}
 				else {
 					echo "<div class='success-message'>Комментарий был добавлен</div>";
-					$log_type = 1;
-					$log_name = 'added a comment';
-					$log_text = 'user '.$_SESSION['user'].' has added a comment: '.$text;
-					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');
-					$log_important = $_SESSION['admin'];
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
-				}					
+					$logData['name'] = 'added a comment';
+					$logData['text'] = 'user '.$_SESSION['user'].' has added a comment: '.$text;
+				}
+
+				echo addLogs($logData);
 			}
 			else echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}

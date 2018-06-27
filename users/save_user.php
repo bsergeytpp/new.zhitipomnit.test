@@ -7,8 +7,15 @@
 		if($db->getLink()) {
 			$recaptcha = verifyCaptcha($_POST['g-recaptcha-response']);
 			$currentTime = date('Y-m-d H:i:sO');
-			$log_type = 4;
-			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			
+			// данные для логирования
+			global $logData;
+			$logData['type'] = 4;
+			$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+			$logData['important'] = $_SESSION['admin'] || false;
+			$logData['date'] = $currentTime;
+			$logData['ip'] = getUserIp();
+			
 			if(!json_decode($recaptcha)) {
 				echo "Ошибка reCaptcha: не верные или пустые данные!";
 				return;
@@ -17,11 +24,9 @@
 				$jsonResult = json_decode($recaptcha);
 				if($jsonResult->success !== true) {
 					echo "Ошибка reCaptcha: не верно введены данные!";
-					$log_name = 'user-registration';
-					$log_text = 'Wrong reCaptcha code: ' . $recaptcha;
-					$log_date = $currentTime;
-					$log_important = $_SESSION['admin'] ? $_SESSION['admin'] : false;
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+					$logData['name'] = 'user-registration';
+					$logData['text'] = 'Wrong reCaptcha code: ' . $recaptcha;
+					echo addLogs($logData);
 					return;
 				} 
 			}
@@ -41,11 +46,9 @@
 			else {
 				echo 'Пользователь был добавлен<br>';
 				echo '<a href="login.php">Войти</a>';
-				$log_name = 'user-registration';
-				$log_text = 'A new user has registred: '.$login;
-				$log_date = $currentTime;
-				$log_important = $_SESSION['admin'] ? $_SESSION['admin'] : false;
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+				$logData['name'] = 'user-registration';
+				$logData['text'] = 'A new user has registred: '.$login;
+				echo addLogs($logData);
 			}				
 		}
 		else {

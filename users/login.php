@@ -3,21 +3,35 @@
 	require_once "../admin/admin_security/session.inc.php";
 		
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$user = trim(strip_tags($_POST['user']));
-		$user = filter_var($user, FILTER_SANITIZE_STRING);
-		$pw = trim(strip_tags($_POST['pw']));
+		if(isset($_POST['user'])) {
+			$user = trim(strip_tags($_POST['user']));
+			$user = filter_var($user, FILTER_SANITIZE_STRING);
+		}
+		else {
+			$user = 'empty';
+		}
+		
+		if(isset($_POST['pw'])) {
+			$pw = trim(strip_tags($_POST['pw']));
+		}
+		else {
+			$pw = null;
+		}
+		
+		// данные для логирования
+		global $logData;
+		$logData['log_type'] = 4;
+		$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+		$logData['date'] = date('Y-m-d H:i:sO');
+		$logData['important'] = $_SESSION['admin'] || false;
+		$logData['ip'] = getUserIp();
 		
 		if(!checkUser($user, $pw)) {
 			echo 'No luck';
-			$log_type = 4;
-			$log_name = 'failed login';
-			$log_text = 'somebody failed to log in with username: ' . $user;
-			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-			$log_date = date('Y-m-d H:i:sO');
-			$log_important = true;
-			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+			$logData['name'] = 'failed login';
+			$logData['text'] = 'somebody failed to log in with username: ' . $user;
+			addLogs($logData);
 			header("HTTP/1.0 401 Unauthorized");
-			exit;
 		}
 		else {
 			$row = checkUser($user, $pw);
@@ -44,16 +58,12 @@
 				$sessionHandler->setUser($_SESSION['user']);
 			}
 			
-			$log_type = 4;
-			$log_name = 'login';
-			$log_text = 'user '.$_SESSION['user'].' has logged in';
-			$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-			$log_date = date('Y-m-d H:i:sO');
-			$log_important = $_SESSION['admin'];
-			echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
-			
-			exit;
+			$logData['name'] = 'login';
+			$logData['text'] = 'user '.$_SESSION['user'].' has logged in';
+			addLogs($logData);
 		}
+		
+		exit;
 	}
 	else if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		if(!isset($_SESSION['admin'])) {

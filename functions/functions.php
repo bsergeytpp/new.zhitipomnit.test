@@ -72,6 +72,15 @@
 	$secret = null;
 	$token = null;
 	$debug = '';
+	$logData = array(
+		'type' => null, 
+		'location' => null, 
+		'date' => null, 
+		'important' => null,
+		'ip' => null,
+		'name' => null, 
+		'text' => null
+	);
 	
 	//if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 	
@@ -150,29 +159,34 @@
 		$result = $db->executeQuery($query, array($userLogin, $data), 'save_settings');
 	}
 	
-	function addLogs($type, $name, $text, $location, $date, $important) {
+	function addLogs($logData) {
 		global $db;
-		
-		if($name === null || $text === null || $location === null || 
-		   $date === null || $important === null || $type === null) {
-			return false;
+
+		foreach($logData as $value) {
+			if($value === null) return false;
 		}
 		
-		$name = clearStr($name);
-		$text = filter_var($text, FILTER_SANITIZE_STRING);
-		$location = clearStr($location);
+		unset($value);
 		
-		if(!$important) {
-			$important = 'false';
+		$logData['name'] = clearStr($logData['name']);
+		$logData['text'] = filter_var($logData['text'], FILTER_SANITIZE_STRING);
+		$logData['location'] = clearStr($logData['location']);
+		
+		if(!$logData['important']) {
+			$logData['important'] = 'false';
+		}
+		
+		if(!$logData['ip']) {
+			$logData['ip'] = 'undefined';
 		}
 		
 		if($db->getLink()) {
-			$query = "INSERT INTO logs (log_type, log_name, log_text, log_location, log_date, log_important) 
-					  VALUES (?, ?, ?, ?, ?, ?)";
-			$result = $db->executeQuery($query, array($type, $name, $text, $location, $date, $important), 'add_log');
+			$query = "INSERT INTO logs (log_type, log_location, log_date, log_important, log_client_ip, log_name, log_text) 
+					  VALUES (?, ?, ?, ?, ?, ?, ?)";
+			$result = $db->executeQuery($query, array_values($logData), 'add_log');
 			
 			if($result !== false) {
-				echo "<div class='success-message'>Лог добавлен. Данные: ".$type.'|'.$name.'|'.$text.'|'.$location.'|'.$date.'|'.$important."</div>";
+				echo "<div class='success-message'>Лог добавлен. Данные: ".implode('|', $logData)."</div>";
 			}
 			else {
 				echo "<div class='error-message'>Лог не добавлен</div>";
@@ -182,7 +196,7 @@
 			echo "<div class='error-message'>Соединение с базой данных не установлено</div>";
 		}
 	}
-	
+		
 	function clearStr($str) {
 		return preg_replace('~\R~u', "", trim($str));
 	}
@@ -488,5 +502,13 @@
 		}
 		
 		return $result;
+	}
+	
+	function getUserIp() {
+		if(isset($_SERVER['REMOTE_ADDR'])) {
+			return $_SERVER['REMOTE_ADDR'];
+		}
+		
+		return false;
 	}
 ?>

@@ -38,11 +38,14 @@
 				$this->link = new PDO($str, $connStr['user'], $connStr['password'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 			}
 			catch(PDOException $e) {
-				echo addLogs(
-					5, 'failed connection', 'Соединение оборвалось: ' . $e->getMessage(), 
-					'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
-					date('Y-m-d H:i:sO'), 
-					true);
+				echo addLogs(array(
+					'type' => 5,
+					'name' => 'failed connection', 
+					'text' => 'Соединение оборвалось: ' . $e->getMessage(), 
+					'location' => 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
+					'date' => date('Y-m-d H:i:sO'), 
+					'important' => true,
+					'ip' => getUserIp()));
 				exit;
 			}
 		}
@@ -65,11 +68,15 @@
 				return $this->result;
 			}
 			catch(PDOException $e) {
-				echo addLogs(
-					5, 'failed query', $e -> getCode() . ":" . $e -> getMessage(), 
-					'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
-					date('Y-m-d H:i:sO'), 
-					true);
+				global $logData;
+				$logData['type'] = 5;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = true;
+				$logData['ip'] = getUserIp();
+				$logData['name'] = 'failed query';
+				$logData['text'] = $e->getCode() . ":" . $e->getMessage();
+				addLogs($logData);
 				exit;
 			}
 		}

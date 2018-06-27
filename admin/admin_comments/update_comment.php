@@ -22,26 +22,26 @@
 				$query = "UPDATE comments SET comments_text = ?, comments_edited_by = ?, comments_edited_date = ? WHERE comments_id = ?";
 				$result = $db->executeQuery($query, array($text, $author_id, $editedDate, $id), 'update_comments');
 				
+				// данные для логирования
+				global $logData;
+				$logData['type'] = 1;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = $_SESSION['admin'] || false;
+				$logData['ip'] = getUserIp();
+				
 				if($result === false) {
 					echo "<div class='error-message'>Комментарий не был обновлен</div>";
-					$log_type = 1;
-					$log_name = 'failed to update a comment';
-					$log_text = 'user '.$_SESSION['user'].' has failed to update comment id: '.$id.' with new text: '.$text;
-					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');
-					$log_important = true;
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
+					$logData['name'] = 'failed to update a comment';
+					$logData['text'] = 'user '.$_SESSION['user'].' has failed to update comment id: '.$id.' with new text: '.$text;
 				}
 				else {
 					echo "<div class='success-message'>Комментарий был обновлен</div>";
-					$log_type = 1;
-					$log_name = 'updated a comment';
-					$log_text = 'user '.$_SESSION['user'].' has updated comment id: '.$id.' with new text: '.$text;
-					$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-					$log_date = date('Y-m-d H:i:sO');
-					$log_important = $_SESSION['admin'];
-					echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);
-				}					
+					$logData['name'] = 'updated a comment';
+					$logData['text'] = 'user '.$_SESSION['user'].' has updated comment id: '.$id.' with new text: '.$text;
+				}
+
+				addLogs($logData);
 			}
 			else echo "<div class='error-message'>Нет данных для обновления.</div>";
 		}

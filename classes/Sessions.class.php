@@ -73,7 +73,7 @@
 				$this->data = $res->fetchColumn();
 				
 				// http://php.net/manual/ru/function.session-start.php#120589
-				return is_null($this->data) ? '' : $this->data;
+				return (is_null($this->data) || $this->data === false) ? '' : $this->data;
 			}
 
 			return '';
@@ -85,10 +85,22 @@
 			$this->data = $sessionData;
 			
 			if($this->db->getLink()) {
-				$query = "INSERT INTO sessions (session_hash, session_data, session_username, session_last_seen, session_ip, session_user_agent)
+				$query = "INSERT INTO sessions (
+										session_hash, 
+										session_data, 
+										session_username, 
+										session_last_seen, 
+										session_ip, 
+										session_user_agent)
 						  VALUES (?, ?, ?, NOW(), ?, ?) 
 						  ON CONFLICT (session_hash) DO UPDATE SET session_data = ?, session_last_seen = NOW()";
-				$res = $this->db->executeQuery($query, array($this->sessionId, $this->data, $this->user, $this->ip, $this->userAgent, $this->data), 'write_session');
+				$res = $this->db->executeQuery($query, array(
+										$this->sessionId, 
+										$this->data, 
+										$this->user, 
+										$this->ip, 
+										$this->userAgent, 
+										$this->data), 'write_session');
 				//error_log("LOG: write session with hash => $this->sessionId", 0);
 			}
 			

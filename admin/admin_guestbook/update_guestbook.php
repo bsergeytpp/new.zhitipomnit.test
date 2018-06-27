@@ -17,23 +17,27 @@
 				$gbId = clearStr($_POST['gb-id']);
 				$query = "UPDATE guestbook SET gb_text = ? WHERE gb_id = ?";
 				$result = $db->executeQuery($query, array("$gbText", "$gbId"), 'update_gb_message');
-				$log_type = 6;
-				$log_location = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				$log_date = date('Y-m-d H:i:sO');
-				$log_important = $_SESSION['admin'];
+				
+				// данные для логирования
+				global $logData;
+				$logData['type'] = 6;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = $_SESSION['admin'] || false;
+				$logData['ip'] = getUserIp();
 				
 				if($result === false) {
 					echo "<div class='error-message'>Сообщение не было обновлено</div>";
-					$log_name = 'failed to update guestbook message';
-					$log_text = 'user '.$_SESSION['user'].' has failed to update guestbook message with id: '.$gbId;
+					$logData['name'] = 'failed to update guestbook message';
+					$logData['text'] = 'user '.$_SESSION['user'].' has failed to update guestbook message with id: '.$gbId;
 				}
 				else {
 					echo "<div class='success-message'>Сообщение было обновлено</div>";
-					$log_name = 'guestbook message has been updated';
-					$log_text = 'user '.$_SESSION['user'].' has updated guestbook message with id: '.$gbId;	
+					$logData['name'] = 'guestbook message has been updated';
+					$logData['text'] = 'user '.$_SESSION['user'].' has updated guestbook message with id: '.$gbId;	
 				}
 				
-				echo addLogs($log_type, $log_name, $log_text, $log_location, $log_date, $log_important);				
+				echo addLogs($logData);				
 			}
 			else {
 				echo "<div class='error-message'>Нет данных для обновления.</div>";

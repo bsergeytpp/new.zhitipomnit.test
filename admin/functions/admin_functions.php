@@ -165,9 +165,11 @@
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
 			echo '<tr>';
+			
 			for($i=0, $len=count($newsArr); $i<$len; $i++) {
 				echo '<td name='.$newsArr[$i].'>' . $row[$i] . '</td>';
 			}
+			
 			echo '</tr>';
 			echo '<tr>';
 			echo '<td class="edit-btn" colspan="2"><strong>';
@@ -206,14 +208,47 @@
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
 			echo '<tr>';
+			
 			for($i=0, $len=count($publsArr); $i<$len; $i++) {
 				echo '<td name='.$publsArr[$i].'>' . $row[$i] . '</td>';
 			}
+			
 			echo '</tr>';
 			echo '<tr>';
 			echo '<td class="edit-btn"><strong>';
 			echo '<a href="edit_single_publ.php?publId='.$row[0].'">Редактировать</a></strong></td>';
 			echo '<td class="delete-btn"><strong>Удалить</strong></td>';
+			echo '</tr>';
+		}
+	}
+	
+	function getUsersToTable() {
+		global $db;
+		
+		$query = 'SELECT user_id, user_login, user_email, user_group, user_reg_date, user_last_seen FROM users ORDER BY user_id';
+		$res = $db->executeQuery($query, null, null);
+		
+		$usersArr = [
+			0 => 'user_id',
+			1 => 'user_login',
+			2 => 'user_email',
+			3 => 'user_group',
+			4 => 'user_reg_date',
+			5 => 'user_last_seen'
+		];
+		
+		while($row = $res->fetch(PDO::FETCH_NUM)) {
+			echo '<tr>';
+			
+			for($i=0, $len=count($usersArr); $i<$len; $i++) {
+				echo '<td name='.$usersArr[$i].'>' . $row[$i] . '</td>';
+			}
+	
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td class="edit-btn" colspan="5" style="cursor: pointer;"><strong>';
+			echo '<a href="edit_single_user.php?user_id='.$row[0].'">Редактировать</a></strong></td>';
+			echo '<td class="delete-btn" colspan="1" style="cursor: pointer;"><strong>Удалить</strong></td>';
 			echo '</tr>';
 		}
 	}

@@ -6,14 +6,25 @@
 	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
-		$text = ''; $id = -1;
 		if($db->getLink()) {
-			if(isset($_POST['text']) && isset($_POST['id'])) {
-				$text = strip_tags(clearStr($_POST['text']));
-				$name = clearStr($_POST['name']);
-				$id = (int)$_POST['id'];
-				$query = "UPDATE users SET " . pg_escape_string($name) . " = ? WHERE user_id = ?";
-				$result = $db->executeQuery($query, array($text, $id), 'update_user');
+			if(isset($_POST['user-login']) && 
+			   isset($_POST['user-email']) && 
+			   isset($_POST['user-group']) && 
+			   isset($_POST['user-reg']) && 
+			   isset($_POST['user-last']) && 
+			   isset($_POST['user-id'])) {
+				$login = strip_tags(clearStr($_POST['user-login']));
+				$email = strip_tags(clearStr($_POST['user-email']));
+				$group = strip_tags(clearStr($_POST['user-group']));
+				$regDate = $_POST['user-reg'];
+				$lastSeen = $_POST['user-last'];
+				$id = (int)$_POST['user-id'];
+				$query = "UPDATE users SET user_login = COALESCE(?, user_login),
+										  user_email = COALESCE(?, user_email),
+										  user_group = COALESCE(?, user_email),
+										  user_reg_date = COALESCE(?, user_reg_date),
+										  user_last_seen = COALESCE(?, user_last_seen) WHERE user_id = ?";
+				$result = $db->executeQuery($query, array($login, $email, $group, $regDate, $lastSeen, $id), 'update_user');
 				
 				if($result === false) echo "<div class='error-message'>Данные пользователя не были обновлены</div>";
 				else {
@@ -23,7 +34,7 @@
 					global $logData;
 					$logData['type'] = 4;
 					$logData['name'] = 'user-update';
-					$logData['text'] = 'user '.$_SESSION['user'].' has updated user: '.$name;
+					$logData['text'] = 'user '.$_SESSION['user'].' has updated user: '.$login;
 					$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 					$logData['date'] = date('Y-m-d H:i:sO');
 					$logData['important'] = $_SESSION['admin'] || false;

@@ -38,14 +38,15 @@
 				$this->link = new PDO($str, $connStr['user'], $connStr['password'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 			}
 			catch(PDOException $e) {
-				echo addLogs(array(
-					'type' => 5,
-					'name' => 'failed connection', 
-					'text' => 'Соединение оборвалось: ' . $e->getMessage(), 
-					'location' => 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'], 
-					'date' => date('Y-m-d H:i:sO'), 
-					'important' => true,
-					'ip' => getUserIp()));
+				global $logData;
+				$logData['type'] = 5;
+				$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+				$logData['date'] = date('Y-m-d H:i:sO');
+				$logData['important'] = true;
+				$logData['ip'] = getUserIp();
+				$logData['name'] = 'failed connection';
+				$logData['text'] = 'Соединение оборвалось: ' . $e->getMessage();
+				addLogs($logData);
 				exit;
 			}
 		}

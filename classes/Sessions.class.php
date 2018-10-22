@@ -139,7 +139,7 @@
 				$this->user = $userLogin;
 				
 				if($this->db->getLink()) {
-					$query = "UPDATE sessions SET session_username = ? WHERE session_id = ?";
+					$query = "UPDATE sessions SET session_username = ? WHERE session_hash = ?";
 					$res = $this->db->executeQuery($query, array($userLogin, $this->sessionId), 'session_update_user');
 					//error_log("LOG: setUser for session with hash => $this->sessionId", 0);
 				}

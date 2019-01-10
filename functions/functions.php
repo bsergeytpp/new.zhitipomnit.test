@@ -159,6 +159,67 @@
 		$result = $db->executeQuery($query, array($userLogin, $data), 'save_settings');
 	}
 	
+	// заголовок страницы и путь к контенту
+	function getPageTitlePath() {
+		$titlePath = [
+			'title' => '', 'path' => ''
+		];
+		$params = isset($_GET['pages']) ? $_GET['pages'] : '';
+		
+		switch($params) {
+			case 'main': 
+				$titlePath['title'] = 'Главная страница'; 
+				$titlePath['path'] = 'content/main.php'; 
+				break;
+			case 'news': 
+				$titlePath['title'] = 'Новости'; 
+				$titlePath['path'] = 'content/news.php'; 
+				break;
+			case 'publ': 
+				$titlePath['title'] = 'Статьи'; 
+				$titlePath['path'] = 'content/publ.php'; 
+				break;
+			case 'contacts': 
+				$titlePath['title'] = 'Контакты'; 
+				$titlePath['path'] = 'content/contacts.php'; 
+				break;
+			case 'memory': 
+				$titlePath['title'] = 'Книга Памяти'; 
+				$titlePath['path'] = 'content/memory.php'; 
+				break;
+			case 'about': 
+				$titlePath['title'] = 'О Фонде'; 
+				$titlePath['path'] = 'content/about.php'; 
+				break;
+			case 'mail': 
+				$titlePath['title'] = 'Почта'; 
+				$titlePath['path'] = 'content/mail.php'; 
+				break;
+			case 'press': 
+				$titlePath['title'] = 'Газета'; 
+				$titlePath['path'] = 'content/press.php'; 
+				break;
+			case 'search':
+				$titlePath['title'] = 'Поиск по Книге Памяти'; 
+				$titlePath['path'] = 'content/search.php'; 
+				break;
+			case 'guestbook':
+				$titlePath['title'] = 'Гостевая книга'; 
+				$titlePath['path'] = 'content/guestbook.php'; 
+				break;
+			default:
+				$titlePath['title'] = 'Главная страница';
+				$titlePath['path'] = [
+					'content/main.php',
+					'content/news.php',
+					'content/publ.php'
+				];
+				break;
+		}
+		
+		return $titlePath;
+	}
+	
 	function addLogs($logData) {
 		global $db;
 

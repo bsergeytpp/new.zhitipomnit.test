@@ -572,4 +572,9 @@
 		
 		return false;
 	}
+	
+	function addWebpClass($classMod, $classComp) {
+		if(strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') !== false) echo $classMod;
+		else echo $classComp;
+	}
 ?>

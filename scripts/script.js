@@ -81,12 +81,12 @@ function postComment(e) {
 	e.preventDefault();
 	removeActiveTinymceEditors();
 	
-	var commentsForm = getElems(['comments-form', 0]);
+	var commentsForm = getElems(['comments-form', 0]).elements;
 	var text = tinymce.activeEditor.getContent();
-	var login = commentsForm.elements['comments-login'].value;
-	var parentId = commentsForm.elements['comments-parent'].value;
-	var id = commentsForm.elements['comments-location-id'].value;
-	var token = commentsForm.elements['security-token'].value;
+	var login = commentsForm['comments-login'].value;
+	var parentId = commentsForm['comments-parent'].value;
+	var id = commentsForm['comments-location-id'].value;
+	var token = commentsForm['security-token'].value;
 
 	if(!checkCookieToken(token)) {
 		console.log("Ошибка безопасности.");
@@ -283,6 +283,10 @@ function replacePressPagesLinks() {
 		if(checkClass(pagesLinks[i], ['article-press-links'])) continue;
 		
 		var strHref = pagesLinks[i].getAttribute('href');
+		
+		// внешний домен
+		if(strHref.substring(0,4) === 'http') continue;
+		
 		// берем ссылку на вторую страницу газеты за основу (чтобы был атрибут page)
 		var newHref = getElems(['article-press-links', 1]).getAttribute('href');
 		// убираем номер страницы

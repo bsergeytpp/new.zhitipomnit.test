@@ -17,7 +17,7 @@
 		}
 
 		$totalFiles = count($tmpNames);
-		
+				
 		// загружаем файлы в папку
 		for($i=0; $i<$totalFiles; $i++) {
 			if(is_uploaded_file($tmpNames[$i])) {

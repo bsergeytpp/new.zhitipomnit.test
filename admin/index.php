@@ -60,7 +60,7 @@
 	<? 
 		global $sessionHandler;
 		$sessHandler = DBSessionHandler::getInstance();
-		$sessHandler->getActiveSessions(); 
+		$sessHandler->getActiveSessions();
 	?></strong>
 </body>
 </html>

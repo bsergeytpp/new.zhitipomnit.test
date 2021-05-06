@@ -16,7 +16,7 @@
 				$query .= "	WHERE to_tsvector(person_lastname  || ' ' || 
 										      person_about     || ' ' || 
 										      person_firstname || ' ' || 
-										      person_middlename) @@ plainto_tsquery('$search')";
+										      person_middlename) @@ to_tsquery('$search' || ':*')";
 			}
 			
 			$result = $db->executeQuery($query, null, null);

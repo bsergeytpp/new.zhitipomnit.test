@@ -59,11 +59,16 @@ body::before {
     margin: 5px;
     margin-left: 30%;
     border-top: 30px solid transparent;
-    border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
-    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
-	/*transition: margin .1s linear;*/
 	transform: translate3d(0,0,0);
+}
+.article-mod {
+	border-image: url(../images/lenta_shadow.webp) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.webp) 105 0 0 0 round;
+}
+.article-comp {
+	border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 }
 .full-width {
     width: 100% !important;
@@ -158,14 +163,20 @@ body::before {
 	text-decoration: underline;
 }
 .nav {
-    width: 30%;
+	width: 30%;
     margin: 5px;
     float: left;
     z-index: 2;
     border-top: 30px solid transparent;
-    border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
-    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 	border-style: solid;
+}
+.nav-mod {
+    border-image: url(../images/lenta_shadow.webp) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.webp) 105 0 0 0 round;
+}
+.nav-comp {
+	border-image: url(../images/lenta_shadow.png) 105 0 0 0 round;
+    -o-border-image: url(../images/lenta.png) 105 0 0 0 round;
 }
 .nav ul {
     list-style: none;

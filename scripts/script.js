@@ -338,9 +338,9 @@ function makeCommentsTree() {
 		for(var j=0; j<len; j++) {
 			var temp_tr = getElems(['comments-content', 0], comm_tables[j]);
 			var temp_id = getElems(['comment-id', 0], temp_tr);
-			//DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
+			DEBUG(makeCommentsTree.name, 'Current id: '+temp_id);
 			
-			if(temp_id !== parent_id) continue;			
+			if(temp_id.textContent !== parent_id) continue;			
 			
 			DEBUG(makeCommentsTree.name, 'Parent is found: '+comm_tables[j]);
 			comm_tables[j].parentNode.appendChild(comm_tables[i].parentNode);
@@ -351,7 +351,6 @@ function makeCommentsTree() {
 // при клике на кнопку "Ответить" записываем в скрытое поле формы комментирования ID комментария
 // ссылаемся на ID в тексте кнопки "Ответ"
 function setCommentsParentId(e) {
-	console.log('TEST');
 	var target = e.target;
 	
 	if(!checkClass(target, ['respond-button'])) return;
@@ -359,16 +358,16 @@ function setCommentsParentId(e) {
 	var parent = target.parentNode; 									// TD - родитель кнопки "Ответить"
 	
 	while(parent.tagName !== 'TABLE') {
-		if(!checkClass(parent, ['comments-respond'])) break;
+		//if(!checkClass(parent, ['comments-respond'])) break;
 		
 		parent = parent.parentNode;
 	}
 	
 	e.preventDefault();
 
-	var parentLink = getElems(['', 0, 'A'], parent);
+	var parentLink = getElems(['comment-id', 0, 'A'], parent);
 	var parentId = parentLink.textContent; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
-	var parentAuthor = parentLink.getAttribute('href'); 
+	var parentAuthor = parentLink.getAttribute('href');
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = getElems(['comments-form', 0]).elements['comments-parent'];
 

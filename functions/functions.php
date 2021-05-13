@@ -472,6 +472,7 @@
 				foreach($row as $val) {
 					switch($i) {
 						case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
+						case 1: echo "<td class='comment-parent'>". $val ."</td>"; break;
 						case 3: 
 							echo "<td class='comment-text' id='text-id-$j'>". $val;
 							
@@ -482,6 +483,7 @@
 							
 							echo "</td>"; 
 							break;
+						case 4: echo "<td class='comment-date'>". strftime("%F", strtotime($val)) ."</td>"; break;
 						case 5: case 6: break;
 						default: echo "<td>". $val ."</td>"; break;
 					}
@@ -490,7 +492,7 @@
 				echo "</tr>";
 				
 				if(isset($_SESSION['user']) && $_SESSION['user'] !== null) {
-					echo "<tr class='comments-respond'><td colspan='5'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+					echo "<tr class='comments-respond'><td colspan='3'><a class='respond-button' href='#'>Ответить</a></td></tr>";
 				}
 				
 				echo "</table>";

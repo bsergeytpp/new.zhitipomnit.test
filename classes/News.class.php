@@ -208,7 +208,7 @@
 			$replacement = [
 				$news['news_id'],
 				$news['news_date'], 
-				"<h4>".$news['news_header']."</h4>".$news['news_text']
+				"<h2>".$news['news_header']."</h2>".$news['news_text']
 			];
 			$newsFull = str_replace($pattern, $replacement, $newsFull);
 			echo $newsFull;
@@ -260,6 +260,7 @@
 		public function getNews() {
 			$this->allNews = file_get_contents("content/news/archive_news.html");
 			$this->allNews = strip_tags($this->allNews, '<p><strong><a>');
+			$this->allNews = str_replace('http://www.zhitipomnit.ru/publik/publik.html', 'index.php?pages=publ', $this->allNews);
 			$this->createNewsList();
 		}
 		

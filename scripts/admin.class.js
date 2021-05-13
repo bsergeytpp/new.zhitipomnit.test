@@ -482,7 +482,7 @@ Admin.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 							    innerHTML: '<a href="#" class="admin-edit edit-comm " data-id="'+commId+'">Редактировать</a>'});
 	var removeTd = createDOMElem({tagName: 'TD', 
 								  innerHTML: '<a href="#" class="admin-edit del-comm" data-id="'+commId+'">Удалить</a>'});
-	var infoTd = createDOMElem({tagName: 'TD', args: [{name: 'colspan', value: 3}], innerHTML: '<strong>Управление</strong>'});
+	var infoTd = createDOMElem({tagName: 'TD', args: [{name: 'colspan', value: 1}], innerHTML: '<strong>Управление</strong>'});
 	tr.appendChild(infoTd);
 	tr.appendChild(editTd);
 	tr.appendChild(removeTd);

@@ -92,7 +92,7 @@ function getParamFromLocationSearch(parName) {
 		className: '',
 		id: '',
 		args: [{name: '', value: ''...}],
-		innerHTML: ''
+		innerText: ''
 	}
 */
 function createDOMElem(elemParams) {
@@ -110,8 +110,8 @@ function createDOMElem(elemParams) {
 		}
 	}
 	
-	if(elemParams.innerHTML) {
-		elem.innerHTML = elemParams.innerHTML;
+	if(elemParams.innerText) {
+		elem.innerText = elemParams.innerText;
 	}
 	
 	DEBUG(createDOMElem.name, 'Элемент создан: ' + elem);

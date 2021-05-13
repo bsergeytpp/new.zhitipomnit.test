@@ -107,14 +107,14 @@ Admin.prototype.addGuestbookEditBtn = function addGuestbookEditBtn() {
 			tagName: 'A', 
 			args: [{name: 'href', value: '#'}, {name: 'data-id', value: gbId.substr(gbId.indexOf('-')+1)}], 
 			className: 'gb-edit-button', 
-			innerHTML: 'Редактировать'
+			innerText: 'Редактировать'
 		});
 		var deleteBtn = createDOMElem({
 			tagName: 'A', 
 			args: [{name: 'href', value: '#'}, {name: 'data-id', value: gbId.substr(gbId.indexOf('-')+1)}], 
 			className: 'gb-edit-button', 
 			id: 'gb-'+gbId.substr(gbId.indexOf('-')+1),
-			innerHTML: 'Удалить'
+			innerText: 'Удалить'
 		});
 		this._guestbookForms[i].appendChild(editBtn);
 		this._guestbookForms[i].appendChild(deleteBtn);
@@ -255,7 +255,7 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 		
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
 		var commId = getElems(['comment-id', 0], this._commentsTables[i]);
-		var editTr = this.createEditCommentsTr(getElems(['', 0, 'A'], commId).textContent);
+		var editTr = this.createEditCommentsTr(commId.textContent);
 		getElems(['', 0, 'TBODY'], this._commentsTables[i]).appendChild(editTr);
 	}
 	
@@ -478,11 +478,37 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 // создаем TR с кнопками редактировать/удалить 
 Admin.prototype.createEditCommentsTr = function createEditCommentsTr(commId) {
 	var tr = createDOMElem({tagName: 'TR', className: 'comments-edit'});
-	var editTd = createDOMElem({tagName: 'TD', 
-							    innerHTML: '<a href="#" class="admin-edit edit-comm " data-id="'+commId+'">Редактировать</a>'});
-	var removeTd = createDOMElem({tagName: 'TD', 
-								  innerHTML: '<a href="#" class="admin-edit del-comm" data-id="'+commId+'">Удалить</a>'});
-	var infoTd = createDOMElem({tagName: 'TD', args: [{name: 'colspan', value: 1}], innerHTML: '<strong>Управление</strong>'});
+	var editTd = createDOMElem({tagName: 'TD'});
+	var removeTd = editTd.cloneNode();
+	var infoTd = editTd.cloneNode();
+		
+	var editLink = createDOMElem({
+		tagName: 'A',
+		args: [{name: 'href', value: '#'}, {name: 'data-id', value: commId}], 
+		className: 'admin-edit edit-comm ',
+		innerText: 'Редактировать'
+	});
+	
+	editTd.appendChild(editLink);
+	
+	var delLink = createDOMElem({
+		tagName: 'A',
+		args: [{name: 'href', value: '#'}, {name: 'data-id', value: commId}], 
+		className: 'admin-edit del-comm ',
+		innerText: 'Удалить'
+	});
+	
+	removeTd.appendChild(delLink);
+	
+	infoTd.setAttribute('colspan', 1);
+	
+	var infoLink = createDOMElem({
+		tagName: 'STRONG',
+		innerText: 'Управление'
+	});
+	
+	infoTd.appendChild(infoLink);
+	
 	tr.appendChild(infoTd);
 	tr.appendChild(editTd);
 	tr.appendChild(removeTd);
@@ -596,7 +622,7 @@ Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 					resp = resp.replace('$id$', self._responseObject[pattern+'_id']);
 					resp = resp.replace('$header$', self._responseObject[pattern+'_header']);
 					resp = resp.replace('$inner$', self._responseObject[pattern+'_text']);
-					var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem', innerHTML: resp});
+					var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem', innerText: resp});
 					document.body.appendChild(div);
 					self._editDiv = div;
 					
@@ -719,6 +745,7 @@ Admin.prototype._sendSaveRequest = function sendSaveRequest(argArr, reqType, req
 };
 
 // создаем панель администратора
+// TODO: проверять на наличии ссылки перед добавлением (AJAX)
 Admin.prototype.addAdminPanelLink = function addAdminPanelLink() {
 	var headerLinks = getElems(['header-links', 0]);
 	var headerUl = getElems(['', 0, 'UL'], headerLinks);
@@ -726,7 +753,7 @@ Admin.prototype.addAdminPanelLink = function addAdminPanelLink() {
 	var linkElem = createDOMElem({
 									tagName: 'A', 
 									args: [{name: 'href', value: 'admin/index.php'}], 
-									innerHTML: 'Админ Панель'
+									innerText: 'Админ Панель'
 							    });
 	liElem.appendChild(linkElem);
 	headerUl.appendChild(liElem);

@@ -106,6 +106,8 @@ function postComment(e) {
 	
 	sendAjaxRequest(data, 'admin/save_comments.php');
 	updateCommentsWrapper();
+	commentsForm['comments-parent'].value = "";
+	target.value = "Добавить";
 }
 
 // добавляет событие по клику на нумерацию
@@ -155,12 +157,19 @@ function addLinksToCommentsId() {
 			
 			if(!loginTd) continue;
 			
-			if(!loginTd[2]) continue;	// TD с ником автора
+			//if(!loginTd[2]) continue;	// TD с ником автора
 			
 			DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
 			var userLogin = loginTd[2].textContent;
 			var commId = loginTd[0].textContent;
-			loginTd[0].innerHTML = '<a href="../users/user_profile.php?user_login='+userLogin+'">'+commId+'</a>';
+			var profileName = loginTd[2].textContent;
+			loginTd[2].textContent = "";
+			var profileLink = createDOMElem({
+				tagName: 'A', 
+				args: [{name: 'href', value: '../users/user_profile.php?user_login='+userLogin}], 
+				innerText: profileName
+			});
+			loginTd[2].appendChild(profileLink);
 		}
 	}
 }
@@ -365,12 +374,12 @@ function setCommentsParentId(e) {
 	
 	e.preventDefault();
 
-	var parentLink = getElems(['comment-id', 0, 'A'], parent);
-	var parentId = parentLink.textContent; 								// TR -> TR>A>textNode (ID комментария, на который отвечаем)
+	var parentLink = getElems(['', 0, 'A'], parent);
+	var parentId = getElems(['comment-id', 0], parent).textContent;		// TR -> TR>A>textNode (ID комментария, на который отвечаем)
 	var parentAuthor = parentLink.getAttribute('href');
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = getElems(['comments-form', 0]).elements['comments-parent'];
-
+	console.log("parentId: "+parentId);
 	if(commentsInput.tagName !== 'INPUT') return;
 	
 	commentsInput.value = parentId;

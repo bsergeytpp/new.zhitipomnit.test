@@ -2,3 +2,23 @@
  order allow,deny
  deny from all
 </Files>
+
+<ifModule mod_headers.c>
+ <FilesMatch "\.(css|jpg|jpeg|png|gif|js|ico)$">
+  Header set Cache-Control "max-age=31536000, public, must-revalidate"
+ </FilesMatch>
+</ifModule>
+
+<ifModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 5 seconds"
+    ExpiresByType image/x-icon "access plus 172000 seconds"
+    ExpiresByType image/jpeg "access plus 172000 seconds"
+    ExpiresByType image/png "access plus 172000 seconds"
+    ExpiresByType image/gif "access plus 172000 seconds"
+    ExpiresByType application/x-shockwave-flash "access plus 172000 seconds"
+    ExpiresByType text/css "access plus 172000 seconds"
+    ExpiresByType text/javascript "access plus 172000 seconds"
+    ExpiresByType application/javascript "access plus 172000 seconds"
+    ExpiresByType application/x-javascript "access plus 172000 seconds"
+</ifModule>

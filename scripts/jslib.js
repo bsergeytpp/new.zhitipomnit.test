@@ -66,6 +66,12 @@ function isFileExists(url) {
 
 // подключаем скрипт
 function appendScript(src) {
+	var allScripts = getElems(['', -1, 'SCRIPT']);
+	
+	for(var i=0, len=allScripts.length; i<len; i++) {
+		if(allScripts[i].src.indexOf(src) !== -1) return;
+	}
+	
 	var script = createDOMElem({tagName: 'script', args: [{name: 'src', value: src}]});
 	document.body.appendChild(script);
 }

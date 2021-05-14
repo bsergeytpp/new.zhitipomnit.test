@@ -767,8 +767,20 @@ p.quotes:before {
 .comments-table .row-id {width: 10%;display:none;}
 .comments-table .row-parent {width: 10%;display:none;}
 .comments-table .row-text {width: 50%;}
-.comments-table .row-date {width: 20%;}
-.comments-table .row-login {width: 10%;}
+.comments-table .row-date {
+	width: 20%;
+	background-image: url(../images/date.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: auto 100%;
+}
+.comments-table .row-login {
+	width: 10%;
+	background-image: url(../images/user.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: auto 100%;
+}
 .comments-table .comment-id {display:none;}
 .comments-table .comment-parent {display:none;}
 .comments-table td, th {
@@ -781,9 +793,22 @@ p.quotes:before {
 }
 .comments-div {
 	background: lightgray;
-	padding: 5px;
+	padding: 5px 5px 0 5px;
 	width: 80%;
 	margin: 10px 0 10px auto;
+	position: relative;
+	border-left: 1px solid darkgray;
+	border-radius: 0 15px;
+}
+.comments-div:before {
+	border-bottom: 1px solid darkgray;
+	border-radius: 0 15px;
+	width: 90%;
+	height: 15px;
+	left: 0;
+	bottom: 0;
+	position: absolute;
+	content: "";
 }
 .comments-num {
 	width: 15%;

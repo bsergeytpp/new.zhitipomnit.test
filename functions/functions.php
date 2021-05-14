@@ -462,9 +462,9 @@
 				echo "<tr>
 						<th class='row-id'>ID</th>
 						<th class='row-parent'>Родитель</th>
-						<th class='row-login'>Логин</th>
+						<th class='row-login'></th>
 						<th class='row-text'>Сообщение</th>
-						<th class='row-date'>Дата</th>
+						<th class='row-date'></th>
 					 </tr>";
 				echo "<tr class='comments-content'>";
 				$i = 0;
@@ -474,14 +474,14 @@
 						case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
 						case 1: echo "<td class='comment-parent'>". $val ."</td>"; break;
 						case 3: 
-							echo "<td class='comment-text' id='text-id-$j'>". $val;
+							echo "<td class='comment-text' id='text-id-$j'><div>". $val;
 							
 							if($row['com_edited_by'] !== null) {
 								echo "<br><em class='edited'>Отредактировано: ".$row['com_edited_by'];
 								echo " | ".$row['comments_edited_date']."</em>";
 							}
 							
-							echo "</td>"; 
+							echo "</div></td>"; 
 							break;
 						case 4: echo "<td class='comment-date'>". strftime("%F", strtotime($val)) ."</td>"; break;
 						case 5: case 6: break;

@@ -622,7 +622,8 @@ Admin.prototype._createEditDiv = function createEditDiv(pattern, callback) {
 					resp = resp.replace('$id$', self._responseObject[pattern+'_id']);
 					resp = resp.replace('$header$', self._responseObject[pattern+'_header']);
 					resp = resp.replace('$inner$', self._responseObject[pattern+'_text']);
-					var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem', innerText: resp});
+					var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem'});
+					div.innerHTML = resp;
 					document.body.appendChild(div);
 					self._editDiv = div;
 					

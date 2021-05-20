@@ -292,7 +292,7 @@ body::before {
     text-indent: 2%;
     margin-top: 0;
 	background-color: transparent !important;
-	width: inherit;
+	width: auto;
 }
 .article img {
     max-width: 90% !important;

@@ -438,8 +438,8 @@ Admin.prototype.initEditorForGuestbook = function initEditorForGuestbook(btn) {
 	btn.textContent = 'Сохранить';
 	initTinyMCE('.edit-this', false, 'auto', 'auto');
 	// TODO: добавить возможность отключения панелей в initTinyMCE
-	getElems(['mce-menubar', 0]).style.display = 'none';
-	getElems(['mce-toolbar-grp', 0]).style.display = 'none';;
+	//getElems(['mce-menubar', 0]).style.display = 'none';
+	//getElems(['mce-toolbar-grp', 0]).style.display = 'none';;
 };
 
 // убираем предыдущий объект tinymce и меняем назначение кнопок

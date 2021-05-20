@@ -35,8 +35,9 @@
 				echo "<h2>Пользователь <strong>".$userLogin."</strong> не найден!</h2>";
 				exit;
 			}
+			
+			echo "<h1>Профиль пользователя $userLogin</h1>";
 		?>
-		<h1>Профиль пользователя <?=$userLogin?></h1>
 		<a href="/">Главная</a><br> 
 		<h3>Данные:</h3>
 		<p><strong>Логин: </strong><? echo $userData['user_login']; ?></p>

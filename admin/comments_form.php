@@ -7,7 +7,8 @@
 					$userLogin = $_SESSION['user'];
 				}
 				if($userLogin === null) {
-					echo '<div class="warning-message">Гостям не разрешено осталять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.</div>';
+					echo '<div class="warning-message">Гостям не разрешено оставлять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.</div>';
+					jsLogNotify('Гостям не разрешено оставлять комментарии. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.', 'warning');
 				} 
 				else {
 					$userData = getUserData($userLogin);

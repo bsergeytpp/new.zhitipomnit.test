@@ -748,3 +748,30 @@ function updateGuestbookDiv() {
 		request.send();
 	}, 1500);
 }
+
+function logNotify(logText, logClass) {
+	var logDiv = document.createElement('div');
+	logDiv.classList.add('log-div');
+	logDiv.innerText = logText;
+	
+	switch(logClass) {
+		case 'error': logDiv.classList.add('log-div-error'); break;
+		case 'warning': logDiv.classList.add('log-div-warning'); break;
+		case 'info': logDiv.classList.add('log-div-info'); break;
+		default: break;
+	}
+	
+	document.body.appendChild(logDiv);
+	
+	setTimeout(function() {
+		logDiv.classList.add('log-div-shown');
+	}, 1000);
+	
+	setTimeout(function() {
+		logDiv.classList.remove('log-div-shown');
+	}, 4000);
+	
+	setTimeout(function() {
+		logDiv.remove();
+	}, 6000);
+};

@@ -222,11 +222,11 @@
 	
 		protected function createExceptNews($news) {
 			$news['news_header'] = strip_tags($news['news_header']);//exceptStr(strip_tags($news['news_header']));
-			
+
 			if($this->newsStyle === 'classic') {
 				$newsTemplate = file_get_contents('content/templates/news_template.php');
 			}
-			else {
+			else if($this->newsStyle === 'alt') {
 				$newsTemplate = file_get_contents('content/templates/alt_news_template.php');
 			}
 			

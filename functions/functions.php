@@ -43,7 +43,7 @@
 	}
 	
 	if(!$siteSettings) {
-		$_COOKIE["newsStyle"] = 'alt';
+		//$_COOKIE["newsStyle"] = 'alt';
 	}
 	
 	$NEWS_MAXCOUNT = $defaultSettings['site_settings']['NEWS_MAXCOUNT'];

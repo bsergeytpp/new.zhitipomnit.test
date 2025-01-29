@@ -1,7 +1,7 @@
 <?
 	//require_once (__DIR__.'/../functions/functions.php'); 
 	
-	class DBSessionHandler implements \ SessionHandlerInterface {
+	class DBSessionHandler implements /*\*/ SessionHandlerInterface {
 		private $db = null;
 		private $sessionId = null;
 		private $sessionTime = 7200; // 2 hours

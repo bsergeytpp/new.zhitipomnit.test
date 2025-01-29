@@ -159,8 +159,11 @@
 				Подробнее: http://stackoverflow.com/questions/1685277/warning-domdocumentloadhtml-htmlparseentityref-expecting-in-entity
 			*/
 			$internalErrors = libxml_use_internal_errors(true);
-			$dom = DOMDocument::loadHTML($news);
-			libxml_use_internal_errors($internalErrors);
+			//$dom = DOMDocument::loadHTML($news);
+			// Для работы PHP 8+
+			$dom = new DOMDocument();
+			$dom->loadHTML($news);
+			//libxml_use_internal_errors($internalErrors);
 			$xpath = new DOMXPath($dom);
 			
 			if($this->newsStyle === 'classic') {
@@ -175,16 +178,18 @@
 			// новость приходит одна, выбираем ее ID
 			foreach($entries as $i) {
 				$id = $i->getAttribute('id');
+				echo $id;
 			}
 			
 			if($this->db->getLink()) {
 				$query = "SELECT COUNT(*) FROM comments WHERE comments_location_id = ?";
 				$result = $this->db->executeQuery($query, array($id), 'get_comments');
+				$result = $this->db->executeQuery($query, array($id), 'get_comments');
 				
 				if($result === false) echo '<div class="error-message">Новость не найдена</div>';
 				else {
 					$num_rows = $result->fetchColumn();
-					return $num_rows;				
+					return $num_rows;
 				}
 			}
 			
@@ -259,7 +264,7 @@
 		protected $allNews = [];
 		public function getNews() {
 			$this->allNews = file_get_contents("content/news/archive_news.html");
-			$this->allNews = strip_tags($this->allNews, '<p><strong><a>');
+			$this->allNews = strip_tags($this->allNews, '<p><strong><a><img>');
 			$this->allNews = str_replace('http://www.zhitipomnit.ru/publik/publik.html', 'index.php?pages=publ', $this->allNews);
 			$this->createNewsList();
 		}

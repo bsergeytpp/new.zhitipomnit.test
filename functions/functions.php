@@ -111,7 +111,7 @@
 			)
 		);
 		$context  = stream_context_create($opts);
-		$response = file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, $context);
+		$response = file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
 		return $response;
 	}
 	

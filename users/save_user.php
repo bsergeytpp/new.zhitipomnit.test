@@ -5,7 +5,7 @@
 
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if($db->getLink()) {
-			$recaptcha = verifyCaptcha($_POST['g-recaptcha-response']);
+			$captcha = verifyCaptcha($_POST['cf-turnstile-response']);
 			$currentTime = date('Y-m-d H:i:sO');
 			
 			// данные для логирования
@@ -16,16 +16,16 @@
 			$logData['date'] = $currentTime;
 			$logData['ip'] = getUserIp();
 			
-			if(!json_decode($recaptcha)) {
-				echo "Ошибка reCaptcha: не верные или пустые данные!";
+			if(!json_decode($captcha)) {
+				echo "Ошибка Cloudflare Turnstile: неверные или пустые данные!";
 				return;
 			}
 			else {
-				$jsonResult = json_decode($recaptcha);
+				$jsonResult = json_decode($captcha);
 				if($jsonResult->success !== true) {
-					echo "Ошибка reCaptcha: не верно введены данные!";
+					echo "Ошибка Cloudflare Turnstile: неверно введены данные!";
 					$logData['name'] = 'user-registration';
-					$logData['text'] = 'Wrong reCaptcha code: ' . $recaptcha;
+					$logData['text'] = 'Wrong Cloudflare Turnstile code: ' . $captcha;
 					echo addLogs($logData);
 					return;
 				} 

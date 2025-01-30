@@ -235,7 +235,7 @@ Admin.prototype.checkForComments = function checkForComments() {
 	var commentsTables = getElems(['comments-table']);
 	
 	if(!commentsTables) return;
-	
+		
 	this._commentsTables = commentsTables;
 	this.addCommentsEditBtn();
 	
@@ -254,6 +254,8 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	if(getElems(['comments-edit'])) return;
 		
 	for(var i=0, len=this._commentsTables.length; i<len; i++) {
+		if(this._commentsTables[i].className.includes('deleted')) continue;
+
 		var commId = getElems(['comment-id', 0], this._commentsTables[i]);
 		var editTr = this.createEditCommentsTr(commId.textContent);
 		getElems(['', 0, 'TBODY'], this._commentsTables[i]).appendChild(editTr);

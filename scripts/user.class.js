@@ -101,6 +101,8 @@ User.prototype.addCommentsEditBtn = function addCommentsEditBtn(commentsIds) {
 	this._userComments = this.getUserComments(commTables, commentsIds);
 	
 	for(var i=0, len=this._userComments.length; i<len; i++) {
+		if(this._userComments[i].className.includes('deleted')) continue;
+		
 		var commId = getElems(['comment-id', 0], this._userComments[i]).textContent;
 		var editTr = this.createEditCommentsTr(commId);
 		getElems(['', 0, 'TBODY'], this._userComments[i]).appendChild(editTr);

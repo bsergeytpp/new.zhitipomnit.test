@@ -429,7 +429,8 @@
 					comments.comments_text, 
 					comments.comments_date,
 					(SELECT user_login FROM users WHERE user_id = comments_edited_by) as com_edited_by,
-					comments.comments_edited_date
+					comments.comments_edited_date,
+					comments.comments_deleted
 				  FROM comments, users 
 				  WHERE comments_location_id = ? 
 				  AND comments.comments_author = users.user_id 
@@ -455,47 +456,65 @@
 			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				echo "<div class='comments-div'>";
 				
-				if($row['comments_parent_id'] !== null) {
-					echo "<table class='comments-table respond'>"; 
+				if($row['comments_deleted'] != true) {
+					if($row['comments_parent_id'] !== null)
+						echo "<table class='comments-table'>";
+					else 
+						echo "<table class='comments-table respond'>"; 
 				}
-				else echo "<table class='comments-table'>"; 
+				else {
+					if($row['comments_parent_id'] !== null)
+						echo "<table class='comments-table deleted'>";
+					else 
+						echo "<table class='comments-table respond deleted'>";
+				}
 				
-				echo "<tr>
-						<th class='row-id'>ID</th>
-						<th class='row-parent'>Родитель</th>
-						<th class='row-login'></th>
-						<th class='row-text'>Сообщение</th>
-						<th class='row-date'></th>
-					 </tr>";
-				echo "<tr class='comments-content'>";
-				$i = 0;
-				
-				foreach($row as $val) {
-					switch($i) {
-						case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
-						case 1: echo "<td class='comment-parent'>". $val ."</td>"; break;
-						case 3: 
-							echo "<td class='comment-text' id='text-id-$j'><div>". $val;
-							
-							if($row['com_edited_by'] !== null) {
-								echo "<br><em class='edited'>Отредактировано: ".$row['com_edited_by'];
-								echo " | ".$row['comments_edited_date']."</em>";
-							}
-							
-							echo "</div></td>"; 
-							break;
-						case 4: echo "<td class='comment-date'>". strftime("%F", strtotime($val)) ."</td>"; break;
-						case 5: case 6: break;
-						default: echo "<td>". $val ."</td>"; break;
+				if($row['comments_deleted'] == true) {
+					echo "<tr>
+							<th colspan='3'>Комментарий был удален</th>
+						 </tr>";
+					echo "<tr class='comments-content'>";
+					echo "<td class='comment-id'>". $row['comments_id'] ."</td>";
+					echo "<td class='comment-parent'>". $row['comments_parent_id'] ."</td>";
+					echo "</tr>";
+				}
+				else {
+					echo "<tr>
+							<th class='row-id'>ID</th>
+							<th class='row-parent'>Родитель</th>
+							<th class='row-login'></th>
+							<th class='row-text'>Сообщение</th>
+							<th class='row-date'></th>
+						 </tr>";
+					echo "<tr class='comments-content'>";
+					$i = 0;
+					
+					foreach($row as $val) {
+						switch($i) {
+							case 0: echo "<td class='comment-id'>". $val ."</td>"; break;
+							case 1: echo "<td class='comment-parent'>". $val ."</td>"; break;
+							case 3: 
+								echo "<td class='comment-text' id='text-id-$j'><div>". $val;
+								
+								if($row['com_edited_by'] !== null) {
+									echo "<br><em class='edited'>Отредактировано: ".$row['com_edited_by'];
+									echo " | ".$row['comments_edited_date']."</em>";
+								}
+								
+								echo "</div></td>"; 
+								break;
+							case 4: echo "<td class='comment-date'>". strftime("%F", strtotime($val)) ."</td>"; break;
+							case 5: case 6: case 7: break;
+							default: echo "<td>". $val ."</td>"; break;
+						}
+						$i++; $j++;
 					}
-					$i++; $j++;
+					echo "</tr>";
+					
+					if(isset($_SESSION['user']) && $_SESSION['user'] !== null) {
+						echo "<tr class='comments-respond'><td colspan='3'><a class='respond-button' href='#'>Ответить</a></td></tr>";
+					}
 				}
-				echo "</tr>";
-				
-				if(isset($_SESSION['user']) && $_SESSION['user'] !== null) {
-					echo "<tr class='comments-respond'><td colspan='3'><a class='respond-button' href='#'>Ответить</a></td></tr>";
-				}
-				
 				echo "</table>";
 				echo "</div>";
 			}

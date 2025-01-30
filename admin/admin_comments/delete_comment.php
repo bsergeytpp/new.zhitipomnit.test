@@ -15,8 +15,8 @@
 		if($db->getLink()) {
 			if(isset($_POST['comment-id'])) {
 				$id = (int)$_POST['comment-id'];
-				$query = "DELETE FROM comments WHERE comments_id = ?";
-				$result = $db->executeQuery($query, array($id), 'delete_comment');
+				$query = "UPDATE comments SET comments_deleted = ? WHERE comments_id = ?";
+				$result = $db->executeQuery($query, array(true, $id), 'delete_comment');
 
 				// данные для логирования
 				global $logData;

@@ -157,7 +157,7 @@ function addLinksToCommentsId() {
 			
 			if(!loginTd) continue;
 			
-			//if(!loginTd[2]) continue;	// TD с ником автора
+			if(!loginTd[2]) continue;	// TD с ником автора
 			
 			DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
 			var userLogin = loginTd[2].textContent;

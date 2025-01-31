@@ -21,7 +21,7 @@
 	function checkUser($login, $password) {
 		global $db;
 		
-		$query = "SELECT user_id, user_login, user_password, user_group, user_email FROM users WHERE user_login = ?";
+		$query = "SELECT user_id, user_login, user_password, user_group, user_email FROM users WHERE user_login = ? AND user_deleted IS NOT TRUE";
 		//pg_query($db->getLink(), "DEALLOCATE ALL");
 		$result = $db->executeQuery($query, array($login), 'check_user');
 		

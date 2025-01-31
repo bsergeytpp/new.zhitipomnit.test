@@ -25,6 +25,7 @@
 			<th>Group</th>
 			<th>Reg date</th>
 			<th>Last login</th>
+			<th>Deleted</th>
 		</tr>
 		<? getUsersToTable(); ?>
 	</table> 

@@ -225,7 +225,7 @@
 	function getUsersToTable() {
 		global $db;
 		
-		$query = 'SELECT user_id, user_login, user_email, user_group, user_reg_date, user_last_seen FROM users ORDER BY user_id';
+		$query = 'SELECT user_id, user_login, user_email, user_group, user_reg_date, user_last_seen, user_deleted FROM users ORDER BY user_id';
 		$res = $db->executeQuery($query, null, null);
 		
 		$usersArr = [
@@ -234,7 +234,8 @@
 			2 => 'user_email',
 			3 => 'user_group',
 			4 => 'user_reg_date',
-			5 => 'user_last_seen'
+			5 => 'user_last_seen',
+			6 => 'user_deleted'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
@@ -248,7 +249,8 @@
 			echo '<tr>';
 			echo '<td class="edit-btn" colspan="5" style="cursor: pointer;"><strong>';
 			echo '<a href="edit_single_user.php?user_id='.$row[0].'">Редактировать</a></strong></td>';
-			echo '<td class="delete-btn" colspan="1" style="cursor: pointer;"><strong>Удалить</strong></td>';
+			echo '<td class="delete-btn" colspan="2" style="cursor: pointer;"><strong>';
+			echo '<a href="delete_user.php?user_id='.$row[0].'">Удалить</strong></td>';
 			echo '</tr>';
 		}
 	}

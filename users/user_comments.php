@@ -1,13 +1,15 @@
 <?
-	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+	require_once ("../admin/admin_security/session.inc.php");
 	require_once "../functions/functions.php";
+	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
+	
 	global $db;
 	
 	if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		if($db->getLink()) {
 			if(isset($_GET['login']) && isset($_GET['comments-location-id'])) {
 				$login = $_GET['login'];
-				
+
 				if($login !== $_SESSION['user']) {
 					echo "Ошибка проверки подлинности!";
 					return;

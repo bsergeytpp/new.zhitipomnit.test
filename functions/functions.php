@@ -456,6 +456,10 @@
 			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				echo "<div class='comments-div'>";
 				
+				/*$commentsTableStr = "<table class='comments-table'";
+				
+				$commentsTableStr += ($row['comments_parent_id'] !== null) ? : ;*/
+				
 				if($row['comments_deleted'] != true) {
 					if($row['comments_parent_id'] !== null)
 						echo "<table class='comments-table'>";

@@ -20,7 +20,7 @@
 		
 		// данные для логирования
 		global $logData;
-		$logData['log_type'] = 4;
+		$logData['type'] = 4;
 		$logData['location'] = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 		$logData['date'] = date('Y-m-d H:i:sO');
 		$logData['important'] = $_SESSION['admin'] || false;
@@ -53,7 +53,8 @@
 				$_SESSION['user'] = $row['user_login'];
 				header("Location: user_profile.php");
 			}
-			
+			$test = $_SESSION['user'];
+			error_log("LOGIN_TEST: $test", 0);
 			if(isset($sessionHandler)) {
 				$sessionHandler->setUser($_SESSION['user']);
 			}

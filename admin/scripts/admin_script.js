@@ -24,8 +24,8 @@ function initTinyMCE(className, isInline) {
 function editBtnOnClick(pattern) {
 	var editBtns = getElems(['edit-btn']);
 		
-	for(var i=0, len=editBtns.length; i<len; i++) {
-		editBtns[i].addEventListener('click', function(e) {
+	for(var editBtn of editBtns) {
+		editBtn.addEventListener('click', function(e) {
 			var target = e.target;
 			
 			if(target === e.currentTarget) {
@@ -172,8 +172,8 @@ function sendRequest(data, reqType, reqTarget, contentType) {
 function removeSelection(parent) {
 	var selectedElems = getElems(['selected'], parent);
 	
-	for(var i=0, len=selectedElems.length; i<len; i++) {
-		selectedElems[i].classList.remove('selected');
+	for(var elem of selectedElems) {
+		elem.classList.remove('selected');
 	}
 }
 
@@ -322,27 +322,19 @@ function navigateUlList(e) {
 	// одна страница есть всегда
 	if(!pageNum) pageNum = 1;
 
-	// самый первый/последний элемент списка
+	// самый первый/последний элемент списка (стрелки)
 	if(target === this.firstChild || target === this.lastChild) {
 		var listNav = target.textContent;
 		// идем назад
-		if(listNav.indexOf("«") !== -1) {	// ES6: listNav.includes("«"), no IE support
-			console.log("Назад: " + listNav);
-
-			if(pageNum != 1) {
-				urlParams['page'] = --pageNum;
-				urlArr = [];
-			}
+		if(listNav.includes("«") && pageNum != 1) {
+			urlParams['page'] = --pageNum;
 		}
 		// идем вперед
-		else if(listNav.indexOf("»") !== -1) {	// ES6: listNav.includes("»"), no IE support
-			console.log("Вперед: " + listNav);
-
-			if(pageNum != this.children.length-2) {
-				urlParams['page'] = ++pageNum;
-				urlArr = [];
-			}
+		else if(listNav.includes("»") && (pageNum != this.children.length-2)) {
+			urlParams['page'] = ++pageNum;
 		}
+
+		urlArr = [];
 		// создаем новый URL и открываем его
 		for(var elem in urlParams) {
 			urlArr.push(elem + "=" + urlParams[elem]); 

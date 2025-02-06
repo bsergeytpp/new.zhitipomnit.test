@@ -22,8 +22,8 @@ function addEventListenerWithOptions(target, type, handler, options) {
 	}
 	
 	if(target.length !== undefined) {
-		for(var i=0, len=target.length; i<len; i++) {
-			target[i].addEventListener(type, handler, optionsOrCapture);
+		for(targetElem of target) {
+			targetElem.addEventListener(type, handler, optionsOrCapture);
 		}
 	}
 	else target.addEventListener(type, handler, optionsOrCapture);
@@ -68,8 +68,8 @@ function isFileExists(url) {
 function appendScript(src) {
 	var allScripts = getElems(['', -1, 'SCRIPT']);
 	
-	for(var i=0, len=allScripts.length; i<len; i++) {
-		if(allScripts[i].src.indexOf(src) !== -1) return;
+	for(scriptElem of allScripts) {
+		if(scriptElem.src.indexOf(src) !== -1) return;
 	}
 	
 	var script = createDOMElem({tagName: 'script', args: [{name: 'src', value: src}]});
@@ -81,8 +81,8 @@ function getParamFromLocationSearch(parName) {
 	var location = window.location.search.substring(1);
 	var params = location.split('&');
 	
-	for(var i=0, len=params.length; i<len; i++) {
-		var val = params[i].split("=");
+	for(var param of params) {
+		var val = param.split("=");
 		if(val[0] == parName) {
 			return val[1];
 		}
@@ -111,8 +111,8 @@ function createDOMElem(elemParams) {
 	if(elemParams.id) elem.id = elemParams.id;
 	
 	if(elemParams.args) {
-		for(var i=0, len=elemParams.args.length; i<len; i++) {
-			elem.setAttribute(elemParams.args[i].name, elemParams.args[i].value);
+		for(var param of elemParams.args) {
+			elem.setAttribute(param.name, param.value);
 		}
 	}
 	

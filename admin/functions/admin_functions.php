@@ -72,35 +72,29 @@
 	function getLogsToTable($pars) {
 		global $db, $logPage;
 
-		$logsCountQuery = 'SELECT COUNT(log_id) FROM logs ';
 		$query = 'SELECT * FROM logs ';
 		
 		// если определена категория логов
 		if($pars['type'] > 0) {
 			$query .= "WHERE log_type = '".$pars['type']."' ";
-			$logsCountQuery .= "WHERE log_type = '".$pars['type']."' ";
 			
 			if($pars['importance']) {
 				$query .= 'AND log_important = TRUE ';
-				$logsCountQuery .= 'AND log_important = TRUE ';
 			}
 		}
 		// только важные
 		else if($pars['importance']) {
 			$query .= 'WHERE log_important = TRUE ';
-			$logsCountQuery .= 'WHERE log_important = TRUE ';
 		}
 		
 		$query .= 'ORDER BY log_id';
-		$totalRes = $db->executeQuery($logsCountQuery, null, null);
-		
-		if($totalRes) $totalLogs = $totalRes->fetchColumn();
+		$totalLogs = getLogsCount($pars);
 		
 		// делаем список и ограничиваем кол-во логов на странице
 		if($totalLogs > LOGS_MAXCOUNT) {
 			$logsQuery = 'logs.php?log-type='.$pars["type"].'&log-important='.$pars["importance"].'&';
 			$logsList = getULlist($totalLogs, LOGS_MAXCOUNT, $logsQuery.'page=', $logPage);
-			echo "Всего: $totalLogs";
+			echo "Всего: $totalLogs ";
 			echo $logsList;
 			$query .= ' LIMIT '.LOGS_MAXCOUNT;
 			
@@ -117,7 +111,8 @@
 			3 => 'log_date',
 			4 => 'log_important',
 			5 => 'log_location',
-			6 => 'log_type_category'
+			6 => 'log_type_category',
+			7 => 'log_client_ip'
 		];
 		
 		while($row = $res->fetch(PDO::FETCH_NUM)) {
@@ -133,6 +128,29 @@
 			}
 			echo '</tr>';
 		}
+	}
+	
+	function getLogsCount($pars) {
+		global $db;
+
+		$logsCountQuery = 'SELECT COUNT(log_id) FROM logs ';
+		
+		// если определена категория логов
+		if($pars['type'] > 0) {
+			$logsCountQuery .= "WHERE log_type = '".$pars['type']."' ";
+			
+			if($pars['importance']) {
+				$logsCountQuery .= 'AND log_important = TRUE ';
+			}
+		}
+		// только важные
+		else if($pars['importance']) {
+			$logsCountQuery .= 'WHERE log_important = TRUE ';
+		}
+		
+		$totalRes = $db->executeQuery($logsCountQuery, null, null);
+		
+		return $totalRes ? $totalRes->fetchColumn() : null;
 	}
 	
 	function getNewsToTable() {

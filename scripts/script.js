@@ -146,18 +146,16 @@ function addLinksToCommentsId() {
 	
 	if(!commentsTable) return;
 	
-	for(var j=0, len=commentsTable.length; j<len; j++) {
-		var trs = getElems(['', -1, 'TR'], commentsTable[j]);
+	for(var tableElem of commentsTable) {
+		var trs = getElems(['', -1, 'TR'], tableElem);
 		
-		for(var i=0, trsLen=trs.length; i<trsLen; i++) {
-			if(trs[i].classList.contains('comments-respond') ||
-			   trs[i].classList.contains('comments-edit')) continue;
+		for(var trsElem of trs) {
+			if(trsElem.classList.contains('comments-respond') ||
+			   trsElem.classList.contains('comments-edit')) continue;
 						
-			var loginTd = getElems(['', -1, 'TD'], trs[i]);
+			var loginTd = getElems(['', -1, 'TD'], trsElem);
 			
-			if(!loginTd) continue;
-			
-			if(!loginTd[2]) continue;	// TD с ником автора
+			if(!loginTd || !loginTd[2]) continue; // TD с ником автора
 			
 			DEBUG(addLinksToCommentsId.name, "loginTd: "+ loginTd[2].textContent);
 			var userLogin = loginTd[2].textContent;
@@ -209,8 +207,8 @@ function navigateUlList(e) {
 	var pair, urlParams = {};
 	
 	// запоминаем параметры и их значения
-	for(var i=0, len=urlArr.length; i<len; i++) {
-		pair = urlArr[i].split("=");
+	for(var urlElem of urlArr) {
+		pair = urlElem.split("=");
 		urlParams[pair[0]] = pair[1];
 	}
 	
@@ -223,24 +221,18 @@ function navigateUlList(e) {
 	if(target === this.firstChild || target === this.lastChild) {
 		var listNav = target.textContent;
 		// идем назад
-		if(listNav.indexOf("«") !== -1) {	// ES6: listNav.includes("«"), no IE support
+		if(listNav.indexOf("«") !== -1 && pageNum != 1) {	// ES6: listNav.includes("«"), no IE support
 			DEBUG(navigateUlList.name, "Назад: " + listNav);
-
-			if(pageNum != 1) {
-				urlParams['page'] = --pageNum;
-				urlArr = [];
-			}
+			urlParams['page'] = --pageNum;
 		}
 		// идем вперед
-		else if(listNav.indexOf("»") !== -1) {	// ES6: listNav.includes("»"), no IE support
+		else if(listNav.indexOf("»") !== -1 && (pageNum != this.children.length-2)) {	// ES6: listNav.includes("»"), no IE support
 			DEBUG(navigateUlList.name, "Вперед: " + listNav);
-
-			if(pageNum != this.children.length-2) {
-				urlParams['page'] = ++pageNum;
-				urlArr = [];
-			}
+			urlParams['page'] = ++pageNum;
 		}
+		
 		// создаем новый URL и открываем его
+		urlArr = [];
 		for(var elem in urlParams) {
 			urlArr.push(elem + "=" + urlParams[elem]); 
 		}
@@ -255,8 +247,8 @@ function replaceNewsLinks() {
 	
 	if(!parents) return;
 	
-	for(var i=0, len=parents.length; i<len; i++) {
-		var link = getElems(['', 0, 'A'], parents[i]);
+	for(var parentElem of parents) {
+		var link = getElems(['', 0, 'A'], parentElem);
 		var linkHref = link.getAttribute('href');
 		
 		if(!link || linkHref === '#') continue;
@@ -273,8 +265,8 @@ function replacePressLinks() {
 	
 	if(!press) return;
 	
-	for(var i=0, len=press.length; i<len; i++) {
-		var str = getElems(['', 0, 'A'], press[i]);
+	for(var pressElem of press) {
+		var str = getElems(['', 0, 'A'], pressElem);
 		var strHref = str.getAttribute('href');
 		DEBUG(replacePressLinks.name, strHref);
 		str.setAttribute('href', 'index.php?pages=press&custom-press=' + strHref.substring(0, 5));
@@ -288,10 +280,10 @@ function replacePressPagesLinks() {
 	
 	if(!pagesLinks) return;
 	
-	for(var i=0, len=pagesLinks.length; i<len; i++) {
-		if(checkClass(pagesLinks[i], ['article-press-links'])) continue;
+	for(var linkElem of pagesLinks) {
+		if(checkClass(linkElem, ['article-press-links'])) continue;
 		
-		var strHref = pagesLinks[i].getAttribute('href');
+		var strHref = linkElem.getAttribute('href');
 		
 		// внешний домен
 		if(strHref.substring(0,4) === 'http') continue;
@@ -300,7 +292,7 @@ function replacePressPagesLinks() {
 		var newHref = getElems(['article-press-links', 1]).getAttribute('href');
 		// убираем номер страницы
 		newHref = newHref.substring(0, newHref.length - 1);
-		pagesLinks[i].setAttribute('href', newHref + strHref[0]);
+		linkElem.setAttribute('href', newHref + strHref[0]);
 	}
 }
 
@@ -319,11 +311,11 @@ function displayNewsImage() {
 	
 	if(!imgs) return;
 	
-	for(var i=0, len=imgs.length; i<len; i++) {
+	for(var imgElem of imgs) {
 		if(isFileExists(imgs[i].getAttribute('src'))) {
-			imgs[i].style.display = 'block';
+			imgElem.style.display = 'block';
 		}
-		else imgs[i].style.display = 'none';
+		else imgElem.style.display = 'none';
 	}
 }
 
@@ -368,7 +360,6 @@ function setCommentsParentId(e) {
 	
 	while(parent.tagName !== 'TABLE') {
 		//if(!checkClass(parent, ['comments-respond'])) break;
-		
 		parent = parent.parentNode;
 	}
 	
@@ -380,10 +371,10 @@ function setCommentsParentId(e) {
 	parentAuthor = parentAuthor.substr(parentAuthor.indexOf('=')+1);	// только ник
 	var commentsInput = getElems(['comments-form', 0]).elements['comments-parent'];
 	console.log("parentId: "+parentId);
+	
 	if(commentsInput.tagName !== 'INPUT') return;
 	
 	commentsInput.value = parentId;
-	
 	var postBtn = getElems(['comments-post-button', 0]);
 	postBtn.value = 'Ответ сообщению '+parentId+' за авторством '+parentAuthor;
 	postBtn.focus();
@@ -424,10 +415,10 @@ function checkCookieToken(token) {
 	var secToken = '';
 	var allCookies = document.cookie.split('; ');
 	
-	for(var i = 0, len = allCookies.length; i<len; i++) {
-		if(allCookies[i].indexOf('sec-token') === -1) continue;
+	for(var cookieElem of allCookies) {
+		if(cookieElem.indexOf('sec-token') === -1) continue;
 		
-		secToken = decodeURIComponent(allCookies[i].substring(10));	// sec-token:
+		secToken = decodeURIComponent(cookieElem.substring(10));	// sec-token:
 	}
 	
 	return (secToken === token) ? true : false;
@@ -565,10 +556,10 @@ function updatePageTitle() {
 			i++;
 		}
 
-		for(i=0, len=pageParams.length; i<len; i++) {
-			if(pageParams[i].indexOf('custom-news-date') === -1) continue;
+		for(var paramsElem of pageParams) {
+			if(paramsElem.indexOf('custom-news-date') === -1) continue;
 			
-			header = pageParams[i].substr(-8);	// дата новости
+			header = paramsElem.substr(-8);	// дата новости
 			
 			if(container) {
 				header += ': ' + container.textContent;
@@ -587,8 +578,8 @@ function updatePageTitle() {
 		var parent = getElems('publs-container');
 		var searchElems = ['H2', 'H3', 'P'];
 		
-		for(var i=0, len=searchElems.length; i<len; i++) {
-			container = getElems(['', 0, searchElems[i]], parent);
+		for(var searchElem of searchElems) {
+			container = getElems(['', 0, searchElem], parent);
 			
 			if(!container || container.textContent === '') continue;
 

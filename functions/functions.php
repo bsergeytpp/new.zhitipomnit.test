@@ -112,6 +112,7 @@
 		);
 		$context  = stream_context_create($opts);
 		$response = file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $context);
+		
 		return $response;
 	}
 	
@@ -438,7 +439,6 @@
 				
 				$result = $db->executeQuery($query, array($id), 'get_all_comments');
 				printComments($result);
-				jsLogNotify('test!!!', 'info');
 			}
 		}
 	}
@@ -456,24 +456,14 @@
 			while($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				echo "<div class='comments-div'>";
 				
-				/*$commentsTableStr = "<table class='comments-table'";
+				$commentsTableStr = "<table class='comments-table";
+				$commentsTableStr .= ($row['comments_parent_id']) ? " respond " : "";
+				$commentsTableStr .= ($row['comments_deleted']) ? " deleted " : "";
+				$commentsTableStr .= "'>";
 				
-				$commentsTableStr += ($row['comments_parent_id'] !== null) ? : ;*/
+				echo $commentsTableStr;
 				
-				if($row['comments_deleted'] != true) {
-					if($row['comments_parent_id'] !== null)
-						echo "<table class='comments-table'>";
-					else 
-						echo "<table class='comments-table respond'>"; 
-				}
-				else {
-					if($row['comments_parent_id'] !== null)
-						echo "<table class='comments-table deleted'>";
-					else 
-						echo "<table class='comments-table respond deleted'>";
-				}
-				
-				if($row['comments_deleted'] == true) {
+				if($row['comments_deleted']) {
 					echo "<tr>
 							<th colspan='3'>Комментарий был удален</th>
 						 </tr>";
@@ -522,6 +512,7 @@
 				echo "</table>";
 				echo "</div>";
 			}
+			jsLogNotify('Комментариев на странице: '.$result->rowCount(), 'info');
 		}
 	}
 	
@@ -571,6 +562,7 @@
 					  " password=".$config['password'];
 		
 		$link = pg_connect($connectStr);
+		
 		return $link;
 	}
 	
@@ -592,11 +584,7 @@
 	}
 	
 	function getUserIp() {
-		if(isset($_SERVER['REMOTE_ADDR'])) {
-			return $_SERVER['REMOTE_ADDR'];
-		}
-		
-		return false;
+		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : false;
 	}
 	
 	// use webp images if supported

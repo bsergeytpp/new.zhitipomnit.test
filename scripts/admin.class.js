@@ -101,8 +101,8 @@ Admin.prototype.addGuestbookEditBtn = function addGuestbookEditBtn() {
 	// если кнопок пока нет
 	if(getElems(['gb-edit-button'])) return;
 		
-	for(var i=0, len=this._guestbookForms.length; i<len; i++) {
-		var gbId = this._guestbookForms[i].id;
+	for(var formElem of this._guestbookForms) {
+		var gbId = formElem.id;
 		var editBtn = createDOMElem({
 			tagName: 'A', 
 			args: [{name: 'href', value: '#'}, {name: 'data-id', value: gbId.substr(gbId.indexOf('-')+1)}], 
@@ -116,8 +116,8 @@ Admin.prototype.addGuestbookEditBtn = function addGuestbookEditBtn() {
 			id: 'gb-'+gbId.substr(gbId.indexOf('-')+1),
 			innerText: 'Удалить'
 		});
-		this._guestbookForms[i].appendChild(editBtn);
-		this._guestbookForms[i].appendChild(deleteBtn);
+		formElem.appendChild(editBtn);
+		formElem.appendChild(deleteBtn);
 	}
 	
 	this.initGuestbookEditBtns();
@@ -127,20 +127,11 @@ Admin.prototype.addGuestbookEditBtn = function addGuestbookEditBtn() {
 Admin.prototype.initGuestbookEditBtns = function initGuestbookEditBtns() {
 	var self = this;
 	
-	for(var i=0, len=this._guestbookForms.length; i<len; i++) {
-		var btns = getElems(['gb-edit-button'], this._guestbookForms[i]);
+	for(var formElem of this._guestbookForms) {
+		var btns = getElems(['gb-edit-button'], formElem);
 		
-		// ES6 realization
-		if(Array.from) {
-			Array.from(btns).forEach(function(elem, index, array) {
-				elem.addEventListener('click', this.addHandlerOnGuestbookEditBtns.bind(this), false);
-			}, self);
-		}
-		// Old realization ES5
-		else {
-			for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-				btns[j].addEventListener('click', self.addHandlerOnGuestbookEditBtns.bind(self), false);
-			}
+		for(var btn of btns) {
+			btn.addEventListener('click', self.addHandlerOnGuestbookEditBtns.bind(self), false);
 		}
 	}
 };
@@ -160,6 +151,7 @@ Admin.prototype.addHandlerOnGuestbookEditBtns = function addHandlerOnGuestbookEd
 			case 'Редактировать': editGuestbookMessage.call(self, target, targetId); break;
 			case 'Сохранить': saveGuestbookMessage.call(self, targetId); break;
 			case 'Удалить': deleteGuestbookMessage.call(self, targetId); break;
+			default: break;
 		}
 	}
 };
@@ -253,12 +245,12 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 	// если кнопок пока нет
 	if(getElems(['comments-edit'])) return;
 		
-	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		if(this._commentsTables[i].className.includes('deleted')) continue;
+	for(var tableElem of this._commentsTables) {
+		if(tableElem.className.includes('deleted')) continue;
 
-		var commId = getElems(['comment-id', 0], this._commentsTables[i]);
+		var commId = getElems(['comment-id', 0], tableElem);
 		var editTr = this.createEditCommentsTr(commId.textContent);
-		getElems(['', 0, 'TBODY'], this._commentsTables[i]).appendChild(editTr);
+		getElems(['', 0, 'TBODY'], tableElem).appendChild(editTr);
 	}
 	
 	this.initCommentsEditBtns();
@@ -268,24 +260,11 @@ Admin.prototype.addCommentsEditBtn = function addCommentsEditBtn() {
 Admin.prototype.initCommentsEditBtns = function initCommentsEditBtns() {
 	var self = this;
 	
-	for(var i=0, len=this._commentsTables.length; i<len; i++) {
-		var btns = getElems(['admin-edit'], this._commentsTables[i]);
+	for(var tableElem of this._commentsTables) {
+		var btns = getElems(['admin-edit'], tableElem);
 		
-		// ES6 realization
-		if(Array.from) {
-			Array.from(btns).forEach(function(elem, index, array) {
-				elem.addEventListener('click', this.addHandlerOnCommentsEditBtns.bind(this), false);
-			}, self);
-		}
-		// ES6 realization 2
-		/*for(var btn of btns) {
+		for(var btn of btns) {
 			btn.addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
-		}*/
-		// Old realization ES5
-		else {
-			for(var j=0, btnsLen=btns.length; j<btnsLen; j++) {
-				btns[j].addEventListener('click', self.addHandlerOnCommentsEditBtns.bind(self), false);
-			}
 		}
 	}
 };
@@ -452,28 +431,28 @@ Admin.prototype.disablePrevEditors = function disablePrevEditors() {
 	
 	if(!prevTinymceElems || !saveLinks) return;
 
-	for(var i=0, len=tinymce.editors.length; i<len; i++) {
-		if(tinymce.editors[i].id === 'comments-text' ||
-		   tinymce.editors[i].id === 'guestbook-text') continue;
+	for(var tinymceEditor of tinymce.editors) {
+		if(tinymceEditor.id === 'comments-text' ||
+		   tinymceEditor.id === 'guestbook-text') continue;
 		
-		tinymce.remove('#'+tinymce.editors[i].id);
+		tinymce.remove('#'+tinymceEditor.id);
 	}
 	
-	for(i=0, len=prevTinymceElems.length; i<len; i++) {
+	for(var prevTinymceElem of prevTinymceElems) {
 		if(this._tempText !== '') {
 			DEBUG(disablePrevEditors.name, 'this._tempText: '+this._tempText);
-			DEBUG(disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
-			prevTinymceElems[i].innerHTML = this._tempText;
+			DEBUG(disablePrevEditors.name, 'prevTinymceElem: '+prevTinymceElem);
+			prevTinymceElem.innerHTML = this._tempText;		// innerHTML -> ?
 			this._tempText = '';
 		}
 		
-		prevTinymceElems[i].classList.toggle('edit-this', false);
+		prevTinymceElem.classList.toggle('edit-this', false);
 	}
 	
-	for(i=0, len=saveLinks.length; i<len; i++) {
-		if(saveLinks[i].textContent !== 'Сохранить') continue;
+	for(var linkElem of saveLinks) {
+		if(linkElem.textContent !== 'Сохранить') continue;
 		
-		saveLinks[i].textContent = 'Редактировать';
+		linkElem.textContent = 'Редактировать';
 	}
 };
 
@@ -538,8 +517,8 @@ Admin.prototype.addEditBtn = function addEditBtn(elems) {
 Admin.prototype.initAdminEdit = function initAdminEdit() {
 	var self = this;
 	
-	for(var i=0, len=this._editBtns.length; i<len; i++) {
-		this._editBtns[i].addEventListener('mouseup', function(e) {
+	for(var editBtn of this._editBtns) {
+		editBtn.addEventListener('mouseup', function(e) {
 			var id = e.target.parentNode.getAttribute('id');
 			var className = e.target.parentNode.className;
 			var pattern = (className.indexOf('news') > -1) ? 'news' : 'publs';

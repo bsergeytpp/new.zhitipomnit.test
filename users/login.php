@@ -28,6 +28,7 @@
 		
 		if(!checkUser($user, $pw)) {
 			echo 'No luck';
+			jsLogNotify('No luck. <a href="../users/login.php">Войдите</a> или <a href="../users/reg_users.php">зарегистрируйстесь</a>.', 'warning');
 			$logData['name'] = 'failed login';
 			$logData['text'] = 'somebody failed to log in with username: ' . $user;
 			addLogs($logData);
@@ -64,7 +65,7 @@
 			addLogs($logData);
 		}
 		
-		exit;
+		//exit;
 	}
 	else if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		if(!isset($_SESSION['admin'])) {
@@ -95,6 +96,7 @@
 <head>
 	<title>Авторизация</title>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+	<link type="text/css" rel="StyleSheet" href="../styles/styles.css" />
 </head>
 <body>
 	<h1>Авторизация</h1>

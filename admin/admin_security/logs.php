@@ -69,6 +69,7 @@
 			<th>Important</th>
 			<th>Location</th>
 			<th>Category</th>
+			<th>IP</th>
 		</tr>
 		<? getLogsToTable($logParams); ?>
 	</table> 

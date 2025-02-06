@@ -17,6 +17,7 @@
 				$result = $db->executeQuery($query, array('1'), 'get_single_user_query');
 				$userArr = $result->fetch(PDO::FETCH_ASSOC);
 			}
+			$checked = ((boolean)$userArr['user_deleted']) ? "checked='checked'": "";
 		}
 	}	
 ?>
@@ -36,6 +37,7 @@
 			<p>Группа: <input type="text" name="user-group" size="100" required value="<? echo $userArr['user_group']; ?>"></p>
 			<p>Дата регистрации: <input type="datetime" name="user-reg" size="100" required value="<? echo $userArr['user_reg_date']; ?>"></p>
 			<p>Последний вход: <input type="datetime" name="user-last" size="100" required value="<? echo $userArr['user_last_seen']; ?>"></p>
+			<p>Удален: <input type="checkbox" name="user-deleted" size="100" required value="<? echo $userArr['user_deleted']; ?>" "<? echo $checked ?>"></p>
 			<input name="user-id" type="hidden" value="<? echo $userId; ?>"></input>
 			<p><input type="submit" value="Изменить"></p>
 		</form>

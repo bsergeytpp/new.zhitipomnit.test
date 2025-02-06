@@ -264,7 +264,7 @@ body::before {
 	width: 100%;
 }
 .comments-list-div h2, .comments-form-div h2 {
-	width: 70%;
+	width: 90%;
 	background: none;
 	color: black;
 	text-decoration: underline;
@@ -870,7 +870,7 @@ p.quotes:before {
 	color: black;
 }
 .success-message {
-	background-color: lightgreen;
+	background-color: green;
 	color: white;
 }
 .admin-bar {
@@ -907,7 +907,7 @@ p.quotes:before {
 	top: 5%;
 }
 .log-div-info {
-	background: lightgreen;
+	background: green;
 	color: white;
 }
 .log-div-warning {

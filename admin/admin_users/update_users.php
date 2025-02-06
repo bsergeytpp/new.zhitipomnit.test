@@ -12,19 +12,22 @@
 			   isset($_POST['user-group']) && 
 			   isset($_POST['user-reg']) && 
 			   isset($_POST['user-last']) && 
-			   isset($_POST['user-id'])) {
+			   isset($_POST['user-id']) &&
+			   isset($_POST['user-deleted'])) {
 				$login = strip_tags(clearStr($_POST['user-login']));
 				$email = strip_tags(clearStr($_POST['user-email']));
 				$group = strip_tags(clearStr($_POST['user-group']));
 				$regDate = $_POST['user-reg'];
 				$lastSeen = $_POST['user-last'];
 				$id = (int)$_POST['user-id'];
+				$deleted = $_POST['user-deleted'];
 				$query = "UPDATE users SET user_login = COALESCE(?, user_login),
 										  user_email = COALESCE(?, user_email),
 										  user_group = COALESCE(?, user_email),
 										  user_reg_date = COALESCE(?, user_reg_date),
-										  user_last_seen = COALESCE(?, user_last_seen) WHERE user_id = ?";
-				$result = $db->executeQuery($query, array($login, $email, $group, $regDate, $lastSeen, $id), 'update_user');
+										  user_last_seen = COALESCE(?, user_last_seen),
+										  user_deleted = COALESCE(?, user_deleted) WHERE user_id = ?";
+				$result = $db->executeQuery($query, array($login, $email, $group, $regDate, $lastSeen, $deleted $id), 'update_user');
 				
 				if($result === false) echo "<div class='error-message'>Данные пользователя не были обновлены</div>";
 				else {

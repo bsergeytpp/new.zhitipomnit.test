@@ -130,6 +130,7 @@
 		}
 	}
 	
+	// получаем кол-во логов
 	function getLogsCount($pars) {
 		global $db;
 

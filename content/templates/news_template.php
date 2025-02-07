@@ -1,6 +1,6 @@
 	<div class="article-news editable" id="newsId">
 		<div class="article-news-header">
-			<strong>Дата: newsDate</strong>
+			<strong class="article-news-date">Дата: newsDate</strong>
 			<!-- if (is_file('content/news/materials/newsDate/logo.jpg')): -->
 				<!--<img class="article-news-image" src="content/materials/newsDate/logo.jpg" alt="">-->
 			<!-- endif; -->

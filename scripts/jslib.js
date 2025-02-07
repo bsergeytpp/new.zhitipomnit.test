@@ -22,7 +22,7 @@ function addEventListenerWithOptions(target, type, handler, options) {
 	}
 	
 	if(target.length !== undefined) {
-		for(targetElem of target) {
+		for(var targetElem of target) {
 			targetElem.addEventListener(type, handler, optionsOrCapture);
 		}
 	}
@@ -68,7 +68,7 @@ function isFileExists(url) {
 function appendScript(src) {
 	var allScripts = getElems(['', -1, 'SCRIPT']);
 	
-	for(scriptElem of allScripts) {
+	for(var scriptElem of allScripts) {
 		if(scriptElem.src.indexOf(src) !== -1) return;
 	}
 	

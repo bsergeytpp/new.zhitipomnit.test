@@ -17,13 +17,13 @@
 				isset($_POST['news-date']) || 
 				isset($_POST['news-header'])) {
 				$newsText = clearStr($_POST['news-text']);
-				$newsHeader = strip_tags(clearStr($_POST['news-header']));
+				$newsHeader = isset($_POST['news-header']) ?  strip_tags(clearStr($_POST['news-header'])) : NULL;
 				$newsId = clearStr($_POST['news-id']);
-				$newsDate = $_POST['news-date'];
+				$newsDate = isset($_POST['news-date']) ? $_POST['news-date'] : NULL;
 				$query = "UPDATE news SET news_date = COALESCE(?, news_date),
 										  news_text = COALESCE(?, news_text),
 										  news_header = COALESCE(?, news_header) WHERE news_id = ?";
-				$result = $db->executeQuery($query, array("$newsDate", "$newsText", "$newsHeader", "$newsId"), 'update_news_query');
+				$result = $db->executeQuery($query, array($newsDate, "$newsText", "$newsHeader", "$newsId"), 'update_news_query');
 				
 				// данные для логирования
 				global $logData;

@@ -7,7 +7,7 @@
 		<div class="alt-news-info-div">
 			<div class="alt-news-date-div">
 				<img src="../../images/calendar.png" alt="" width="30">
-				<strong>Дата: newsDate</strong>
+				<strong class="article-news-date">Дата: newsDate</strong>
 			</div>
 			<div class="alt-news-comments-div">
 				<img src="../../images/comments_icon.png" alt="">

@@ -425,12 +425,10 @@ function checkCookieToken(token) {
 }
 
 function removeActiveTinymceEditors() {
-	var len = tinymce.editors.length;
+	if(tinymce.get().length <= 1) return;
 	
-	if(len <= 1) return;
-	
-	for(var i=1; i<len; i++) {
-		tinymce.editors[i].destroy();
+	for(var editor of tinymce.get()) {
+		editor.destroy();
 	}
 }
 

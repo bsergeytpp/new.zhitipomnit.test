@@ -70,12 +70,12 @@ function saveBtnHandler(prevNode, pattern) {
 		saveEditedText(updatedText, id, name, pattern);
 	}
 	else {
-		for(var i=0, totalEditors=tinymce.editors.length; i<totalEditors; i++) {
-			var elem = tinymce.editors[i].getElement();
+		for(var editor of tinymce.get().length) {
+			var elem = editor.getElement();
 			var elemParent = elem.parentNode;
 			var elemId = elemParent.firstChild.innerHTML;
 			var elemName = elem.getAttribute('name');
-			saveEditedText(tinymce.editors[i].getContent(), elemId, elemName, pattern);
+			saveEditedText(editor.getContent(), elemId, elemName, pattern);
 		}
 	}
 	document.location.reload(true);
@@ -117,7 +117,7 @@ function saveEditedText(text, id, name, pattern) {
 	- принимает шаблон
 */
 function checkActiveEditors(pattern) {
-	if(tinymce.editors.length <= 1) return false;
+	if(tinymce.get().length <= 1) return false;
 	
 	return confirm('Остались несохраненные данные. Отбросить их и сохранить только последнюю правку?');
 }

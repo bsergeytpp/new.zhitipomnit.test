@@ -1,8 +1,7 @@
 'use strict';
 class Admin {
-	isAdmin = false;
-	self = this;
-	login = null;
+	#isAdmin = false;
+	#login = null;
 	
 	#XMLHttpRequest = null;
 	#editBtns = [];
@@ -14,11 +13,10 @@ class Admin {
 	
 	get checkAdmin() { return this.isAdmin; };
 	get Login() { return this.login; };
-	get Self() { return this.self; };
 	
 	// выясняем являемся ли мы админом
 	constructor () {
-		var anotherThis = this.Self;
+		var self = this;
 		this.#XMLHttpRequest = new XMLHttpRequest();
 		this.#XMLHttpRequest.onreadystatechange = function () {
 			if(this.readyState == 4) {
@@ -30,10 +28,10 @@ class Admin {
 				if(respLogin !== null) {
 					if(resp !== null) {
 						DEBUG("checkIfAdmin", "Вы - Админ. Поздравляю!");
-						anotherThis.isAdmin = true;
-						anotherThis.login = respLogin;
+						self.isAdmin = true;
+						self.login = respLogin;
 						User = user = null;
-						anotherThis.setPrivilege();
+						self.setPrivilege();
 					}
 					else {
 						DEBUG("checkIfAdmin", "Вы - не Админ.");
@@ -43,7 +41,8 @@ class Admin {
 				}
 				else {
 					DEBUG("checkIfAdmin", "Вы - не авторизованы.");
-					Admin = admin = null;
+					//Admin = admin = null;
+					self.destructor();
 					User = user = null;
 				} 
 			}
@@ -53,6 +52,10 @@ class Admin {
 		}, 60*1000);
 		this.#XMLHttpRequest.open('HEAD', 'content/json.php', true);
 		this.#XMLHttpRequest.send();
+	}
+	
+	destructor() {
+		admin = null;
 	}
 	
 	// проверяем есть ли на странице редактируемые элементы
@@ -143,17 +146,17 @@ class Admin {
 	
 	#editGuestbookMessage(btn, gbId) {
 		// если есть форма сообщения гостевой, то пропускаем ее
-		var totalEditors = tinymce.editors.length;
+		var totalEditors = tinymce.get().length;
 		var gbEditors = (tinymce.activeEditor.getElement.id === 'guestbook-text') ? totalEditors - 1 : totalEditors;
 		
 		if(totalEditors > 1) {
-			if(tinymce.editors[1].id === 'edit-textarea') {
+			if(tinymce.get()[1].getElement().name === 'edit-textarea') {
 				alert("Закончите текущее редактирование!");
 				return;
 			}
 			
-			if(tinymce.activeEditor.id === 'guestbook-text') {
-				tinymce.editors[1].focus();
+			if(tinymce.activeEditor.getElement().name === 'guestbook-text') {
+				tinymce.get()[1].focus();
 			}
 		}
 		
@@ -174,8 +177,8 @@ class Admin {
 
 	#saveGuestbookMessage(gbId) {
 		// выбрана форма добавления сообщения
-		if(tinymce.editors.length > 1 && tinymce.activeEditor.id === 'guestbook-text') {
-			tinymce.editors[1].focus();
+		if(tinymce.get().length > 1 && tinymce.activeEditor.getElement().name === 'guestbook-text') {
+			tinymce.get()[1].focus();
 		}
 		
 		var updatedText = tinymce.activeEditor.getContent({ format: 'text' });
@@ -286,26 +289,26 @@ class Admin {
 	*/
 	#editComments(td, tdId) {	
 		// если есть форма комментирования, то пропускаем ее
-		var totalEditors = tinymce.editors.length;
+		var totalEditors = tinymce.get().length;
 		
-		if(tinymce.activeEditor.getElement().id === 'comments-text') {
+		if(tinymce.activeEditor.getElement().name === 'comments-text') {
 			totalEditors = 1;
 		}
-		else if(tinymce.editors[0].id === 'comments-text') {
-			totalEditors = tinymce.editors.length - 1;
+		else if(tinymce.get()[0].getElement().name === 'comments-text') {
+			totalEditors = tinymce.get().length - 1;
 		}
 		
-		if(tinymce.editors.length > totalEditors) {						// уже есть редактируемый комментарий
-			if(tinymce.editors[1].id === 'edit-textarea') {
+		if(tinymce.get().length > totalEditors) {						// уже есть редактируемый комментарий
+			if(tinymce.get()[1].getElement().name === 'edit-textarea') {
 				alert("Закончите текущее редактирование!");
 				return;
 			}
 			
 			if(tinymce.activeEditor.id === 'comments-text') {			// была выбрана форма комментирования
-				tinymce.editors[1].focus();
+				tinymce.get()[1].focus();
 			}
 			
-			var prevEditor = tinymce.activeEditor.bodyElement.parentElement;
+			var prevEditor = tinymce.activeEditor.getBody().parentElement;
 			var prevEditId = getElems(['comment-id', 0], prevEditor).textContent;
 
 			if(confirm('Уже начато редактирование комментария №'+prevEditId+
@@ -345,12 +348,12 @@ class Admin {
 	// TODO: фигово сделано
 	#saveComments(tdId) {
 		// была выбрана форма комментирования
-		if(tinymce.editors.length > 1 && tinymce.activeEditor.id === 'comments-text') {
-			tinymce.editors[1].focus();
+		if(tinymce.get().length > 1 && tinymce.activeEditor.getElement().name === 'comments-text') {
+			tinymce.get()[1].focus();
 		}
 		
 		var updatedText = tinymce.activeEditor.getContent();
-		var activeEditorId = tinymce.activeEditor.getParam('id');
+		var activeEditorId = tinymce.activeEditor.getParam('id');	// Unused
 		var editPos = updatedText.indexOf('<br><em class=');
 		removeActiveTinymceEditors();
 		this.#tempText = '';
@@ -390,7 +393,7 @@ class Admin {
 		DEBUG(this.#initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
 		DEBUG(this.#initEditorForComment.name, 'Редактирование: '+td.getAttribute('data-id'));
 
-		commentsTextTd.classList.add('edit-this');
+		commentsTextTd.firstChild.classList.add('edit-this');
 		td.textContent = 'Сохранить';
 		initTinyMCE('.edit-this', true, 'auto', 'auto');
 	}
@@ -419,15 +422,16 @@ class Admin {
 	#disablePrevEditors() {
 		var prevTinymceElems = getElems(['edit-this']);
 		var saveLinks = getElems(['edit-comm']) || getElems(['gb-edit-button']);
-		var activeEditorId = tinymce.activeEditor.getParam('id');
+		var activeEditorId = tinymce.activeEditor.getParam('id');	// Unused
 		
 		if(!prevTinymceElems || !saveLinks) return;
 
-		for(var tinymceEditor of tinymce.editors) {
-			if(tinymceEditor.id === 'comments-text' ||
-			   tinymceEditor.id === 'guestbook-text') continue;
+		for(var tinymceEditor of tinymce.get()) {
+			if(tinymceEditor.getElement().name === 'comments-text' ||
+			   tinymceEditor.getElement().name === 'guestbook-text') continue;
 			
 			tinymce.remove('#'+tinymceEditor.id);
+			console.log('11111');
 		}
 		
 		for(var prevTinymceElem of prevTinymceElems) {
@@ -439,6 +443,7 @@ class Admin {
 			}
 			
 			prevTinymceElem.classList.toggle('edit-this', false);
+			console.log('22222');
 		}
 		
 		for(var linkElem of saveLinks) {
@@ -622,7 +627,7 @@ class Admin {
 	#createEditDivCallback(pattern, id) {
 		var self = this;
 		// удаляем другие объекты tinymce
-		if(tinymce.editors.length > 0) {
+		if(tinymce.get().length > 0) {
 			this.#disablePrevEditors();
 		}
 		
@@ -638,8 +643,8 @@ class Admin {
 			if(targetText === 'Отменить') {
 				e.stopPropagation();
 				
-				if(tinymce.activeEditor.id === 'comments-text') {
-					if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+				if(tinymce.activeEditor.getElement().name === 'comments-text') {
+					if(tinymce.get().length > 1 && tinymce.get()[1].getElement().name !== 'comments-text') {
 						removeActiveTinymceEditors();
 					}
 				}
@@ -659,8 +664,8 @@ class Admin {
 				   'admin/admin_'+pattern+'/update_'+pattern+'.php', 
 				   'application/x-www-form-urlencoded');
 				
-				if(tinymce.activeEditor.id === 'comments-text') {
-					if(tinymce.editors.length > 1 && tinymce.editors[1].id !== 'comments-text') {
+				if(tinymce.activeEditor.getElement().name === 'comments-text') {
+					if(tinymce.get().length > 1 && tinymce.get()[1].getElement().name !== 'comments-text') {
 						removeActiveTinymceEditors();
 					}
 				}

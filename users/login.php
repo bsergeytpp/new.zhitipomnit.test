@@ -103,11 +103,11 @@
 	<form action="login.php" method="post">
 		<div>
 			<label for="txtUser">Логин</label>
-			<input id="txtUser" type="text" name="user" />
+			<input id="txtUser" type="text" name="user" autocomplete="username" />
 		</div>
 		<div>
 			<label for="txtString">Пароль</label>
-			<input id="txtString" type="password" name="pw" />
+			<input id="txtString" type="password" name="pw" autocomplete="current-password" />
 		</div>
 		<div>
 			<button type="submit">Войти</button>

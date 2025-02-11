@@ -189,7 +189,8 @@ function initTinyMCE(className, isInline, width, height) {
 		plugins: 'code',
 		paste_data_images: true,
 		width: width,
-		height: height
+		height: height,
+		license_key: 'gpl'
 	});
 }
 

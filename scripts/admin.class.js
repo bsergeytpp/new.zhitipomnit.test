@@ -35,7 +35,7 @@ class Admin {
 					}
 					else {
 						DEBUG("checkIfAdmin", "Вы - не Админ.");
-						Admin = admin = null;
+						self.destructor();
 						createUserClass();
 					}
 				}
@@ -147,7 +147,7 @@ class Admin {
 	#editGuestbookMessage(btn, gbId) {
 		// если есть форма сообщения гостевой, то пропускаем ее
 		var totalEditors = tinymce.get().length;
-		var gbEditors = (tinymce.activeEditor.getElement.id === 'guestbook-text') ? totalEditors - 1 : totalEditors;
+		var gbEditors = (tinymce.activeEditor.getElement().name === 'guestbook-text') ? totalEditors - 1 : totalEditors;
 		
 		if(totalEditors > 1) {
 			if(tinymce.get()[1].getElement().name === 'edit-textarea') {
@@ -295,7 +295,7 @@ class Admin {
 			totalEditors = 1;
 		}
 		else if(tinymce.get()[0].getElement().name === 'comments-text') {
-			totalEditors = tinymce.get().length - 1;
+			totalEditors -= 1;
 		}
 		
 		if(tinymce.get().length > totalEditors) {						// уже есть редактируемый комментарий
@@ -304,7 +304,7 @@ class Admin {
 				return;
 			}
 			
-			if(tinymce.activeEditor.id === 'comments-text') {			// была выбрана форма комментирования
+			if(tinymce.activeEditor.getElement().name === 'comments-text') {			// была выбрана форма комментирования
 				tinymce.get()[1].focus();
 			}
 			

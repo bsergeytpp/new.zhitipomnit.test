@@ -290,12 +290,14 @@ class Admin {
 	#editComments(td, tdId) {	
 		// если есть форма комментирования, то пропускаем ее
 		var totalEditors = tinymce.get().length;
-		
-		if(tinymce.activeEditor.getElement().name === 'comments-text') {
-			totalEditors = 1;
-		}
-		else if(tinymce.get()[0].getElement().name === 'comments-text') {
-			totalEditors -= 1;
+			
+		if(tinymce.activeEditor) {
+			if(tinymce.activeEditor.getElement().name === 'comments-text') {
+				totalEditors = 1;
+			}
+			else if(tinymce.get()[0].getElement().name === 'comments-text') {
+				totalEditors -= 1;
+			}
 		}
 		
 		if(tinymce.get().length > totalEditors) {						// уже есть редактируемый комментарий
@@ -382,12 +384,12 @@ class Admin {
 		if(tdParent === null) return;
 		
 		var commentsTextTd = getElems(['comment-text', 0], tdParent); // нашли текст комментария
-		var commentsText = commentsTextTd.innerHTML;
+		var commentsText = DOMPurify.sanitize(commentsTextTd.innerHTML);
 		var editPos = commentsText.indexOf('<br><em class=');
 		
 		if(editPos !== -1) {
 			this.#tempText = commentsText;
-			commentsTextTd.innerHTML = commentsText.substr(0, editPos);
+			commentsTextTd.innerHTML = DOMPurify.sanitize(commentsText.substr(0, editPos));
 		}
 		
 		DEBUG(this.#initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
@@ -438,7 +440,7 @@ class Admin {
 			if(this.#tempText !== '') {
 				DEBUG(this.#disablePrevEditors.name, 'this.#tempText: '+this.#tempText);
 				DEBUG(this.#disablePrevEditors.name, 'prevTinymceElem: '+prevTinymceElem);
-				prevTinymceElem.innerHTML = this.#tempText;		// innerHTML -> ?
+				prevTinymceElem.innerHTML = DOMPurify.sanitize(this.#tempText);
 				this.#tempText = '';
 			}
 			
@@ -601,7 +603,7 @@ class Admin {
 						resp = resp.replace('$header$', self.#responseObject[pattern+'_header']);
 						resp = resp.replace('$inner$', self.#responseObject[pattern+'_text']);
 						var div = createDOMElem({tagName: 'DIV', className: 'admin-edit-elem'});
-						div.innerHTML = resp;
+						div.innerHTML = DOMPurify.sanitize(resp);
 						document.body.appendChild(div);
 						self.#editDiv = div;
 						
@@ -711,7 +713,7 @@ class Admin {
 				else {
 					DEBUG(self.#sendSaveRequest.name, 'Запрос отправлен. Ответ сервера: ' + this.responseText);
 					setTimeout(function() {
-						location.reload();
+						//location.reload();
 					}, 3*1000);
 					//updateCommentsWrapper();
 				}

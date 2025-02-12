@@ -475,13 +475,15 @@ function updateCommentsWrapper() {
 			? DEBUG(updateCommentsWrapper.name, 'Ошибка: ' + request.responseText)
 			: DEBUG(updateCommentsWrapper.name, 'Запрос отправлен.');
 			
-			tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comments-text');
+			for(var editor of tinymce.get()) {
+				tinymce.EditorManager.execCommand('mceRemoveEditor', true, editor.id);
+			}
 
 			if(commentsDiv) {
 				wrapper.removeChild(commentsDiv);
 			}
 			// вставляем обновленный список комментариев + старую форму
-			wrapper.innerHTML = request.responseText + wrapper.innerHTML;
+			wrapper.innerHTML = DOMPurify.sanitize(request.responseText) + DOMPurify.sanitize(wrapper.innerHTML);
 			initTinyMCE('.comments-textarea', false, '100%');
 			wrapper.style.height = '';
 			wrapper.style.opacity = '';
@@ -720,7 +722,7 @@ function updateGuestbookDiv() {
 			: DEBUG(updateGuestbookDiv.name, 'Запрос отправлен.');
 			
 			// вставляем обновленный список сообщение
-			gbDiv.innerHTML = request.responseText;
+			gbDiv.innerHTML = DOMPurify.sanitize(request.responseText);
 			gbDiv.style.opacity = '';
 			
 			if(window.admin) {

@@ -365,7 +365,7 @@ body::before {
     font-size: 1.1em;
     margin: 0 auto;
     text-align: justify;
-	box-shadow: 1px 1px .3em black;
+	box-shadow: -1px -1px .3em black;
 }
 .article table strong {
     color: white;

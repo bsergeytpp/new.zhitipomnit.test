@@ -224,12 +224,12 @@ class User {
 		if(tdParent === null) return;
 		
 		var commentsTextTd = getElems(['comment-text', 0], tdParent); // нашли текст комментария
-		var commentsText = commentsTextTd.innerHTML;
+		var commentsText = DOMPurify.sanitize(commentsTextTd.innerHTML);
 		var editPos = commentsText.indexOf('<br><em class=');
 		
 		if(editPos !== -1) {
 			this.#tempText = commentsText;
-			commentsTextTd.innerHTML = commentsText.substr(0, editPos);
+			commentsTextTd.innerHTML = DOMPurify.sanitize(commentsText.substr(0, editPos));
 		}
 		
 		DEBUG(this.#initEditorForComment.name, 'commentsTextTd: '+commentsTextTd);
@@ -242,7 +242,7 @@ class User {
 
 	// убираем предыдущий объект tinymce и меняем назначение кнопок
 	#disablePrevEditors() {
-		var prevTinymceElems = getElems(['edit-this']);
+		var prevTinymceEditors = getElems(['edit-this']);
 		var saveLinks = getElems(['edit-comm']);
 		var activeEditorId = tinymce.activeEditor.getParam('id');
 		
@@ -254,14 +254,14 @@ class User {
 		}
 		
 		// убираем все внесенные изменения
-		for(i=0, len=prevTinymceElems.length; i<len; i++) {
-			prevTinymceElems[i].classList.toggle('edit-this', false);
+		for(var prevEditor of prevTinymceEditors) {
+			prevEditor.classList.toggle('edit-this', false);
 			
 			if(this.#tempText === '') continue;
 			
 			DEBUG(this.#disablePrevEditors.name, 'this.#tempText: '+this.#tempText);
-			DEBUG(this.#disablePrevEditors.name, 'prevTinymceElems[i]: '+prevTinymceElems[i]);
-			prevTinymceElems[i].innerHTML = this.#tempText;
+			DEBUG(this.#disablePrevEditors.name, 'prevEditor: '+prevEditor);
+			prevEditor.innerHTML = DOMPurify.sanitize(this.#tempText);
 			this.#tempText = '';
 		}
 		

@@ -1,7 +1,7 @@
 <?
 	//require_once "admin_security/secure.inc.php";
-	require_once "functions/admin_functions.php";
-	require_once "admin_security/session.inc.php";
+	require_once "../functions/functions.php";
+	require_once "../sessions/session.inc.php";
 	global $db;
 	$userLogin = (isset($_SESSION['user'])) ? $_SESSION['user'] : null;
 	
@@ -18,7 +18,7 @@
 				$text = filter_var($text, FILTER_SANITIZE_STRING);
 				$login = filter_var($login, FILTER_SANITIZE_STRING);
 				$id = $_POST['comments-location-id'];
-				$user_id = getUserId($login);
+				$user_id = getUserId2($login);
 				$parent_id = $_POST['comments-parent'];
 				if($parent_id === '') {
 					$parent_id = NULL;

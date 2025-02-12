@@ -1,5 +1,5 @@
 	<?
-		require_once "admin_security/session.inc.php";
+		require_once (__DIR__."/../sessions/session.inc.php");
 		
 		if(session_status() !== PHP_SESSION_ACTIVE) {
 			session_start();

@@ -1,5 +1,5 @@
 		<?
-			//require_once "admin_security/session.inc.php";
+			require_once (__DIR__."/../sessions/session.inc.php");
 		?> 
 		<div class="comments-list-div">
 			<h2>Комментарии:</h2>

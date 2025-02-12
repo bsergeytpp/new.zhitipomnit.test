@@ -92,6 +92,28 @@
 		return ($temp === $_SESSION['token']) ? true : false;
 	}
 	
+	/*
+		Функция поиска ID пользователя по логину
+		- принимает логин
+		- возвращает ID
+	*/
+	function getUserId2($login) {
+		global $db, $dbLink;
+		
+		if(!$dbLink) return false;
+		
+		$query = "SELECT user_id FROM users WHERE user_login = ? LIMIT 1";
+		$result = $db->executeQuery($query, array($login), 'select_user_id');
+		
+		if($result === false) {
+			echo "<div class='error-message'>Пользователь не найден</div>";
+		}
+		else {
+			$row = $result->fetch();
+			return $row[0];	// TODO: не проверялось
+		} 	
+	}
+	
 	//https://gist.github.com/jonathanstark/dfb30bdfb522318fc819
 	function verifyCaptcha($userData) {
 		global $config;

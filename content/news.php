@@ -23,7 +23,7 @@
 								
 								if($newsId !== '') {
 									echo $newsClass->getSingleNews();
-									include "admin/comments.php";
+									include "comments/comments.php";
 								}
 								else {
 									echo $newsClass->getNews();

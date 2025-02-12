@@ -2,7 +2,7 @@
 	require_once (__DIR__."/../functions/admin_functions.php");
 	
 	function logOut() {
-		require_once "session.inc.php";
+		require_once (__DIR__."/../../sessions/session.inc.php");
 		global $sessionHandler;
 		
 		if(isset($sessionHandler)) {

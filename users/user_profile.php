@@ -1,6 +1,6 @@
 <?
 	require_once (__DIR__."/../functions/functions.php");
-	require_once (__DIR__."/../admin/admin_security/session.inc.php");
+	require_once (__DIR__."/../sessions/session.inc.php");
 	
 	if(session_status() !== PHP_SESSION_ACTIVE) session_start();
 ?>
@@ -11,7 +11,7 @@
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<script src="../scripts/jslib.js"></script>
 	<script src="../scripts/tinymce/tinymce.min.js"></script>
-	<script src="../admin/scripts/admin_script.js"></script>
+	<!--script src="../admin/scripts/admin_script.js"></script-->
 	<link type="text/css" rel="StyleSheet" href="../styles/styles.css" />
 </head>
 <body>

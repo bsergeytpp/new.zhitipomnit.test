@@ -1,6 +1,6 @@
 <?
 	require_once "../admin/admin_security/secure.inc.php";
-	require_once "../admin/admin_security/session.inc.php";
+	require_once "../sessions/session.inc.php";
 		
 	if($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if(isset($_POST['user'])) {

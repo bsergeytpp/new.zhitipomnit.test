@@ -1,5 +1,5 @@
 <? 
-	require_once "admin/admin_security/session.inc.php";
+	require_once "sessions/session.inc.php";
 	$titlePath = getPageTitlePath();
 ?>
 <!DOCTYPE html>
@@ -36,6 +36,7 @@
         <?
             include "content/bottom.php";
         ?> 
+        <script src="scripts/purify.min.js"></script>
         <script src="scripts/jslib.js"></script>
         <script src="scripts/script.js"></script>
         <script src="scripts/admin.class.js" defer></script>

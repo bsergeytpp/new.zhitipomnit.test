@@ -1,7 +1,7 @@
 <?
 	require_once (__DIR__."/../functions/admin_functions.php");
 	require_once (__DIR__."/../admin_security/secure.inc.php");
-	require_once (__DIR__."/../admin_security/session.inc.php");
+	require_once (__DIR__."/../../sessions/session.inc.php");
 	
 	if($_SERVER['REQUEST_METHOD'] == 'GET') {
 		if(isset($_GET['page'])) {
